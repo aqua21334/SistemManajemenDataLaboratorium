@@ -12,7 +12,8 @@ class Pnbp extends Model
     protected $primaryKey = 'id_pnbp';
 
     protected $fillable = [
-        'id_permintaan', 'jumlah', 'tanggal_bayar', 'invoice'
+        'id_permintaan', 'total_biaya', 'jumlah_bayar', 'sisa_tagihan', 
+        'status_pembayaran', 'tanggal_bayar', 'bukti_bayar'
     ];
 
     // Data PNBP ini milik 1 Permintaan Layanan

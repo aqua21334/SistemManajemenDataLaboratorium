@@ -4,17 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     // Menampilkan halaman login
     public function index()
     {
-        // Jika user sudah login, langsung lempar ke dashboard
+        // Jika user sudah login, lemparkan kembali ke halaman depan
         if (Auth::check()) {
-            return redirect('/dashboard');
+            return redirect('/'); 
         }
-        return view('auth.login'); // (View ini akan kita buat di tahap frontend nanti)
+        return view('auth.login'); 
     }
 
     // Memproses data login
@@ -32,6 +34,7 @@ class AuthController extends Controller
 
 
             // 3. Cek Role dan arahkan ke tujuan masing-masing
+            // 3. Cek Role dan arahkan ke tujuan masing-masing
             $role = Auth::user()->role->nama_role;
 
             if ($role === 'Admin') {
@@ -40,8 +43,10 @@ class AuthController extends Controller
                 return redirect()->intended('/kepala/dashboard');
             } elseif ($role === 'Petugas') {
                 return redirect()->intended('/petugas/dashboard');
+            } elseif ($role === 'Customer') {
+                // Sekarang Customer diarahkan ke dashboard khusus mereka
+                return redirect()->intended('/customer/dashboard'); 
             } else {
-                // Jika Customer, kembalikan ke Front Page ('/')
                 return redirect()->intended('/'); 
             }
         }
@@ -52,6 +57,46 @@ class AuthController extends Controller
         ])->onlyInput('email');
     }
 
+    // --- FUNGSI UNTUK MENAMPILKAN HALAMAN REGISTER ---
+    public function showRegister()
+    {
+        return view('auth.register');
+    }
+
+    // --- FUNGSI UNTUK MEMPROSES DATA PENDAFTARAN ---
+    public function register(Request $request)
+    {
+        // 1. Validasi input dari form
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email', // Pastikan email belum pernah dipakai
+            'password' => 'required|min:6' // Minimal 6 karakter
+        ], [
+            // Pesan error custom (opsional, agar bahasanya enak dibaca)
+            'email.unique' => 'Email ini sudah terdaftar!',
+            'password.min' => 'Kata sandi minimal 6 karakter!'
+        ]);
+
+        // 2. Cari ID Role untuk 'Customer' secara otomatis
+        // Asumsi: Kita ingin semua orang yang mendaftar lewat halaman depan otomatis menjadi Customer
+        $roleCustomer = \App\Models\Role::where('nama_role', 'Customer')->first();
+        
+        // Jika karena suatu alasan role Customer tidak ditemukan di database, set manual ke angka (misal: 4)
+        $id_role_customer = $roleCustomer ? $roleCustomer->id_role : 4; 
+
+        // 3. Simpan data user baru ke database
+        $user = \App\Models\User::create([
+            'nama' => $request->nama,
+            'email' => $request->email,
+            'password' => \Illuminate\Support\Facades\Hash::make($request->password), // Password WAJIB dienkripsi (Hash)
+            'id_role' => $id_role_customer
+        ]);
+
+        // 4. Arahkan kembali ke halaman login dengan membawa pesan sukses
+        return redirect('/login')->with('success', 'Akun berhasil dibuat! Silakan masuk menggunakan Email dan Kata Sandi Anda.');
+    }
+
+    // Memproses logout
     // Memproses logout
     public function logout(Request $request)
     {
@@ -59,6 +104,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        // Mengarahkan kembali ke rute halaman depan (/)
+        return redirect('/');
     }
 }

@@ -4,12 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Absensi;
 use Illuminate\Http\Request;
+use App\Exports\AbsensiExport;          // <-- WAJIB: Import class export yang sudah kita buat
+use Maatwebsite\Excel\Facades\Excel;    // <-- WAJIB: Import library Excel dari Maatwebsite
 
 class AbsensiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $absensis = Absensi::orderBy('tanggal', 'desc')->get();
+        $query = Absensi::query();
+
+        // Logika tambahan: Jika ada filter tanggal dari halaman view, terapkan ke query
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('tanggal', [$request->start_date, $request->end_date]);
+        }
+
+        $absensis = $query->orderBy('tanggal', 'desc')->get();
         return view('absensi.index', compact('absensis'));
     }
 
@@ -30,5 +39,17 @@ class AbsensiController extends Controller
     {
         Absensi::findOrFail($id)->delete();
         return back()->with('success', 'Data absensi dihapus!');
+    }
+    // --- FUNGSI BARU UNTUK EXPORT EXCEL (VERSI MULTIPLE SHEETS) ---
+    public function exportExcel(Request $request)
+    {
+        // Menangkap input tahun dari URL/Form. Jika kosong, gunakan tahun saat ini
+        $tahun = $request->input('tahun', date('Y'));
+
+        // Nama file akan dinamis, contoh: Rekap_Absensi_2026.xlsx
+        $namaFile = 'Rekap_Absensi_' . $tahun . '.xlsx';
+
+        // Memanggil Master Export dan memberikan variabel tahun
+        return Excel::download(new AbsensiExport($tahun), $namaFile);
     }
 }

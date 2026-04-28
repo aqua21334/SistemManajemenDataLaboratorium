@@ -10,21 +10,29 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up()
-{
-    Schema::create('permintaan_layanans', function (Blueprint $table) {
-        $table->id('id_permintaan');
-        $table->unsignedBigInteger('id_user'); // FK ke Customer/Pemohon
-        
-        $table->string('pemohon', 100);
-        $table->string('jenis_permintaan', 100);
-        // Enum sangat cocok untuk status yang opsinya sudah pasti
-        $table->enum('status', ['sedang diproses', 'diverifikasi', 'selesai'])->default('sedang diproses');
-        $table->date('tanggal_permintaan');
-        $table->timestamps();
+    {
+        Schema::create('permintaan_layanans', function (Blueprint $table) {
+            $table->id('id_permintaan');
+            $table->unsignedBigInteger('id_user'); // FK ke Customer
+            
+            // --- KOLOM BARU YANG DITAMBAHKAN ---
+            $table->string('no_hp', 20);
+            $table->string('file_layanan', 255); // Untuk menyimpan nama file dokumen
+            // -----------------------------------
 
-        $table->foreign('id_user')->references('id_user')->on('users')->onDelete('cascade');
-    });
-}
+            $table->string('jenis_permintaan', 100);
+            $table->enum('status', ['sedang diproses', 'diverifikasi', 'selesai'])->default('sedang diproses');
+            
+            // Dijadikan nullable (opsional) agar tidak error saat create data dari Customer
+            // Karena nama bisa diambil dari relasi user, dan tanggal dari created_at
+            $table->string('pemohon', 100)->nullable();
+            $table->date('tanggal_permintaan')->nullable();
+            
+            $table->timestamps();
+
+            $table->foreign('id_user')->references('id_user')->on('users')->onDelete('cascade');
+        });
+    }
 
     /**
      * Reverse the migrations.

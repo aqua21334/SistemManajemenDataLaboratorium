@@ -11,8 +11,15 @@ class PermintaanLayanan extends Model
 
     protected $primaryKey = 'id_permintaan';
     
+    // KUNCI PERBAIKAN: Menambahkan 'no_hp' dan 'file_layanan' ke dalam array
     protected $fillable = [
-        'id_user', 'pemohon', 'jenis_permintaan', 'status', 'tanggal_permintaan'
+        'id_user', 
+        'pemohon', 
+        'jenis_permintaan', 
+        'no_hp',             // <-- Ditambahkan
+        'file_layanan',      // <-- Ditambahkan
+        'status', 
+        'tanggal_permintaan'
     ];
 
     // --- RELASI ---
