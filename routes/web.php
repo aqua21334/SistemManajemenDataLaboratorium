@@ -36,8 +36,10 @@ Route::middleware('auth')->group(function () {
     
     // --- ROUTE DASHBOARD (Berdasarkan Role) ---
     Route::get('/admin/dashboard', function () {
-        return "Halo Admin " . Auth::user()->nama . ", Selamat Datang di Balai Teknik Rawa!";
-    });
+        $countPegawai = \App\Models\Personil::count();
+        return view('admin.dashboard', compact('countPegawai'));
+    })->name('dashboard');
+
     Route::get('/kepala/dashboard', function () {
         return "Halo Kepala Lab " . Auth::user()->nama;
     });
@@ -67,7 +69,17 @@ Route::middleware('auth')->group(function () {
 
     // --- ROUTE DATA MASTER & KEPEGAWAIAN ---
     Route::resource('peralatan', PeralatanController::class);
-    Route::resource('personil', PersonilController::class);
+    
+    // --- ROUTE DATA MASTER & KEPEGAWAIAN ---
+Route::resource('personil', PersonilController::class)->names([
+    'index'   => 'pegawai',
+    'create'  => 'pegawai.create',
+    'store'   => 'pegawai.store',
+    'edit'    => 'pegawai.edit',    // Pastikan baris ini ada
+    'update'  => 'pegawai.update',  // Pastikan baris ini ada
+    'destroy' => 'pegawai.destroy',
+]);
+    
     Route::resource('sop', DaftarSopController::class);
     Route::resource('absensi', AbsensiController::class);
 

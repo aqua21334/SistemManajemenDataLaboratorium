@@ -12,9 +12,13 @@ class Personil extends Model
     protected $primaryKey = 'id_personil';
     
     protected $fillable = [
-        'id_user', 'nama_personil', 'jabatan', 'nip', 'foto', 'email'
-    ];
-
+    'id_user', 
+    'nama_personil', 
+    'jabatan', 
+    'nip', 
+    'email', // Pastikan ini ada
+    'foto'
+];
     // Personil ini tertaut ke 1 Akun User (untuk login)
     public function user()
     {

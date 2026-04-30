@@ -227,7 +227,6 @@
 
     <div class="container section-border">
         <h4 class="fw-bold mb-4">Dokumentasi</h4>
-        
         <div class="row mb-4 align-items-center">
             <div class="col-md-4">
                 <img src="https://via.placeholder.com/400x200/0dcaf0/ffffff?text=Imagine+Life" class="img-fluid rounded" alt="Ilustrasi">
