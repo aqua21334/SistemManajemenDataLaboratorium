@@ -9,10 +9,11 @@ class Peralatan extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'kode_bmn'; // PK beda sendiri
+    // Primary key adalah id (default)
+    // kode_bmn adalah string biasa yang manual input
     
     protected $fillable = [
-        'nama_peralatan', 'tanggal_kalibrasi'
+        'kode_bmn', 'nama_peralatan', 'tanggal_kalibrasi', 'status'
     ];
 
     // 1 Alat bisa punya banyak riwayat Status/Perbaikan

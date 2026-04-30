@@ -12,10 +12,11 @@ return new class extends Migration
    public function up()
 {
     Schema::create('peralatans', function (Blueprint $table) {
-        // Menggunakan kode_bmn sebagai Primary Key sesuai desain PDM kamu
-        $table->id('kode_bmn'); 
+        $table->id(); // Primary key auto_increment
+        $table->string('kode_bmn', 50)->unique(); // Kode BMN manual input, tidak auto_increment
         $table->string('nama_peralatan', 100);
         $table->date('tanggal_kalibrasi');
+        $table->string('status', 50)->nullable();
         $table->timestamps();
     });
 }

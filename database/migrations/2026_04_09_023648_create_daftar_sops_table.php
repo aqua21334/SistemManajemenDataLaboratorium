@@ -12,11 +12,12 @@ return new class extends Migration
     public function up()
 {
     Schema::create('daftar_sops', function (Blueprint $table) {
-        $table->id('id_sop'); // Primary Key
+        $table->string('id_sop', 50)->primary(); // Primary Key (String, Tidak Auto Increment)
         $table->unsignedBigInteger('id_user'); // Mengacu pada siapa yang mengunggah
         
         $table->string('jenis_sop', 50);
         $table->string('judul_sop', 100);
+        $table->string('file_sop')->nullable(); // Menyimpan nama file
         $table->timestamps();
 
         // Relasi ke tabel users

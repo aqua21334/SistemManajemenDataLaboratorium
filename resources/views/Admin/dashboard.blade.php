@@ -39,9 +39,9 @@
     <ul class="nav flex-column px-2">
         <li class="nav-item"><a href="{{ route('dashboard') }}" class="nav-link active"><i class="bi bi-grid-fill me-2"></i> Dashboard</a></li>
         <li class="nav-item"><a href="{{ route('pegawai') }}" class="nav-link"><i class="bi bi-people-fill me-2"></i> Pegawai</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-tools me-2"></i> Peralatan</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-file-earmark-check-fill me-2"></i> Daftar SOP</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-file-earmark-text-fill me-2"></i> Laporan</a></li>
+        <li class="nav-item"><a href="{{ route('peralatan') }}" class="nav-link"><i class="bi bi-tools me-2"></i> Peralatan</a></li>
+        <li class="nav-item"><a href="{{ route('sop.index') }}" class="nav-link"><i class="bi bi-file-earmark-check-fill me-2"></i> Daftar SOP</a></li>
+        <li class="nav-item"><a href="{{ route('permintaan.index') }}" class="nav-link"><i class="bi bi-file-earmark-text-fill me-2"></i> Laporan</a></li>
         <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-exclamation-square-fill me-2"></i> Riwayat Laporan</a></li>
         <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-wallet2 me-2"></i> PNBP</a></li>
         <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
@@ -133,8 +133,8 @@
                             @foreach($peralatanKalibrasi as $item)
                                 <div class="ringkasan-box mb-2 justify-content-between">
                                     <div>
-                                        <h6 class="fw-bold mb-1" style="font-size: 13px;">{{ $item->nama }}</h6>
-                                        <p class="m-0 text-muted" style="font-size: 11px;">Kode: {{ $item->kode }}</p>
+                                        <h6 class="fw-bold mb-1" style="font-size: 13px;">{{ $item->nama_peralatan }}</h6>
+                                        <p class="m-0 text-muted" style="font-size: 11px;">Kode: {{ $item->kode_bmn }}</p>
                                     </div>
                                     <div class="text-danger fw-bold" style="font-size: 11px;">Belum Di Kalibrasi</div>
                                 </div>

@@ -37,7 +37,9 @@ Route::middleware('auth')->group(function () {
     // --- ROUTE DASHBOARD (Berdasarkan Role) ---
     Route::get('/admin/dashboard', function () {
         $countPegawai = \App\Models\Personil::count();
-        return view('admin.dashboard', compact('countPegawai'));
+        $countPeralatan = \App\Models\Peralatan::count();
+        $peralatanKalibrasi = \App\Models\Peralatan::where('status', 'belum dikalibrasi')->get();
+        return view('admin.dashboard', compact('countPegawai', 'countPeralatan', 'peralatanKalibrasi'));
     })->name('dashboard');
 
     Route::get('/kepala/dashboard', function () {
@@ -68,7 +70,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('dokumen', DokumenController::class);
 
     // --- ROUTE DATA MASTER & KEPEGAWAIAN ---
-    Route::resource('peralatan', PeralatanController::class);
+    Route::resource('peralatan', PeralatanController::class)->names([
+        'index'   => 'peralatan',
+        'create'  => 'peralatan.create',
+        'store'   => 'peralatan.store',
+        'edit'    => 'peralatan.edit',
+        'update'  => 'peralatan.update',
+        'destroy' => 'peralatan.destroy',
+    ]);
     
     // --- ROUTE DATA MASTER & KEPEGAWAIAN ---
 Route::resource('personil', PersonilController::class)->names([
