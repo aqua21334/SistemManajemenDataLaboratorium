@@ -36,7 +36,6 @@
         .search-container input { border: none; outline: none; width: 100%; margin-left: 10px; font-size: 14px; }
 
         /* Filter & Buttons */
-        .custom-select { border: 2px solid #333; border-radius: 10px; padding: 5px 10px; font-weight: bold; background: white; }
         .btn-custom { border: 2px solid #333; border-radius: 10px; font-weight: bold; padding: 6px 20px; font-size: 14px; }
         .btn-print { background: white; }
         .btn-tambah { background: #345E6F; color: white; }
@@ -74,12 +73,17 @@
         <li class="nav-item"><a href="{{ route('peralatan') }}" class="nav-link"><i class="bi bi-tools me-2"></i> Peralatan</a></li>
         <li class="nav-item"><a href="{{ route('sop.index') }}" class="nav-link"><i class="bi bi-file-earmark-check-fill me-2"></i> Daftar SOP</a></li>
         <li class="nav-item"><a href="{{ route('permintaan.index') }}" class="nav-link"><i class="bi bi-file-earmark-text-fill me-2"></i> Laporan</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-exclamation-square-fill me-2"></i> Riwayat Laporan</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-wallet2 me-2"></i> PNBP</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
+        <li class="nav-item"><a href="{{ route('riwayat-penelitian.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Riwayat Penelitian</a></li>
+        <li class="nav-item"><a href="{{ route('pnbp.index') }}" class="nav-link"><i class="bi bi-cash-stack me-2"></i> PNBP</a></li>
+        <li class="nav-item"><a href="{{ route('riwayat-absensi.index') }}" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
     </ul>
     <div style="position: absolute; bottom: 30px; left: 25px;">
-        <button class="border-0 bg-transparent text-white d-flex align-items-center"><i class="bi bi-box-arrow-left fs-4 me-2"></i> <span class="fw-bold">Keluar</span></button>
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="border-0 bg-transparent text-white d-flex align-items-center">
+                <i class="bi bi-box-arrow-left fs-4 me-2"></i> <span class="fw-bold">Keluar</span>
+            </button>
+        </form>
     </div>
 </div>
 
@@ -100,15 +104,18 @@
 
         <div class="row g-3 align-items-center">
             <div class="col-md-5">
-                <div class="search-container shadow-sm">
-                    <i class="bi bi-search fs-5 text-muted"></i>
-                    <input type="text" placeholder="Cari Pegawai...">
-                </div>
-            </div>
+    <!-- Tambahkan Form dengan method GET -->
+    <form action="{{ route('pegawai') }}" method="GET">
+        <div class="search-container shadow-sm">
+            <i class="bi bi-search fs-5 text-muted"></i>
+            <!-- Berikan name="search" dan value dari request sebelumnya -->
+            <input type="text" name="search" placeholder="Cari Pegawai (Nama/NIP)..." value="{{ request('search') }}">
+            <!-- Tambahkan tombol submit tersembunyi agar bisa tekan Enter -->
+            <button type="submit" class="d-none"></button>
+        </div>
+    </form>
+</div>
             <div class="col-md-7 d-flex justify-content-end align-items-center gap-2">
-                <select class="custom-select shadow-sm me-2">
-                    <option>Kategori Staf Laboratorium</option>
-                </select>
                 <a href="{{ route('pegawai.create') }}" class="btn btn-custom btn-tambah shadow-sm">Tambah</a>
             </div>
         </div>
@@ -118,7 +125,6 @@
                 <thead>
                     <tr>
                         <th width="60"></th>
-                        <th>Id User</th>
                         <th>Nama</th>
                         <th>Email</th>
                         <th>Jabatan</th>
@@ -133,7 +139,6 @@
         <td class="text-center">
             <input type="checkbox" class="form-check-input" name="selected_pegawai[]" value="{{ $p->id_personil }}">
         </td>
-        <td class="text-center fw-bold">{{ $p->id_user }}</td>
         <td>
             <div class="d-flex align-items-center">
                 {{-- Foto: Jika ada di DB pakai itu, jika tidak pakai inisial nama --}}
@@ -155,11 +160,11 @@
                 <button type="submit" class="btn btn-custom btn-hapus shadow-sm" style="padding: 4px 10px; font-size: 12px;" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
             </form>
         </td>
-    </tr>i
+    </tr>
     @empty
     {{-- Tampilan jika database kosong --}}
     <tr>
-        <td colspan="7" class="text-center py-5">
+        <td colspan="6" class="text-center py-5">
             <div class="text-muted">
                 <i class="bi bi-people fs-1 d-block mb-2"></i>
                 <p class="mb-0">Belum ada data pegawai di database.</p>
@@ -174,7 +179,7 @@
         @for($i = 0; $i < (5 - count($personils)); $i++)
         <tr>
             <td class="text-center"><input type="checkbox" class="form-check-input" disabled></td>
-            <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+            <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
         </tr>
         @endfor
     @endif

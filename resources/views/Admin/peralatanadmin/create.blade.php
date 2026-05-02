@@ -47,7 +47,19 @@
         <li class="nav-item"><a href="{{ route('pegawai') }}" class="nav-link"><i class="bi bi-people-fill me-2"></i> Pegawai</a></li>
         <li class="nav-item"><a href="{{ route('peralatan') }}" class="nav-link active"><i class="bi bi-tools me-2"></i> Peralatan</a></li>
         <li class="nav-item"><a href="{{ route('sop.index') }}" class="nav-link"><i class="bi bi-file-earmark-check-fill me-2"></i> Daftar SOP</a></li>
+        <li class="nav-item"><a href="{{ route('permintaan.index') }}" class="nav-link"><i class="bi bi-file-earmark-text-fill me-2"></i> Laporan</a></li>
+        <li class="nav-item"><a href="{{ route('riwayat-penelitian.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Riwayat Penelitian</a></li>
+       <li class="nav-item"><a href="{{ route('pnbp.index') }}" class="nav-link"><i class="bi bi-cash-stack me-2"></i> PNBP</a></li>
+        <li class="nav-item"><a href="{{ route('riwayat-absensi.index') }}" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
     </ul>
+    <div style="position: absolute; bottom: 30px; left: 25px;">
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="border-0 bg-transparent text-white d-flex align-items-center">
+                <i class="bi bi-box-arrow-left fs-4 me-2"></i> <span class="fw-bold">Keluar</span>
+            </button>
+        </form>
+    </div>
 </div>
 
 <div class="main-wrapper">
@@ -66,24 +78,34 @@
         <div class="form-container">
             <h4 class="fw-bold mb-5" style="color: #345E6F;">Tambah Data Peralatan</h4>
 
+            @if ($errors->any())
+                <div class="alert alert-danger mb-4 border-2 border-dark">
+                    <ul class="m-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form action="{{ route('peralatan.store') }}" method="POST">
                 @csrf
                 <div class="row g-5">
                     <div class="col-md-6">
                         <div class="form-group-custom mb-4">
                             <label>Kode BMN</label>
-                            <input type="text" class="form-control-custom shadow-sm" name="kode_bmn" required>
+                            <input type="text" class="form-control-custom shadow-sm" name="kode_bmn" value="{{ old('kode_bmn') }}" required>
                         </div>
                         <div class="form-group-custom mb-4">
                             <label>Nama Peralatan</label>
-                            <input type="text" class="form-control-custom shadow-sm" name="nama_peralatan" required>
+                            <input type="text" class="form-control-custom shadow-sm" name="nama_peralatan" value="{{ old('nama_peralatan') }}" required>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-group-custom mb-4">
                             <label>Tanggal Penyelesaian Kalibrasi</label>
-                            <input type="date" class="form-control-custom shadow-sm" name="tanggal_kalibrasi" required>
+                            <input type="date" class="form-control-custom shadow-sm" name="tanggal_kalibrasi" value="{{ old('tanggal_kalibrasi') }}" required>
                         </div>
                     </div>
                 </div>

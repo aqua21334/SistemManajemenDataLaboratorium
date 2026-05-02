@@ -10,8 +10,21 @@ class DaftarSopController extends Controller
 {
     public function index()
     {
-        $sops = DaftarSop::with('user')->get();
-        return view('Admin.sop.index', compact('sops'));
+        $search = request('search');
+        
+        $query = DaftarSop::with('user');
+        
+        if (!empty($search)) {
+            $query->where(function ($builder) use ($search) {
+                $builder->where('id_sop', 'like', '%' . $search . '%')
+                    ->orWhere('jenis_sop', 'like', '%' . $search . '%')
+                    ->orWhere('judul_sop', 'like', '%' . $search . '%');
+            });
+        }
+        
+        $sops = $query->orderBy('judul_sop', 'asc')->get();
+        
+        return view('Admin.sop.index', compact('sops', 'search'));
     }
 
     public function create()
@@ -25,7 +38,9 @@ class DaftarSopController extends Controller
             'id_sop' => 'required|string|max:50|unique:daftar_sops,id_sop',
             'jenis_sop' => 'required|string|max:50',
             'judul_sop' => 'required|string|max:100',
-            'file_sop' => 'nullable|mimes:pdf,doc,docx,xlsx,xls|max:5120' // Max 5MB
+            'file_sop' => 'nullable|mimes:pdf,doc,docx,xlsx,xls|max:5120',
+        ], [
+            'id_sop.unique' => 'Gagal! ID Dokumen ' . $request->id_sop . ' sudah terdaftar di sistem.',
         ]);
 
         $data = [
@@ -45,7 +60,7 @@ class DaftarSopController extends Controller
 
         DaftarSop::create($data);
 
-        return back()->with('success', 'SOP baru berhasil ditambahkan!');
+        return redirect()->route('sop.index')->with('success', 'SOP baru berhasil ditambahkan!');
     }
 
     public function edit($id)

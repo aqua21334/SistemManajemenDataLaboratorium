@@ -13,6 +13,8 @@ use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\PnbpController;
 use App\Http\Controllers\LaporanHasilController;
 use App\Http\Controllers\DokumenController;
+use App\Http\Controllers\RiwayatPenelitianController;
+use App\Http\Controllers\DashboardController;
 use App\Models\PermintaanLayanan;
 
 // --- ROUTE HALAMAN DEPAN ---
@@ -35,12 +37,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     
     // --- ROUTE DASHBOARD (Berdasarkan Role) ---
-    Route::get('/admin/dashboard', function () {
-        $countPegawai = \App\Models\Personil::count();
-        $countPeralatan = \App\Models\Peralatan::count();
-        $peralatanKalibrasi = \App\Models\Peralatan::where('status', 'belum dikalibrasi')->get();
-        return view('admin.dashboard', compact('countPegawai', 'countPeralatan', 'peralatanKalibrasi'));
-    })->name('dashboard');
+    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/kepala/dashboard', function () {
         return "Halo Kepala Lab " . Auth::user()->nama;
@@ -91,6 +88,13 @@ Route::resource('personil', PersonilController::class)->names([
     
     Route::resource('sop', DaftarSopController::class);
     Route::resource('absensi', AbsensiController::class);
+    
+    // --- ROUTE RIWAYAT PENELITIAN (Hanya View & Detail, Read-only) ---
+    Route::get('/riwayat-penelitian', [RiwayatPenelitianController::class, 'index'])->name('riwayat-penelitian.index');
+    Route::get('/riwayat-penelitian/{id}', [RiwayatPenelitianController::class, 'show'])->name('riwayat-penelitian.show');
+
+    // --- ROUTE RIWAYAT ABSENSI (Admin Panel) ---
+    Route::get('/riwayat-absensi', [AbsensiController::class, 'index'])->name('riwayat-absensi.index');
 
     //--- ROUTE EXPORT EXCEL (Hanya untuk Admin & Kepala Lab) ---
     Route::get('/absensi/export', [AbsensiController::class, 'exportExcel'])->name('absensi.export');

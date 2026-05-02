@@ -8,7 +8,38 @@ use Illuminate\Http\Request;
 
 class PnbpController extends Controller
 {
-    // ... (Fungsi index biarkan seperti biasa)
+    // Menampilkan daftar semua PNBP/Tagihan
+    public function index()
+    {
+        // Tampilkan semua Permintaan Layanan dengan status PNBP-nya
+        $query = PermintaanLayanan::with('user', 'pnbp')->orderBy('created_at', 'desc');
+        
+        // Search functionality
+        $search = request('search');
+        if ($search) {
+            $query->where(function($builder) use ($search) {
+                $builder->where('id_permintaan', 'like', '%' . $search . '%')
+                        ->orWhere('jenis_permintaan', 'like', '%' . $search . '%')
+                        ->orWhere('pemohon', 'like', '%' . $search . '%')
+                        ->orWhereHas('user', function($q) use ($search) {
+                            $q->where('nama', 'like', '%' . $search . '%');
+                        })
+                        ->orWhereHas('pnbp', function($q) use ($search) {
+                            $q->where('status_pembayaran', 'like', '%' . $search . '%');
+                        });
+            });
+        }
+        
+        $permintaans = $query->get();
+        return view('Admin.pnbp.index', compact('permintaans', 'search'));
+    }
+
+    // Form Buat Tagihan
+    public function create()
+    {
+        $permintaans = PermintaanLayanan::with('user')->get();
+        return view('Admin.pnbp.create', compact('permintaans'));
+    }
 
     // 1. Fungsi Admin Menetapkan Harga Awal (Buat Tagihan)
     public function store(Request $request)
@@ -18,7 +49,13 @@ class PnbpController extends Controller
             'total_biaya' => 'required|numeric|min:0',
         ]);
 
-        // Buat tagihan kosong, sisa tagihan = total biaya
+        // Cek apakah PNBP sudah ada untuk permintaan ini
+        $existingPnbp = Pnbp::where('id_permintaan', $request->id_permintaan)->first();
+        if($existingPnbp) {
+            return back()->with('error', 'Tagihan untuk permintaan ini sudah ada!');
+        }
+
+        // Buat tagihan baru
         Pnbp::create([
             'id_permintaan' => $request->id_permintaan,
             'total_biaya' => $request->total_biaya,
@@ -27,7 +64,7 @@ class PnbpController extends Controller
             'status_pembayaran' => 'Belum Dibayar'
         ]);
 
-        return back()->with('success', 'Harga awal berhasil ditetapkan, tagihan dikirim ke Customer!');
+        return redirect()->route('pnbp.index')->with('success', 'Tagihan berhasil dibuat dengan total Rp ' . number_format($request->total_biaya, 0, ',', '.'));
     }
 
     // 2. Fungsi Customer Membayar & Upload Bukti
@@ -68,12 +105,33 @@ class PnbpController extends Controller
         return back()->with('success', 'Pembayaran berhasil diverifikasi. Invoice telah diupdate!');
     }
 
-    // 3. Fungsi Menampilkan Halaman Invoice untuk Customer
+    // 3. Fungsi Menampilkan Form Edit PNBP
+    public function edit($id)
+    {
+        $pnbp = Pnbp::with('permintaanLayanan.user')->findOrFail($id);
+        return view('Admin.pnbp.edit', compact('pnbp'));
+    }
+
+    // 4. Fungsi Update Status Pembayaran
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'status_pembayaran' => 'required|in:Belum Dibayar,Belum Lunas,Lunas'
+        ]);
+
+        $pnbp = Pnbp::findOrFail($id);
+        $pnbp->update([
+            'status_pembayaran' => $request->status_pembayaran
+        ]);
+
+        return redirect()->route('pnbp.index')->with('success', 'Status pembayaran berhasil diupdate!');
+    }
+
+    // 5. Fungsi Menampilkan Halaman Invoice untuk Customer
     public function cetakInvoice($id)
     {
         $pnbp = Pnbp::with('permintaanLayanan.user')->findOrFail($id);
         
-        // Nanti kita buat file view khusus invoice yang rapi
-        return view('pnbp.invoice', compact('pnbp')); 
+        return view('Admin.pnbp.invoice', compact('pnbp')); 
     }
 }

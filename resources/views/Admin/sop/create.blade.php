@@ -96,19 +96,24 @@
         <li class="nav-item"><a href="{{ route('pegawai') }}" class="nav-link"><i class="bi bi-people-fill me-2"></i> Pegawai</a></li>
         <li class="nav-item"><a href="{{ route('peralatan') }}" class="nav-link"><i class="bi bi-tools me-2"></i> Peralatan</a></li>
         <li class="nav-item"><a href="{{ route('sop.index') }}" class="nav-link active"><i class="bi bi-file-earmark-check-fill me-2"></i> Daftar SOP</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-file-earmark-text-fill me-2"></i> Laporan</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-exclamation-square-fill me-2"></i> Riwayat Laporan</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-wallet2 me-2"></i> PNBP</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
+        <li class="nav-item"><a href="{{ route('permintaan.index') }}" class="nav-link"><i class="bi bi-file-earmark-text-fill me-2"></i> Laporan</a></li>
+        <li class="nav-item"><a href="{{ route('riwayat-penelitian.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Riwayat Penelitian</a></li>
+       <li class="nav-item"><a href="{{ route('pnbp.index') }}" class="nav-link"><i class="bi bi-cash-stack me-2"></i> PNBP</a></li>
+        <li class="nav-item"><a href="{{ route('riwayat-absensi.index') }}" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
     </ul>
     <div style="position: absolute; bottom: 30px; left: 25px;">
-        <button class="border-0 bg-transparent text-white d-flex align-items-center"><i class="bi bi-box-arrow-left fs-4 me-2"></i> <span class="fw-bold">Keluar</span></button>
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="border-0 bg-transparent text-white d-flex align-items-center">
+                <i class="bi bi-box-arrow-left fs-4 me-2"></i> <span class="fw-bold">Keluar</span>
+            </button>
+        </form>
     </div>
 </div>
 
 <div class="main-wrapper">
     <div class="topbar-card shadow-sm">
-        <h3 class="fw-light m-0">Selamat Datang !!</h3>
+        <h3 class="fw-light m-0">Selamat Datang</h3>
         <div class="d-flex align-items-center">
             <div class="text-end me-3">
                 <p class="m-0 fw-bold" style="font-size: 14px;">{{ Auth::user()->nama }}</p>
@@ -121,6 +126,16 @@
     <div class="dashboard-container shadow-sm">
         <div class="form-card shadow-sm">
             <h5><i class="bi bi-file-earmark-plus me-2"></i>Tambah Data SOP</h5>
+
+            @if ($errors->any())
+                <div class="alert alert-danger mb-4 border-2 border-dark">
+                    <ul class="m-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             <form action="{{ route('sop.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf

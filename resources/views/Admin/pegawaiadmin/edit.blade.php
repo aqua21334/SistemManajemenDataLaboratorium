@@ -47,11 +47,19 @@
         <li class="nav-item"><a href="{{ route('pegawai') }}" class="nav-link active"><i class="bi bi-people-fill me-2"></i> Pegawai</a></li>
         <li class="nav-item"><a href="{{ route('peralatan') }}" class="nav-link"><i class="bi bi-tools me-2"></i> Peralatan</a></li>
         <li class="nav-item"><a href="{{ route('sop.index') }}" class="nav-link"><i class="bi bi-file-earmark-check-fill me-2"></i> Daftar SOP</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-file-earmark-text-fill me-2"></i> Laporan</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-exclamation-square-fill me-2"></i> Riwayat Laporan</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-wallet2 me-2"></i> PNBP</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
+        <li class="nav-item"><a href="{{ route('permintaan.index') }}" class="nav-link"><i class="bi bi-file-earmark-text-fill me-2"></i> Laporan</a></li>
+        <li class="nav-item"><a href="{{ route('riwayat-penelitian.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Riwayat Penelitian</a></li>
+       <li class="nav-item"><a href="{{ route('pnbp.index') }}" class="nav-link"><i class="bi bi-cash-stack me-2"></i> PNBP</a></li>
+        <li class="nav-item"><a href="{{ route('riwayat-absensi.index') }}" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
     </ul>
+    <div style="position: absolute; bottom: 30px; left: 25px;">
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="border-0 bg-transparent text-white d-flex align-items-center">
+                <i class="bi bi-box-arrow-left fs-4 me-2"></i> <span class="fw-bold">Keluar</span>
+            </button>
+        </form>
+    </div>
 </div>
 
 <div class="main-wrapper">
@@ -121,7 +129,12 @@
                         </div>
                         <div class="form-group-custom mb-4">
                             <label>Jabatan</label>
-                            <input type="text" class="form-control-custom shadow-sm" name="jabatan" value="{{ old('jabatan', $personil->jabatan) }}" required>
+                            <select class="form-control-custom shadow-sm" name="jabatan" required>
+                                <option value="">-- Pilih Jabatan --</option>
+                                <option value="Kepala Lab" {{ old('jabatan', $personil->jabatan) == 'Kepala Lab' ? 'selected' : '' }}>Kepala Lab</option>
+                                <option value="Petugas Lab Tanah" {{ old('jabatan', $personil->jabatan) == 'Petugas Lab Tanah' ? 'selected' : '' }}>Petugas Lab Tanah</option>
+                                <option value="Petugas Lab Rawa" {{ old('jabatan', $personil->jabatan) == 'Petugas Lab Rawa' ? 'selected' : '' }}>Petugas Lab Rawa</option>
+                            </select>
                         </div>
 
                         <div class="d-flex justify-content-end gap-3 mt-5">

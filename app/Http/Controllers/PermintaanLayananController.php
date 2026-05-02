@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PermintaanLayanan;
 use App\Models\RiwayatPenelitian;
+use App\Models\Pnbp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,9 +24,28 @@ public function index()
     }
 
     // SESUAIKAN DENGAN FOTO: Admin/permintaanlayanan/index
-    $laporans = PermintaanLayanan::with('user')->orderBy('created_at', 'desc')->get();
+    $query = PermintaanLayanan::with('user')->orderBy('created_at', 'desc');
     
-    return view('Admin.permintaanlayanan.index', compact('laporans'));
+    // Search functionality
+    $search = request('search');
+    if ($search) {
+        $query->where(function($builder) use ($search) {
+            $builder->where('id_permintaan', 'like', '%' . $search . '%')
+                    ->orWhere('pemohon', 'like', '%' . $search . '%')
+                    ->orWhere('jenis_permintaan', 'like', '%' . $search . '%')
+                    ->orWhere('no_hp', 'like', '%' . $search . '%');
+        });
+    }
+    
+    // Status filter
+    $status = request('status');
+    if ($status && $status !== '') {
+        $query->where('status', $status);
+    }
+    
+    $laporans = $query->get();
+    
+    return view('Admin.permintaanlayanan.index', compact('laporans', 'search', 'status'));
 }
 
 // 2. Menampilkan detail
@@ -33,8 +53,6 @@ public function show($id)
 {
     $permintaan = PermintaanLayanan::with(['dokumens', 'pnbp', 'laporanHasil', 'riwayats'])->findOrFail($id);
     
-    // SESUAIKAN DENGAN FOTO: Admin/permintaanlayanan/show
-    // (Pastikan kamu sudah buat file show.blade.php di folder tersebut)
     return view('Admin.permintaanlayanan.show', compact('permintaan'));
 }
 
@@ -100,7 +118,7 @@ public function edit($id)
         return back()->with('success', 'Status berhasil diperbarui!');
     }
     
-    // 8. Menyimpan Permintaan Baru (Customer)
+    // 8. Menyimpan Permintaan Baru (Customer) + Auto-create PNBP dengan Tarif Fixed 100rb
     public function store(Request $request)
     {
         $request->validate([
@@ -116,7 +134,11 @@ public function edit($id)
             $file->move(public_path('uploads/permintaan'), $nama_file);
         }
 
-        PermintaanLayanan::create([
+        // Tarif fixed untuk semua permintaan = Rp 100.000
+        $tarif_fixed = 100000;
+
+        // 1. Buat Permintaan Layanan
+        $permintaan = PermintaanLayanan::create([
             'id_user' => Auth::id(), 
             'pemohon' => Auth::user()->nama, 
             'jenis_permintaan' => $request->jenis_permintaan,
@@ -126,7 +148,16 @@ public function edit($id)
             'tanggal_permintaan' => now()->toDateString() 
         ]);
 
-        return back()->with('success', 'Permintaan berhasil dikirim!');
+        // 2. Otomatis buat PNBP (Tagihan) dengan tarif fixed 100rb
+        Pnbp::create([
+            'id_permintaan' => $permintaan->id_permintaan,
+            'total_biaya' => $tarif_fixed,
+            'jumlah_bayar' => 0,
+            'sisa_tagihan' => $tarif_fixed,
+            'status_pembayaran' => 'Belum Dibayar'
+        ]);
+
+        return back()->with('success', 'Permintaan berhasil dikirim! Invoice otomatis dibuat dengan tarif Rp ' . number_format($tarif_fixed, 0, ',', '.'));
     }
 
     // 9. Menghapus Permintaan

@@ -144,8 +144,9 @@
             </div>
         @endif
 
-        <form action="/permintaan" method="POST" enctype="multipart/form-data">
-            @csrf <div class="row mb-3">
+        <form action="{{ route('permintaan.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf 
+            <div class="row mb-3">
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">Jenis Permintaan</label>
                     <input type="text" class="form-control border-dark" name="jenis_permintaan" required>
@@ -164,7 +165,10 @@
                     <label class="form-label fw-semibold">No. HandPhone</label>
                     <input type="text" class="form-control border-dark" name="no_hp" required>
                 </div>
-                <div class="col-md-6 d-flex align-items-end justify-content-end">
+                <div class="col-md-6 d-flex align-items-end justify-content-between">
+                    <div class="alert alert-info mb-0" role="alert">
+                        <strong>Tarif:</strong> Rp 100.000
+                    </div>
                     <button type="submit" class="btn btn-custom-dark px-5">Kirim</button>
                 </div>
             </div>

@@ -42,9 +42,9 @@
         <li class="nav-item"><a href="{{ route('peralatan') }}" class="nav-link"><i class="bi bi-tools me-2"></i> Peralatan</a></li>
         <li class="nav-item"><a href="{{ route('sop.index') }}" class="nav-link"><i class="bi bi-file-earmark-check-fill me-2"></i> Daftar SOP</a></li>
         <li class="nav-item"><a href="{{ route('permintaan.index') }}" class="nav-link"><i class="bi bi-file-earmark-text-fill me-2"></i> Laporan</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-exclamation-square-fill me-2"></i> Riwayat Laporan</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-wallet2 me-2"></i> PNBP</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
+        <li class="nav-item"><a href="{{ route('riwayat-penelitian.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Riwayat Penelitian</a></li>
+        <li class="nav-item"><a href="{{ route('pnbp.index') }}" class="nav-link"><i class="bi bi-cash-stack me-2"></i> PNBP</a></li>
+        <li class="nav-item"><a href="{{ route('riwayat-absensi.index') }}" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
     </ul>
 
     <div style="position: absolute; bottom: 30px; left: 25px;">
@@ -77,8 +77,7 @@
             $stats = [
                 ['icon' => 'bi-tools', 'label' => 'Peralatan', 'count' => $countPeralatan ?? 0],
                 ['icon' => 'bi-file-earmark-x', 'label' => 'SOP', 'count' => $countSop ?? 0],
-                ['icon' => 'bi-file-earmark-text', 'label' => 'Dokumen', 'count' => $countDokumen ?? 0],
-                ['icon' => 'bi-chat-left-dots', 'label' => 'Laporan', 'count' => $countLaporan ?? 0],
+                ['icon' => 'bi-file-earmark-check', 'label' => 'Permintaan Layanan', 'count' => $countPermintaanLayanan ?? 0],
                 ['icon' => 'bi-camera-reels', 'label' => 'Riwayat', 'count' => $countRiwayat ?? 0],
             ];
             @endphp
@@ -154,12 +153,13 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    // PIE CHART - Status Pengajuan Layanan
     new Chart(document.getElementById('pieChart'), {
         type: 'pie',
         data: {
             labels: ['Sudah', 'Belum'],
             datasets: [{
-                data: [0, 100], // Default 100% belum jika data kosong
+                data: [{{ $permintaanSudah ?? 0 }}, {{ $permintaanBelum ?? 0 }}],
                 backgroundColor: ['#345E6F', '#B2C3CF'],
                 borderWidth: 1
             }]
@@ -167,12 +167,13 @@
         options: { plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } } } }
     });
 
+    // LINE CHART - Pengajuan 6 Bulan Terakhir
     new Chart(document.getElementById('lineChart'), {
     type: 'line',
     data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+        labels: {!! json_encode($labels ?? ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun']) !!},
         datasets: [{
-            data: [1, 2, 3, 4, 5, 6], 
+            data: {!! json_encode($chartData ?? [1, 2, 3, 4, 5, 6]) !!},
             borderColor: '#345E6F',
             backgroundColor: 'rgba(52, 94, 111, 0.1)',
             fill: false,

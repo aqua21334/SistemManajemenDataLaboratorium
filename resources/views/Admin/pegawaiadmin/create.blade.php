@@ -52,11 +52,19 @@
         <li class="nav-item"><a href="{{ route('pegawai') }}" class="nav-link active"><i class="bi bi-people-fill me-2"></i> Pegawai</a></li>
         <li class="nav-item"><a href="{{ route('peralatan') }}" class="nav-link"><i class="bi bi-tools me-2"></i> Peralatan</a></li>
         <li class="nav-item"><a href="{{ route('sop.index') }}" class="nav-link"><i class="bi bi-file-earmark-check-fill me-2"></i> Daftar SOP</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-file-earmark-text-fill me-2"></i> Laporan</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-exclamation-square-fill me-2"></i> Riwayat Laporan</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-wallet2 me-2"></i> PNBP</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
+        <li class="nav-item"><a href="{{ route('permintaan.index') }}" class="nav-link"><i class="bi bi-file-earmark-text-fill me-2"></i> Laporan</a></li>
+        <li class="nav-item"><a href="{{ route('riwayat-penelitian.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Riwayat Penelitian</a></li>
+        <li class="nav-item"><a href="{{ route('pnbp.index') }}" class="nav-link"><i class="bi bi-cash-stack me-2"></i> PNBP</a></li>
+        <li class="nav-item"><a href="{{ route('riwayat-absensi.index') }}" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
         </ul>
+    <div style="position: absolute; bottom: 30px; left: 25px;">
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="border-0 bg-transparent text-white d-flex align-items-center">
+                <i class="bi bi-box-arrow-left fs-4 me-2"></i> <span class="fw-bold">Keluar</span>
+            </button>
+        </form>
+    </div>
 </div>
 
 <div class="main-wrapper">
@@ -75,26 +83,35 @@
         <div class="form-container">
             <h4 class="fw-bold mb-5" style="color: #345E6F;">Tambah Data Pegawai</h4>
 
+            @if ($errors->any())
+                <div class="alert alert-danger mb-4 border-2 border-dark">
+                    <ul class="m-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <div class="alert alert-info mb-4 border-2 border-dark">
+                Akun login untuk personil akan dibuat otomatis oleh sistem. Password awal menggunakan NIP.
+            </div>
+
             <form action="{{ route('pegawai.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row g-5">
                     <div class="col-md-6">
                         <div class="form-group-custom mb-4">
-                            <label>ID User</label>
-                            <input type="text" class="form-control-custom shadow-sm" value="{{ $nextUserId }}" disabled>
-                            <input type="hidden" name="id_user" value="{{ $nextUserId }}">
-                        </div>
-                        <div class="form-group-custom mb-4">
                             <label>Nama</label>
-                            <input type="text" class="form-control-custom shadow-sm" name="nama" required>
+                            <input type="text" class="form-control-custom shadow-sm" name="nama" value="{{ old('nama') }}" required>
                         </div>
                         <div class="form-group-custom mb-4">
                             <label>Nomor Induk Pegawai</label>
-                            <input type="text" class="form-control-custom shadow-sm" name="nip" required>
+                            <input type="text" class="form-control-custom shadow-sm" name="nip" value="{{ old('nip') }}" required>
                         </div>
                         <div class="form-group-custom mb-4">
                             <label>Email</label>
-                            <input type="email" class="form-control-custom shadow-sm" name="email" required>
+                            <input type="email" class="form-control-custom shadow-sm" name="email" value="{{ old('email') }}" required>
                         </div>
                     </div>
 
@@ -109,7 +126,12 @@
                         </div>
                         <div class="form-group-custom mb-4">
                             <label>Jabatan</label>
-                            <input type="text" class="form-control-custom shadow-sm" name="jabatan" required>
+                            <select class="form-control-custom shadow-sm" name="jabatan" required>
+                                <option value="">-- Pilih Jabatan --</option>
+                                <option value="Kepala Lab" {{ old('jabatan') == 'Kepala Lab' ? 'selected' : '' }}>Kepala Lab</option>
+                                <option value="Petugas Lab Tanah" {{ old('jabatan') == 'Petugas Lab Tanah' ? 'selected' : '' }}>Petugas Lab Tanah</option>
+                                <option value="Petugas Lab Rawa" {{ old('jabatan') == 'Petugas Lab Rawa' ? 'selected' : '' }}>Petugas Lab Rawa</option>
+                            </select>
                         </div>
                         <div class="d-flex justify-content-end gap-3 mt-5">
                             <a href="{{ route('pegawai') }}" class="btn-form btn-kembali">Kembali</a>

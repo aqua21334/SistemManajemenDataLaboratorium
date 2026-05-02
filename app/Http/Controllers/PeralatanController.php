@@ -9,8 +9,27 @@ class PeralatanController extends Controller
 {
     public function index()
     {
-        $peralatans = Peralatan::all();
-        return view('Admin.peralatanadmin.index', compact('peralatans'));
+        $search = request('search');
+        $status = request('status');
+
+        $query = Peralatan::query();
+
+        if (!empty($search)) {
+            $query->where(function ($builder) use ($search) {
+                $builder->where('kode_bmn', 'like', '%' . $search . '%')
+                    ->orWhere('nama_peralatan', 'like', '%' . $search . '%')
+                    ->orWhere('tanggal_kalibrasi', 'like', '%' . $search . '%')
+                    ->orWhere('status', 'like', '%' . $search . '%');
+            });
+        }
+
+        if (!empty($status)) {
+            $query->where('status', $status);
+        }
+
+        $peralatans = $query->orderBy('nama_peralatan', 'asc')->get();
+
+        return view('Admin.peralatanadmin.index', compact('peralatans', 'search', 'status'));
     }
 
     public function create()
@@ -24,6 +43,8 @@ class PeralatanController extends Controller
             'kode_bmn' => 'required|string|max:50|unique:peralatans,kode_bmn',
             'nama_peralatan' => 'required|string|max:100',
             'tanggal_kalibrasi' => 'required|date',
+        ], [
+            'kode_bmn.unique' => 'Gagal! Kode BMN ' . $request->kode_bmn . ' sudah terdaftar di sistem.',
         ]);
 
         // Status default adalah 'belum dikalibrasi' - akan diubah oleh petugas lab saat selesai kalibrasi

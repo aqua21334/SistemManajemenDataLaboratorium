@@ -13,13 +13,26 @@ class AbsensiController extends Controller
     {
         $query = Absensi::query();
 
+        // Search functionality
+        $search = request('search');
+        if ($search) {
+            $query->where(function($builder) use ($search) {
+                $builder->where('id_absensi', 'like', '%' . $search . '%')
+                        ->orWhere('nama', 'like', '%' . $search . '%')
+                        ->orWhere('jabatan', 'like', '%' . $search . '%')
+                        ->orWhere('lokasi', 'like', '%' . $search . '%');
+            });
+        }
+
         // Logika tambahan: Jika ada filter tanggal dari halaman view, terapkan ke query
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('tanggal', [$request->start_date, $request->end_date]);
         }
 
         $absensis = $query->orderBy('tanggal', 'desc')->get();
-        return view('absensi.index', compact('absensis'));
+        
+        // Return view Admin panel (Riwayat Absensi)
+        return view('Admin.riwayatabsensi.index', compact('absensis', 'search'));
     }
 
     public function store(Request $request)

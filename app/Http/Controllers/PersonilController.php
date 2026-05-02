@@ -4,138 +4,176 @@ namespace App\Http\Controllers;
 
 use App\Models\Personil;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
 class PersonilController extends Controller
 {
-  public function index()
-{
-    // Mengambil semua data personil dari database
-    $personils = \App\Models\Personil::all(); 
-    
-    // Kirim data ke view (pastikan path folder Admin sesuai dengan strukturmu)
-    return view('Admin.pegawaiadmin.index', compact('personils'));
-}
+    /**
+     * Menampilkan daftar personil dengan fitur Pencarian.
+     */
+    public function index(Request $request)
+    {
+        // 1. Ambil keyword dari input 'search' di URL
+        $search = $request->query('search');
 
-public function create()
-{
-    // Hitung jumlah personil yang sudah ada, maka id_user berikutnya adalah count + 1
-    $countPersonil = Personil::count();
-    $nextUserId = $countPersonil + 1;
-    
-    return view('Admin.pegawaiadmin.create', compact('nextUserId'));
-}
-   
-public function store(Request $request)
-{
-    // 1. Validasi (Hapus no_hp dari sini)
-    $request->validate([
-        'id_user'       => 'required|exists:users,id_user',
-        'nama'          => 'required|string|max:100',
-        'jabatan'       => 'required|string|max:50',
-        'nip'           => 'required|string|max:25',
-        'email'         => 'required|email',
-        'foto'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-    ]);
+        // 2. Gunakan Query Builder agar bisa memfilter
+        $query = Personil::query();
 
-    // 2. Siapkan Data (Hapus no_hp dari array ini)
-    $data = [
-        'id_user'       => $request->id_user,
-        'nama_personil' => $request->nama,
-        'jabatan'       => $request->jabatan,
-        'nip'           => $request->nip,
-        'email'         => $request->email,
-    ];
+        // 3. Jika ada input pencarian, filter berdasarkan nama, nip, atau jabatan
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('nama_personil', 'like', '%' . $search . '%')
+                  ->orWhere('nip', 'like', '%' . $search . '%')
+                  ->orWhere('jabatan', 'like', '%' . $search . '%');
+            });
+        }
 
-    // 3. Logika Upload Foto
-    if ($request->hasFile('foto')) {
-        $file = $request->file('foto');
-        $nama_foto = time() . "_" . $file->getClientOriginalName();
-        $file->move(public_path('images/pegawai'), $nama_foto);
-        $data['foto'] = $nama_foto;
+        // 4. Ambil data dengan Pagination (misal 10 data per halaman)
+        // Gunakan paginate() agar link di bawah tabel berfungsi otomatis
+        $personils = $query->orderBy('nama_personil', 'asc')->paginate(10);
+        
+        // Kirim data ke view
+        return view('Admin.pegawaiadmin.index', compact('personils'));
     }
 
-    // 4. Simpan ke Database
-    Personil::create($data);
+    public function create()
+    {
+        return view('Admin.pegawaiadmin.create');
+    }
+       
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nama'          => 'required|string|max:100',
+            'jabatan'       => 'required|string|max:50',
+            'nip'           => 'required|string|max:25',
+            'email'         => 'required|email|unique:users,email',
+            'foto'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ], [
+            'email.unique' => 'Gagal! Email ini sudah dipakai oleh akun lain.',
+        ]);
 
-    return redirect()->route('pegawai')->with('success', 'Data personil berhasil ditambahkan!');
-}
-   
-// ... kode lainnya ...
+        // --- VALIDASI 1: CEK NIP DUPLIKAT ---
+        $nipExists = Personil::where('nip', $request->nip)->exists();
+        if ($nipExists) {
+            return back()->withInput()->withErrors(['nip' => 'Gagal! NIP ' . $request->nip . ' sudah terdaftar di sistem.']);
+        }
 
-/**
- * Menampilkan Form Edit Pegawai
- */
-public function edit($id)
-{
-    // Mengambil data satu orang personil berdasarkan ID
-    // Jika ID tidak ditemukan, Laravel otomatis memunculkan halaman error 404
-    $personil = Personil::findOrFail($id);
-    
-    // Pastikan path folder Admin/pegawaiadmin/edit sesuai struktur file Anda
-    return view('Admin.pegawaiadmin.edit', compact('personil'));
-}
+        // --- VALIDASI 2: CEK KEPALA LAB TUNGGAL ---
+        if ($request->jabatan == 'Kepala Lab') {
+            $bossExists = Personil::where('jabatan', 'Kepala Lab')->exists();
+            if ($bossExists) {
+                return back()->withInput()->withErrors(['jabatan' => 'Gagal! Jabatan Kepala Lab sudah terisi. Hanya diperbolehkan satu orang.']);
+            }
+        }
 
-/**
- * Memproses perubahan data ke Database
- */
-public function update(Request $request, $id)
-{
-    // Validasi data yang masuk
-    $request->validate([
-        'nama'    => 'required|string|max:100',
-        'jabatan' => 'required|string|max:50',
-        'nip'     => 'required|string|max:25',
-        'email'   => 'required|email',
-        'foto'    => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-    ]);
+        $idRolePegawai = $request->jabatan === 'Kepala Lab' ? 2 : 3;
 
-    $personil = Personil::findOrFail($id);
-    
-    $data = [
-        'nama_personil' => $request->nama,
-        'jabatan'       => $request->jabatan,
-        'nip'           => $request->nip,
-        'email'         => $request->email,
-    ];
+        DB::transaction(function () use ($request, $idRolePegawai) {
+            $user = User::create([
+                'nama' => $request->nama,
+                'email' => $request->email,
+                'password' => Hash::make($request->nip),
+                'id_role' => $idRolePegawai,
+            ]);
 
-    // Logika jika ada unggahan foto baru
-    if ($request->hasFile('foto')) {
-        // Hapus foto lama dari folder public/images/pegawai jika ada
+            $data = [
+                'id_user'       => $user->id_user,
+                'nama_personil' => $request->nama,
+                'jabatan'       => $request->jabatan,
+                'nip'           => $request->nip,
+                'email'         => $request->email,
+            ];
+
+            if ($request->hasFile('foto')) {
+                $file = $request->file('foto');
+                $nama_foto = time() . "_" . $file->getClientOriginalName();
+                $file->move(public_path('images/pegawai'), $nama_foto);
+                $data['foto'] = $nama_foto;
+            }
+
+            Personil::create($data);
+        });
+
+        return redirect()->route('pegawai')->with('success', 'Data personil dan akun login berhasil dibuat! Password awal akun menggunakan NIP.');
+    }
+
+    public function edit($id)
+    {
+        $personil = Personil::findOrFail($id);
+        return view('Admin.pegawaiadmin.edit', compact('personil'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama'    => 'required|string|max:100',
+            'jabatan' => 'required|string|max:50',
+            'nip'     => 'required|string|max:25',
+            'email'   => 'required|email',
+            'foto'    => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        $personil = Personil::findOrFail($id);
+
+        // --- VALIDASI 1: CEK NIP MILIK ORANG LAIN ---
+        $nipUsedByOther = Personil::where('nip', $request->nip)
+                                  ->where('id_personil', '!=', $id)
+                                  ->exists();
+        if ($nipUsedByOther) {
+            return back()->withInput()->withErrors(['nip' => 'Gagal! NIP sudah digunakan oleh pegawai lain.']);
+        }
+
+        // --- VALIDASI 2: CEK KEPALA LAB (KECUALI DIRINYA SENDIRI) ---
+        if ($request->jabatan == 'Kepala Lab') {
+            $bossUsedByOther = Personil::where('jabatan', 'Kepala Lab')
+                                       ->where('id_personil', '!=', $id)
+                                       ->exists();
+            if ($bossUsedByOther) {
+                return back()->withInput()->withErrors(['jabatan' => 'Gagal! Jabatan Kepala Lab sudah dipegang orang lain.']);
+            }
+        }
+
+        $data = [
+            'nama_personil' => $request->nama,
+            'jabatan'       => $request->jabatan,
+            'nip'           => $request->nip,
+            'email'         => $request->email,
+        ];
+
+        $personil->user?->update([
+            'nama' => $request->nama,
+            'email' => $request->email,
+            'id_role' => $request->jabatan === 'Kepala Lab' ? 2 : 3,
+        ]);
+
+        if ($request->hasFile('foto')) {
+            if ($personil->foto && file_exists(public_path('images/pegawai/' . $personil->foto))) {
+                unlink(public_path('images/pegawai/' . $personil->foto));
+            }
+            $file = $request->file('foto');
+            $nama_foto = time() . "_" . $file->getClientOriginalName();
+            $file->move(public_path('images/pegawai'), $nama_foto);
+            $data['foto'] = $nama_foto;
+        }
+
+        $personil->update($data);
+        return redirect()->route('pegawai')->with('success', 'Data pegawai berhasil diperbarui!');
+    }
+
+
+    public function destroy($id)
+    {
+        $personil = Personil::findOrFail($id);
+
         if ($personil->foto && file_exists(public_path('images/pegawai/' . $personil->foto))) {
             unlink(public_path('images/pegawai/' . $personil->foto));
         }
 
-        $file = $request->file('foto');
-        $nama_foto = time() . "_" . $file->getClientOriginalName();
-        $file->move(public_path('images/pegawai'), $nama_foto);
-        $data['foto'] = $nama_foto;
+        $personil->delete();
+
+        return redirect()->route('pegawai')->with('success', 'Data personil berhasil dihapus!');
     }
-
-    $personil->update($data);
-
-    return redirect()->route('pegawai')->with('success', 'Data pegawai berhasil diperbarui!');
-}
-
-/**
- * Menghapus data personil dari database.
- */
-public function destroy($id)
-{
-    // 1. Cari data personil berdasarkan ID
-    $personil = Personil::findOrFail($id);
-
-    // 2. Logika hapus file foto jika personil memiliki foto
-    if ($personil->foto && file_exists(public_path('images/pegawai/' . $personil->foto))) {
-        unlink(public_path('images/pegawai/' . $personil->foto));
-    }
-
-    // 3. Hapus data dari database
-    $personil->delete();
-
-    // 4. Kembali ke halaman daftar dengan pesan sukses
-    return redirect()->route('pegawai')->with('success', 'Data personil berhasil dihapus!');
-}
-
-    
 }

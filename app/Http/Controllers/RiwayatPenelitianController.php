@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\RiwayatPenelitian;
+use Illuminate\Http\Request;
+
+class RiwayatPenelitianController extends Controller
+{
+    // Hanya menampilkan daftar penelitian yang sudah selesai
+    public function index()
+    {
+        $query = RiwayatPenelitian::with('permintaanLayanan')->orderBy('created_at', 'desc');
+        
+        // Search functionality
+        $search = request('search');
+        if ($search) {
+            $query->where(function($builder) use ($search) {
+                $builder->where('id_permintaan', 'like', '%' . $search . '%')
+                        ->orWhere('nama_laporan', 'like', '%' . $search . '%')
+                        ->orWhere('status', 'like', '%' . $search . '%')
+                        ->orWhereHas('permintaanLayanan', function($q) use ($search) {
+                            $q->where('jenis_permintaan', 'like', '%' . $search . '%');
+                        });
+            });
+        }
+        
+        $riwayatPenelitians = $query->get();
+        return view('Admin.riwayatpenelitian.index', compact('riwayatPenelitians', 'search'));
+    }
+
+    // Menampilkan detail penelitian tertentu
+    public function show($id)
+    {
+        $riwayatPenelitian = RiwayatPenelitian::findOrFail($id);
+        return view('Admin.riwayatpenelitian.show', compact('riwayatPenelitian'));
+    }
+}

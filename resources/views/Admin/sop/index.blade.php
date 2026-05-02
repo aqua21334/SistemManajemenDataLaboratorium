@@ -65,16 +65,24 @@
         <li class="nav-item"><a href="{{ route('peralatan') }}" class="nav-link"><i class="bi bi-tools me-2"></i> Peralatan</a></li>
         <li class="nav-item"><a href="{{ route('sop.index') }}" class="nav-link active"><i class="bi bi-file-earmark-check-fill me-2"></i> Daftar SOP</a></li>
         <li class="nav-item"><a href="{{ route('permintaan.index') }}" class="nav-link"><i class="bi bi-file-earmark-text-fill me-2"></i> Laporan</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-exclamation-square-fill me-2"></i> Riwayat Laporan</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-wallet2 me-2"></i> PNBP</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
+        <li class="nav-item"><a href="{{ route('riwayat-penelitian.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Riwayat Penelitian</a></li>
+        <li class="nav-item"><a href="{{ route('pnbp.index') }}" class="nav-link"><i class="bi bi-cash-stack me-2"></i> PNBP</a></li>
+        <li class="nav-item"><a href="{{ route('riwayat-absensi.index') }}" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
     </ul>
+    <div style="position: absolute; bottom: 30px; left: 25px;">
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="border-0 bg-transparent text-white d-flex align-items-center">
+                <i class="bi bi-box-arrow-left fs-4 me-2"></i> <span class="fw-bold">Keluar</span>
+            </button>
+        </form>
+    </div>
 </div>
 
 <div class="main-wrapper">
     <!-- Topbar -->
     <div class="topbar-card shadow-sm">
-        <h3 class="fw-light m-0">Selamat Datang !!</h3>
+        <h3 class="fw-light m-0">Selamat Datang</h3>
         <div class="d-flex align-items-center">
             <div class="text-end me-3">
                 <p class="m-0 fw-bold" style="font-size: 14px;">{{ Auth::user()->nama }}</p>
@@ -84,19 +92,22 @@
         </div>
     </div>
 
+    <!-- Notifikasi Sukses -->
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show mb-4 border-2 border-dark" role="alert">
+            <strong>Berhasil!</strong> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <!-- Toolbar Area -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <form action="{{ route('sop.index') }}" method="GET" class="d-flex justify-content-between align-items-center mb-4 gap-3" id="filterForm">
         <div class="search-container shadow-sm">
             <i class="bi bi-search fs-5 text-muted"></i>
-            <input type="text" placeholder="Cari Dokumen SOP...">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Dokumen SOP..." id="searchInput">
         </div>
-        <div class="d-flex gap-3">
-            <select class="custom-select shadow-sm">
-                <option>Kategori Dokumen SOP</option>
-            </select>
-            <a href="{{ route('sop.create') }}" class="btn btn-tambah shadow-sm">Tambah</a>
-        </div>
-    </div>
+        <a href="{{ route('sop.create') }}" class="btn btn-tambah shadow-sm">Tambah</a>
+    </form>
 
     <!-- Table -->
     <div class="white-table-card shadow-sm">
@@ -167,6 +178,20 @@
         </div>
     </div>
 </div>
+
+<script>
+    const filterForm = document.getElementById('filterForm');
+    const searchInput = document.getElementById('searchInput');
+
+    let searchTimer;
+
+    searchInput.addEventListener('input', function () {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => {
+            filterForm.submit();
+        }, 400);
+    });
+</script>
 
 </body>
 </html>
