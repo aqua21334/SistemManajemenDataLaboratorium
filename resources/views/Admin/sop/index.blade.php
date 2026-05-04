@@ -60,14 +60,14 @@
         <p class="sidebar-logo-text fw-semibold">Sistem Manajemen Data<br>Laboratorium Balai Teknik Rawa</p>
     </div>
     <ul class="nav flex-column px-2">
-        <li class="nav-item"><a href="{{ route('dashboard') }}" class="nav-link"><i class="bi bi-grid-fill me-2"></i> Dashboard</a></li>
-        <li class="nav-item"><a href="{{ route('pegawai') }}" class="nav-link"><i class="bi bi-people-fill me-2"></i> Pegawai</a></li>
-        <li class="nav-item"><a href="{{ route('peralatan') }}" class="nav-link"><i class="bi bi-tools me-2"></i> Peralatan</a></li>
-        <li class="nav-item"><a href="{{ route('sop.index') }}" class="nav-link active"><i class="bi bi-file-earmark-check-fill me-2"></i> Daftar SOP</a></li>
-        <li class="nav-item"><a href="{{ route('permintaan.index') }}" class="nav-link"><i class="bi bi-file-earmark-text-fill me-2"></i> Laporan</a></li>
-        <li class="nav-item"><a href="{{ route('riwayat-penelitian.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Riwayat Penelitian</a></li>
-        <li class="nav-item"><a href="{{ route('pnbp.index') }}" class="nav-link"><i class="bi bi-cash-stack me-2"></i> PNBP</a></li>
-        <li class="nav-item"><a href="{{ route('riwayat-absensi.index') }}" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
+        <li class="nav-item"><a href="{{ route('admin.dashboard') }}" class="nav-link"><i class="bi bi-grid-fill me-2"></i> Dashboard</a></li>
+        <li class="nav-item"><a href="{{ route('admin.pegawai') }}" class="nav-link"><i class="bi bi-people-fill me-2"></i> Pegawai</a></li>
+        <li class="nav-item"><a href="{{ route('admin.peralatan.index') }}" class="nav-link"><i class="bi bi-tools me-2"></i> Peralatan</a></li>
+        <li class="nav-item"><a href="{{ route('admin.sop.index') }}" class="nav-link active"><i class="bi bi-file-earmark-check-fill me-2"></i> Daftar SOP</a></li>
+        <li class="nav-item"><a href="{{ route('admin.permintaan.index') }}" class="nav-link"><i class="bi bi-file-earmark-text-fill me-2"></i> Laporan</a></li>
+        <li class="nav-item"><a href="{{ route('admin.riwayat-penelitian.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Riwayat Penelitian</a></li>
+        <li class="nav-item"><a href="{{ route('admin.pnbp.index') }}" class="nav-link"><i class="bi bi-cash-stack me-2"></i> PNBP</a></li>
+        <li class="nav-item"><a href="{{ route('admin.riwayat-absensi.index') }}" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
     </ul>
     <div style="position: absolute; bottom: 30px; left: 25px;">
         <form action="{{ route('logout') }}" method="POST">
@@ -101,12 +101,12 @@
     @endif
 
     <!-- Toolbar Area -->
-    <form action="{{ route('sop.index') }}" method="GET" class="d-flex justify-content-between align-items-center mb-4 gap-3" id="filterForm">
+    <form action="{{ route('admin.sop.index') }}" method="GET" class="d-flex justify-content-between align-items-center mb-4 gap-3" id="filterForm">
         <div class="search-container shadow-sm">
             <i class="bi bi-search fs-5 text-muted"></i>
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Dokumen SOP..." id="searchInput">
         </div>
-        <a href="{{ route('sop.create') }}" class="btn btn-tambah shadow-sm">Tambah</a>
+        <a href="{{ route('admin.sop.create') }}" class="btn btn-tambah shadow-sm">Tambah</a>
     </form>
 
     <!-- Table -->
@@ -140,8 +140,8 @@
                     </td>
                     <td>
                         <div class="d-flex justify-content-center gap-2">
-                            <a href="{{ route('sop.edit', $sop->id_sop) }}" class="btn-action-edit">Edit</a>
-                            <form action="{{ route('sop.destroy', $sop->id_sop) }}" method="POST" class="d-inline">
+                            <a href="{{ route('admin.sop.edit', $sop->id_sop) }}" class="btn-action-edit">Edit</a>
+                            <form action="{{ route('admin.sop.destroy', $sop->id_sop) }}" method="POST" class="d-inline">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn-action-hapus" onclick="return confirm('Hapus dokumen ini?')">Hapus</button>
                             </form>

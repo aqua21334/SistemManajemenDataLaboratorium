@@ -20,6 +20,7 @@ class AuthController extends Controller
     }
 
     // Memproses data login
+    // Memproses data login
     public function login(Request $request)
     {
         // 1. Validasi inputan
@@ -32,26 +33,33 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
+            // 3. Ambil id_role langsung dari user yang sedang login
+            $id_role = Auth::user()->id_role;
 
-            // 3. Cek Role dan arahkan ke tujuan masing-masing
-            // 3. Cek Role dan arahkan ke tujuan masing-masing
-            $role = Auth::user()->role->nama_role;
-
-            if ($role === 'Admin') {
-                return redirect()->intended('/admin/dashboard');
-            } elseif ($role === 'Kepala_Lab') {
-                return redirect()->intended('/kepala/dashboard');
-            } elseif ($role === 'Petugas') {
+            // 4. Arahkan sesuai ID Role dari tabel roles
+            if ($id_role == 1) { 
+                // 1 = Admin
+                return redirect()->intended(route('admin.dashboard'));
+            } 
+            elseif ($id_role == 2) { 
+                // 2 = Kepala_Lab
+                return redirect()->intended(route('kepalalab.dashboard'));
+            } 
+            elseif ($id_role == 3) { 
+                // 3 = Petugas
                 return redirect()->intended('/petugas/dashboard');
-            } elseif ($role === 'Customer') {
-                // Sekarang Customer diarahkan ke dashboard khusus mereka
+            } 
+            elseif ($id_role == 4) { 
+                // 4 = Customer
                 return redirect()->intended('/customer/dashboard'); 
-            } else {
+            } 
+            else {
+                // Jika entah kenapa ID role tidak terdaftar, kembalikan ke beranda
                 return redirect()->intended('/'); 
             }
         }
 
-        // Jika gagal login
+        // Jika gagal login (email/password salah)
         return back()->withErrors([
             'email' => 'Email atau Password yang Anda masukkan salah.',
         ])->onlyInput('email');

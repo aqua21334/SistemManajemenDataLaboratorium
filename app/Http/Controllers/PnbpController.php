@@ -64,7 +64,7 @@ class PnbpController extends Controller
             'status_pembayaran' => 'Belum Dibayar'
         ]);
 
-        return redirect()->route('pnbp.index')->with('success', 'Tagihan berhasil dibuat dengan total Rp ' . number_format($request->total_biaya, 0, ',', '.'));
+        return redirect()->route('admin.pnbp.index')->with('success', 'Tagihan berhasil dibuat dengan total Rp ' . number_format($request->total_biaya, 0, ',', '.'));
     }
 
     // 2. Fungsi Customer Membayar & Upload Bukti
@@ -124,7 +124,7 @@ class PnbpController extends Controller
             'status_pembayaran' => $request->status_pembayaran
         ]);
 
-        return redirect()->route('pnbp.index')->with('success', 'Status pembayaran berhasil diupdate!');
+        return redirect()->route('admin.pnbp.index')->with('success', 'Status pembayaran berhasil diupdate!');
     }
 
     // 5. Fungsi Menampilkan Halaman Invoice untuk Customer

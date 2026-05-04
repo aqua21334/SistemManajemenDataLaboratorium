@@ -12,8 +12,21 @@ class Absensi extends Model
     protected $primaryKey = 'id_absensi';
 
     protected $fillable = [
-        'nama', 'jabatan', 'tanggal', 'foto', 'lokasi'
+        'id_user',
+        'tanggal',
+        'jam_masuk',
+        'jam_pulang'
     ];
-    
-    // Tidak ada belongsTo karena berdiri mandiri sesuai desain PDM
+
+    protected $casts = [
+        'tanggal' => 'date',
+        'jam_masuk' => 'datetime:H:i:s',
+        'jam_pulang' => 'datetime:H:i:s',
+    ];
+
+    // Relasi ke User
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user', 'id_user');
+    }
 }

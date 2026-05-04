@@ -3,8 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
-// WAJIB: Import semua Controller yang digunakan di file ini
+// Controllers
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PermintaanLayananController;
 use App\Http\Controllers\PeralatanController;
 use App\Http\Controllers\PersonilController;
@@ -13,90 +14,158 @@ use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\PnbpController;
 use App\Http\Controllers\LaporanHasilController;
 use App\Http\Controllers\DokumenController;
+use App\Http\Controllers\DashboardKepalaLabController;
 use App\Http\Controllers\RiwayatPenelitianController;
-use App\Http\Controllers\DashboardController;
-use App\Models\PermintaanLayanan;
+use App\Http\Controllers\UserController;
 
-// --- ROUTE HALAMAN DEPAN ---
+/*
+|--------------------------------------------------------------------------
+| FRONT PAGE
+|--------------------------------------------------------------------------
+*/
 Route::get('/', function () {
-    return view('welcome'); // <-- Mengarah ke tampilan Front Page yang baru kita buat
+    return view('utama');
 })->name('home');
 
-// --- ROUTE AUTENTIKASI ---
+/*
+|--------------------------------------------------------------------------
+| AUTH
+|--------------------------------------------------------------------------
+*/
 Route::get('/login', [AuthController::class, 'index'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
-// <-- TAMBAHAN ROUTE UNTUK REGISTER -->
 Route::get('/register', [AuthController::class, 'showRegister']);
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-
-// --- ROUTE YANG WAJIB LOGIN (Dilindungi Middleware Auth) ---
+/*
+|--------------------------------------------------------------------------
+| ROUTE LOGIN (ALL USER)
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth')->group(function () {
-    
-    // --- ROUTE DASHBOARD (Berdasarkan Role) ---
-    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/kepala/dashboard', function () {
-        return "Halo Kepala Lab " . Auth::user()->nama;
+    /*
+    |--------------------------------------------------------------------------
+    | USER PROFILE & PASSWORD
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('user')->name('user.')->group(function () {
+        Route::get('/profile', [UserController::class, 'showProfile'])
+            ->name('profile');
+        Route::put('/profile', [UserController::class, 'updateProfile'])
+            ->name('update-profile');
+        Route::get('/change-password', [UserController::class, 'showChangePassword'])
+            ->name('change-password');
+        Route::put('/change-password', [UserController::class, 'updatePassword'])
+            ->name('update-password');
     });
-    Route::get('/petugas/dashboard', function () {
-        return "Halo Petugas " . Auth::user()->nama;
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('admin')
+        ->middleware('admin')
+        ->name('admin.')
+        ->group(function () {
+
+        Route::get('/dashboard', [DashboardController::class, 'index'])
+            ->name('dashboard');
+
+        Route::resource('permintaan', PermintaanLayananController::class);
+        Route::put('/permintaan/{id}/update-status', [PermintaanLayananController::class, 'updateStatus'])
+            ->name('permintaan.updateStatus');
+
+        Route::resource('pnbp', PnbpController::class);
+        Route::get('/pnbp/{id}/invoice', [PnbpController::class, 'cetakInvoice'])->name('pnbp.invoice');
+
+        Route::resource('laporan', LaporanHasilController::class);
+        Route::resource('dokumen', DokumenController::class);
+
+        Route::resource('peralatan', PeralatanController::class);
+        Route::resource('personil', PersonilController::class)->names([
+            'index' => 'pegawai'
+        ]);
+
+        Route::resource('sop', DaftarSopController::class);
+        Route::resource('absensi', AbsensiController::class);
+        Route::get('/absensi/export', [AbsensiController::class, 'exportExcel'])
+            ->name('absensi.export');
+
+        Route::get('/riwayat-penelitian', [RiwayatPenelitianController::class, 'index'])
+            ->name('riwayat-penelitian.index');
+
+        Route::get('/riwayat-absensi', [AbsensiController::class, 'index'])
+            ->name('riwayat-absensi.index');
     });
-    // Cari baris ini di dalam rute yang dilindungi auth:
-    Route::get('/customer/dashboard', function () {
-    $permintaanlayanans = \App\Models\PermintaanLayanan::with('laporanHasil')
-        ->where('id_user', Auth::user()->id_user)
-        ->orderBy('created_at', 'desc')
-        ->get();
-    return view('Customer.dashboard', compact('permintaanlayanans'));
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | KEPALA LAB
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['auth', 'kepala_lab'])->prefix('kepala')->group(function () {
+
+    // Dashboard Kepala Lab
+    Route::get('/dashboard', [DashboardKepalaLabController::class, 'index'])
+        ->name('kepalalab.dashboard');
+
+    // Absensi Kepala Lab
+    Route::post('/absen-masuk', [DashboardKepalaLabController::class, 'absenMasuk'])
+        ->name('kepala.absen-masuk');
+    Route::post('/absen-pulang', [DashboardKepalaLabController::class, 'absenPulang'])
+        ->name('kepala.absen-pulang');
+
+    // Permintaan Layanan
+    Route::get('/permintaan', [PermintaanLayananController::class, 'indexKepalaLab'])
+        ->name('kepala.permintaan');
+
+    // Monitoring Laporan
+    Route::get('/laporan', [LaporanHasilController::class, 'index'])
+        ->name('kepala.laporan');
+
+    // Monitoring Riwayat
+    Route::get('/riwayat', [RiwayatPenelitianController::class, 'indexKepalaLab'])
+        ->name('kepala.riwayat');
+
+    // Monitoring Peralatan
+    Route::get('/peralatan', [PeralatanController::class, 'indexKepalaLab'])
+        ->name('kepala.peralatan');
+
+    // Monitoring Pegawai
+    Route::get('/pegawai', [PersonilController::class, 'indexKepalaLab'])
+        ->name('kepala.pegawai');
+
+    // Monitoring SOP Kepala Lab
+    Route::get('/sop', [DaftarSopController::class, 'indexKepalaLab'])
+        ->name('kepala.sop');
+
 });
 
-    // --- ROUTE TRANSAKSI UTAMA & PENDUKUNG ---
-    Route::resource('permintaan', PermintaanLayananController::class);
-    Route::put('/permintaan/{id}/update-status', [PermintaanLayananController::class, 'updateStatus'])->name('permintaan.updateStatus');
-    
-    // --- Pnpb ----
-    Route::resource('pnbp', PnbpController::class);
-    Route::put('/pnbp/{id}/bayar', [PnbpController::class, 'updatePembayaran'])->name('pnbp.bayar');
-    Route::get('/pnbp/{id}/invoice', [PnbpController::class, 'cetakInvoice'])->name('pnbp.invoice');
+    /*
+    |--------------------------------------------------------------------------
+    | CUSTOMER
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('customer')
+        ->name('customer.')
+        ->group(function () {
 
-    Route::resource('laporan', LaporanHasilController::class);
-    Route::resource('dokumen', DokumenController::class);
+        Route::get('/dashboard', function () {
+            $permintaanlayanans = \App\Models\PermintaanLayanan::with('laporanHasil')
+                ->where('id_user', Auth::user()->id_user)
+                ->latest()
+                ->get();
 
-    // --- ROUTE DATA MASTER & KEPEGAWAIAN ---
-    Route::resource('peralatan', PeralatanController::class)->names([
-        'index'   => 'peralatan',
-        'create'  => 'peralatan.create',
-        'store'   => 'peralatan.store',
-        'edit'    => 'peralatan.edit',
-        'update'  => 'peralatan.update',
-        'destroy' => 'peralatan.destroy',
-    ]);
-    
-    // --- ROUTE DATA MASTER & KEPEGAWAIAN ---
-Route::resource('personil', PersonilController::class)->names([
-    'index'   => 'pegawai',
-    'create'  => 'pegawai.create',
-    'store'   => 'pegawai.store',
-    'edit'    => 'pegawai.edit',    // Pastikan baris ini ada
-    'update'  => 'pegawai.update',  // Pastikan baris ini ada
-    'destroy' => 'pegawai.destroy',
-]);
-    
-    Route::resource('sop', DaftarSopController::class);
-    Route::resource('absensi', AbsensiController::class);
-    
-    // --- ROUTE RIWAYAT PENELITIAN (Hanya View & Detail, Read-only) ---
-    Route::get('/riwayat-penelitian', [RiwayatPenelitianController::class, 'index'])->name('riwayat-penelitian.index');
-    Route::get('/riwayat-penelitian/{id}', [RiwayatPenelitianController::class, 'show'])->name('riwayat-penelitian.show');
+            return view('Customer.dashboardcustomer', compact('permintaanlayanans'));
+        })->name('dashboard');
 
-    // --- ROUTE RIWAYAT ABSENSI (Admin Panel) ---
-    Route::get('/riwayat-absensi', [AbsensiController::class, 'index'])->name('riwayat-absensi.index');
+        Route::post('/permintaan', [PermintaanLayananController::class, 'store'])
+            ->name('permintaan.store');
+    });
 
-    //--- ROUTE EXPORT EXCEL (Hanya untuk Admin & Kepala Lab) ---
-    Route::get('/absensi/export', [AbsensiController::class, 'exportExcel'])->name('absensi.export');
-
-}); // <-- Perhatikan, tutup blok perlindungan Auth ada di paling bawah sini
+});

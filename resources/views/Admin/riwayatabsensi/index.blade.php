@@ -61,14 +61,14 @@
         <p class="sidebar-logo-text fw-semibold">Sistem Manajemen Data<br>Laboratorium Balai Teknik Rawa</p>
     </div>
     <ul class="nav flex-column px-2">
-        <li class="nav-item"><a href="{{ route('dashboard') }}" class="nav-link"><i class="bi bi-grid-fill me-2"></i> Dashboard</a></li>
-        <li class="nav-item"><a href="{{ route('pegawai') }}" class="nav-link"><i class="bi bi-people-fill me-2"></i> Pegawai</a></li>
-        <li class="nav-item"><a href="{{ route('peralatan') }}" class="nav-link"><i class="bi bi-tools me-2"></i> Peralatan</a></li>
-        <li class="nav-item"><a href="{{ route('sop.index') }}" class="nav-link"><i class="bi bi-file-earmark-check-fill me-2"></i> Daftar SOP</a></li>
-        <li class="nav-item"><a href="{{ route('permintaan.index') }}" class="nav-link"><i class="bi bi-file-earmark-text-fill me-2"></i> Laporan</a></li>
-        <li class="nav-item"><a href="{{ route('riwayat-penelitian.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Riwayat Penelitian</a></li>
-        <li class="nav-item"><a href="{{ route('pnbp.index') }}" class="nav-link"><i class="bi bi-cash-stack me-2"></i> PNBP</a></li>
-        <li class="nav-item"><a href="{{ route('riwayat-absensi.index') }}" class="nav-link active"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
+        <li class="nav-item"><a href="{{ route('admin.dashboard') }}" class="nav-link"><i class="bi bi-grid-fill me-2"></i> Dashboard</a></li>
+        <li class="nav-item"><a href="{{ route('admin.pegawai') }}" class="nav-link"><i class="bi bi-people-fill me-2"></i> Pegawai</a></li>
+        <li class="nav-item"><a href="{{ route('admin.peralatan.index') }}" class="nav-link"><i class="bi bi-tools me-2"></i> Peralatan</a></li>
+        <li class="nav-item"><a href="{{ route('admin.sop.index') }}" class="nav-link"><i class="bi bi-file-earmark-check-fill me-2"></i> Daftar SOP</a></li>
+        <li class="nav-item"><a href="{{ route('admin.permintaan.index') }}" class="nav-link"><i class="bi bi-file-earmark-text-fill me-2"></i> Laporan</a></li>
+        <li class="nav-item"><a href="{{ route('admin.riwayat-penelitian.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Riwayat Penelitian</a></li>
+        <li class="nav-item"><a href="{{ route('admin.pnbp.index') }}" class="nav-link"><i class="bi bi-cash-stack me-2"></i> PNBP</a></li>
+        <li class="nav-item"><a href="{{ route('admin.riwayat-absensi.index') }}" class="nav-link active"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
     </ul>
     <div style="position: absolute; bottom: 30px; left: 25px;">
         <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
@@ -96,7 +96,7 @@
     <!-- Toolbar Card -->
     <div class="dashboard-container shadow-sm">
         <h5 class="fw-bold mb-4" style="color: #345E6F;">Data Riwayat Absensi</h5>
-        <form action="{{ route('riwayat-absensi.index') }}" method="GET" id="filterForm" class="d-flex justify-content-between align-items-center">
+        <form action="{{ route('admin.riwayat-absensi.index') }}" method="GET" id="filterForm" class="d-flex justify-content-between align-items-center">
             <div>
                 <!-- Search -->
                 <div class="search-container">
@@ -107,7 +107,7 @@
             <div>
                 <!-- Export Button -->
                 <input type="hidden" name="tahun" value="{{ date('Y') }}">
-                <a href="{{ route('absensi.export') }}?tahun={{ date('Y') }}" class="btn-custom btn-export">
+                <a href="{{ route('admin.absensi.export') }}?tahun={{ date('Y') }}" class="btn-custom btn-export">
                     <i class="bi bi-download me-2"></i> Export
                 </a>
             </div>

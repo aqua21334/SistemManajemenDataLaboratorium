@@ -247,7 +247,7 @@
 <!-- Print Button -->
 <div class="print-btn">
     <button onclick="window.print()">🖨️ Cetak Invoice</button>
-    <a href="{{ route('pnbp.index') }}" style="margin-left: 10px; background-color: #6c757d; padding: 10px 30px; color: white; text-decoration: none; border-radius: 5px; display: inline-block;">← Kembali</a>
+    <a href="{{ route('admin.pnbp.index') }}" style="margin-left: 10px; background-color: #6c757d; padding: 10px 30px; color: white; text-decoration: none; border-radius: 5px; display: inline-block;">← Kembali</a>
 </div>
 
 </body>

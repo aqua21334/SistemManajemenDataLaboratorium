@@ -101,7 +101,7 @@ public function edit($id)
 
         $permintaan->update($data);
 
-        return back()->with('success', 'Permintaan berhasil diperbarui!');
+        return redirect()->route('admin.permintaan.index')->with('success', 'Permintaan berhasil diperbarui!');
     }
 
     // 6. Update Status (Untuk Petugas/Admin)
@@ -115,7 +115,7 @@ public function edit($id)
         $permintaan->status = $request->status;
         $permintaan->save(); 
 
-        return back()->with('success', 'Status berhasil diperbarui!');
+        return redirect()->route('admin.permintaan.index')->with('success', 'Status berhasil diperbarui!');
     }
     
     // 8. Menyimpan Permintaan Baru (Customer) + Auto-create PNBP dengan Tarif Fixed 100rb
@@ -157,7 +157,7 @@ public function edit($id)
             'status_pembayaran' => 'Belum Dibayar'
         ]);
 
-        return back()->with('success', 'Permintaan berhasil dikirim! Invoice otomatis dibuat dengan tarif Rp ' . number_format($tarif_fixed, 0, ',', '.'));
+        return redirect()->route('customer.dashboard')->with('success', 'Permintaan berhasil dikirim! Invoice otomatis dibuat dengan tarif Rp ' . number_format($tarif_fixed, 0, ',', '.'));
     }
 
     // 9. Menghapus Permintaan
@@ -171,6 +171,33 @@ public function edit($id)
         }
 
         $permintaan->delete();
-        return back()->with('success', 'Permintaan berhasil dihapus!');
+        return redirect()->route('admin.permintaan.index')->with('success', 'Permintaan berhasil dihapus!');
+    }
+
+    // 10. Menampilkan data permintaan untuk Kepala Lab
+    public function indexKepalaLab(Request $request)
+    {
+        $query = PermintaanLayanan::with('user')->orderBy('created_at', 'desc');
+        
+        // Search functionality
+        $search = $request->get('search');
+        if ($search) {
+            $query->where(function($builder) use ($search) {
+                $builder->where('id_permintaan', 'like', '%' . $search . '%')
+                        ->orWhere('pemohon', 'like', '%' . $search . '%')
+                        ->orWhere('jenis_permintaan', 'like', '%' . $search . '%')
+                        ->orWhere('no_hp', 'like', '%' . $search . '%');
+            });
+        }
+        
+        // Status filter
+        $status = $request->get('status');
+        if ($status && $status !== '') {
+            $query->where('status', $status);
+        }
+        
+        $permintaans = $query->get();
+        
+        return view('KepalaLab.PermintaanLayanan.index', compact('permintaans', 'search', 'status'));
     }
 }

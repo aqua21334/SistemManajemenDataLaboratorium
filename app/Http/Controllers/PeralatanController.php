@@ -55,7 +55,7 @@ class PeralatanController extends Controller
             'status' => 'belum dikalibrasi',
         ]);
 
-        return redirect()->route('peralatan')->with('success', 'Peralatan baru berhasil ditambahkan!');
+        return redirect()->route('admin.peralatan.index')->with('success', 'Peralatan baru berhasil ditambahkan!');
     }
 
     public function edit($id)
@@ -83,13 +83,41 @@ class PeralatanController extends Controller
             'status' => $request->status,
         ]);
 
-        return redirect()->route('peralatan')->with('success', 'Data peralatan berhasil diperbarui!');
+        return redirect()->route('admin.peralatan.index')->with('success', 'Data peralatan berhasil diperbarui!');
     }
 
     public function destroy($id)
     {
         $peralatan = Peralatan::findOrFail($id);
         $peralatan->delete();
-        return redirect()->route('peralatan')->with('success', 'Data peralatan berhasil dihapus!');
+        return redirect()->route('admin.peralatan.index')->with('success', 'Data peralatan berhasil dihapus!');
+    }
+
+    /**
+     * Menampilkan daftar peralatan untuk Kepala Lab
+     */
+    public function indexKepalaLab()
+    {
+        $search = request('search');
+        $status = request('status');
+
+        $query = Peralatan::query();
+
+        if (!empty($search)) {
+            $query->where(function ($builder) use ($search) {
+                $builder->where('kode_bmn', 'like', '%' . $search . '%')
+                    ->orWhere('nama_peralatan', 'like', '%' . $search . '%')
+                    ->orWhere('tanggal_kalibrasi', 'like', '%' . $search . '%')
+                    ->orWhere('status', 'like', '%' . $search . '%');
+            });
+        }
+
+        if (!empty($status)) {
+            $query->where('status', $status);
+        }
+
+        $peralatans = $query->orderBy('nama_peralatan', 'asc')->paginate(10);
+
+        return view('KepalaLab.peralatankepala.index', compact('peralatans', 'search', 'status'));
     }
 }

@@ -97,7 +97,7 @@ class PersonilController extends Controller
             Personil::create($data);
         });
 
-        return redirect()->route('pegawai')->with('success', 'Data personil dan akun login berhasil dibuat! Password awal akun menggunakan NIP.');
+        return redirect()->route('admin.pegawai')->with('success', 'Data personil dan akun login berhasil dibuat! Password awal akun menggunakan NIP.');
     }
 
     public function edit($id)
@@ -160,7 +160,7 @@ class PersonilController extends Controller
         }
 
         $personil->update($data);
-        return redirect()->route('pegawai')->with('success', 'Data pegawai berhasil diperbarui!');
+        return redirect()->route('admin.pegawai')->with('success', 'Data pegawai berhasil diperbarui!');
     }
 
 
@@ -168,12 +168,52 @@ class PersonilController extends Controller
     {
         $personil = Personil::findOrFail($id);
 
-        if ($personil->foto && file_exists(public_path('images/pegawai/' . $personil->foto))) {
-            unlink(public_path('images/pegawai/' . $personil->foto));
+        try {
+            DB::transaction(function () use ($personil) {
+                $user = $personil->user;
+
+                if ($personil->foto && file_exists(public_path('images/pegawai/' . $personil->foto))) {
+                    unlink(public_path('images/pegawai/' . $personil->foto));
+                }
+
+                // Hapus data personil, lalu hapus akun login terkait agar tidak tersisa di tabel users.
+                $personil->delete();
+                $user?->delete();
+            });
+
+            return redirect()->route('admin.pegawai')->with('success', 'Data personil berhasil dihapus!');
+        } catch (\Throwable $e) {
+            return redirect()->route('admin.pegawai')->with('error', 'Gagal menghapus data pegawai: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Menampilkan daftar personil untuk Kepala Lab (Hanya Petugas Lab)
+     */
+    public function indexKepalaLab(Request $request)
+    {
+        // 1. Ambil keyword dari input 'search' di URL
+        $search = $request->query('search');
+
+        // 2. Gunakan Query Builder agar bisa memfilter
+        $query = Personil::query();
+
+        // 3. Filter hanya Petugas Lab, exclude Kepala Lab
+        $query->where('jabatan', '!=', 'Kepala Lab');
+
+        // 4. Jika ada input pencarian, filter berdasarkan nama, nip, atau jabatan
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('nama_personil', 'like', '%' . $search . '%')
+                  ->orWhere('nip', 'like', '%' . $search . '%')
+                  ->orWhere('jabatan', 'like', '%' . $search . '%');
+            });
         }
 
-        $personil->delete();
-
-        return redirect()->route('pegawai')->with('success', 'Data personil berhasil dihapus!');
+        // 5. Ambil data dengan Pagination
+        $personils = $query->orderBy('nama_personil', 'asc')->paginate(10);
+        
+        // Kirim data ke view kepala lab
+        return view('KepalaLab.pegawaikepala.index', compact('personils', 'search'));
     }
 }

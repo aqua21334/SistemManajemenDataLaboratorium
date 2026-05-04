@@ -60,7 +60,7 @@ class DaftarSopController extends Controller
 
         DaftarSop::create($data);
 
-        return redirect()->route('sop.index')->with('success', 'SOP baru berhasil ditambahkan!');
+        return redirect()->route('admin.sop.index')->with('success', 'SOP baru berhasil ditambahkan!');
     }
 
     public function edit($id)
@@ -99,12 +99,34 @@ class DaftarSopController extends Controller
 
         $sop->update($data);
 
-        return back()->with('success', 'SOP berhasil diperbarui!');
+        return redirect()->route('admin.sop.index')->with('success', 'SOP berhasil diperbarui!');
     }
 
     public function destroy($id)
     {
         DaftarSop::findOrFail($id)->delete();
-        return back()->with('success', 'SOP berhasil dihapus!');
+        return redirect()->route('admin.sop.index')->with('success', 'SOP berhasil dihapus!');
+    }
+
+    /**
+     * Menampilkan daftar SOP untuk Kepala Lab
+     */
+    public function indexKepalaLab()
+    {
+        $search = request('search');
+        
+        $query = DaftarSop::with('user');
+        
+        if (!empty($search)) {
+            $query->where(function ($builder) use ($search) {
+                $builder->where('id_sop', 'like', '%' . $search . '%')
+                    ->orWhere('jenis_sop', 'like', '%' . $search . '%')
+                    ->orWhere('judul_sop', 'like', '%' . $search . '%');
+            });
+        }
+        
+        $sops = $query->orderBy('judul_sop', 'asc')->paginate(10);
+        
+        return view('KepalaLab.sopkepala.index', compact('sops', 'search'));
     }
 }

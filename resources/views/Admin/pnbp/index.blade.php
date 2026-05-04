@@ -62,14 +62,14 @@
         <p class="sidebar-logo-text fw-semibold">Sistem Manajemen Data<br>Laboratorium Balai Teknik Rawa</p>
     </div>
     <ul class="nav flex-column px-2">
-        <li class="nav-item"><a href="{{ route('dashboard') }}" class="nav-link"><i class="bi bi-grid-fill me-2"></i> Dashboard</a></li>
-        <li class="nav-item"><a href="{{ route('pegawai') }}" class="nav-link"><i class="bi bi-people-fill me-2"></i> Pegawai</a></li>
-        <li class="nav-item"><a href="{{ route('peralatan') }}" class="nav-link"><i class="bi bi-tools me-2"></i> Peralatan</a></li>
-        <li class="nav-item"><a href="{{ route('sop.index') }}" class="nav-link"><i class="bi bi-file-earmark-check-fill me-2"></i> Daftar SOP</a></li>
-        <li class="nav-item"><a href="{{ route('permintaan.index') }}" class="nav-link"><i class="bi bi-file-earmark-text-fill me-2"></i> Laporan</a></li>
-        <li class="nav-item"><a href="{{ route('riwayat-penelitian.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Riwayat Penelitian</a></li>
-        <li class="nav-item"><a href="{{ route('pnbp.index') }}" class="nav-link active"><i class="bi bi-cash-stack me-2"></i> PNBP</a></li>
-        <li class="nav-item"><a href="{{ route('riwayat-absensi.index') }}" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
+        <li class="nav-item"><a href="{{ route('admin.dashboard') }}" class="nav-link"><i class="bi bi-grid-fill me-2"></i> Dashboard</a></li>
+        <li class="nav-item"><a href="{{ route('admin.pegawai') }}" class="nav-link"><i class="bi bi-people-fill me-2"></i> Pegawai</a></li>
+        <li class="nav-item"><a href="{{ route('admin.peralatan.index') }}" class="nav-link"><i class="bi bi-tools me-2"></i> Peralatan</a></li>
+        <li class="nav-item"><a href="{{ route('admin.sop.index') }}" class="nav-link"><i class="bi bi-file-earmark-check-fill me-2"></i> Daftar SOP</a></li>
+        <li class="nav-item"><a href="{{ route('admin.permintaan.index') }}" class="nav-link"><i class="bi bi-file-earmark-text-fill me-2"></i> Laporan</a></li>
+        <li class="nav-item"><a href="{{ route('admin.riwayat-penelitian.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Riwayat Penelitian</a></li>
+        <li class="nav-item"><a href="{{ route('admin.pnbp.index') }}" class="nav-link active"><i class="bi bi-cash-stack me-2"></i> PNBP</a></li>
+        <li class="nav-item"><a href="{{ route('admin.riwayat-absensi.index') }}" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
     </ul>
     <div style="position: absolute; bottom: 30px; left: 25px;">
         <button class="border-0 bg-transparent text-white d-flex align-items-center">
@@ -94,7 +94,7 @@
     <!-- Toolbar Card -->
     <div class="dashboard-container shadow-sm">
         <h5 class="fw-bold mb-4" style="color: #345E6F;">Data PNBP</h5>
-        <form action="{{ route('pnbp.index') }}" method="GET" id="filterForm" class="d-flex justify-content-between align-items-center">
+        <form action="{{ route('admin.pnbp.index') }}" method="GET" id="filterForm" class="d-flex justify-content-between align-items-center">
             <div class="d-flex gap-3">
                 <!-- Search -->
                 <div class="search-container">
@@ -104,7 +104,7 @@
             </div>
             <div class="d-flex gap-3">
                 <!-- Action Buttons -->
-                <a href="{{ route('pnbp.create') }}" class="btn-custom btn-tambah">Tambah</a>
+                <a href="{{ route('admin.pnbp.create') }}" class="btn-custom btn-tambah">Tambah</a>
                 <button type="button" class="btn-custom btn-edit">Edit</button>
             </div>
         </form>
@@ -159,15 +159,15 @@
                     <td>
                         @if($p->pnbp)
                             <div style="display: flex; gap: 5px;">
-                                <a href="{{ route('pnbp.edit', $p->pnbp->id_pnbp) }}" class="btn-text-hapus" style="color: #0d6efd; text-decoration: none;" title="Edit Status">✏️</a>
-                                <a href="{{ route('pnbp.invoice', $p->pnbp->id_pnbp) }}" class="btn-text-hapus" style="color: #28a745; text-decoration: none;" title="Lihat Invoice">📄</a>
-                                <form action="{{ route('pnbp.destroy', $p->pnbp->id_pnbp) }}" method="POST" style="display:inline;">
+                                <a href="{{ route('admin.pnbp.edit', $p->pnbp->id_pnbp) }}" class="btn-text-hapus" style="color: #0d6efd; text-decoration: none;" title="Edit Status">✏️</a>
+                                <a href="{{ route('admin.pnbp.invoice', $p->pnbp->id_pnbp) }}" class="btn-text-hapus" style="color: #28a745; text-decoration: none;" title="Lihat Invoice">📄</a>
+                                <form action="{{ route('admin.pnbp.destroy', $p->pnbp->id_pnbp) }}" method="POST" style="display:inline;">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn-text-hapus" onclick="return confirm('Hapus data?')">🗑️</button>
                                 </form>
                             </div>
                         @else
-                            <a href="{{ route('pnbp.create') }}?id_permintaan={{ $p->id_permintaan }}" class="btn-text-hapus" style="color: #0d6efd; text-decoration: none;">+ Buat</a>
+                            <a href="{{ route('admin.pnbp.create') }}?id_permintaan={{ $p->id_permintaan }}" class="btn-text-hapus" style="color: #0d6efd; text-decoration: none;">+ Buat</a>
                         @endif
                     </td>
                 </tr>

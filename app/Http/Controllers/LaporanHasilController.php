@@ -8,11 +8,28 @@ use Illuminate\Http\Request;
 
 class LaporanHasilController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $laporans = LaporanHasil::with('permintaanLayanan')->get();
+        $query = LaporanHasil::with('permintaanLayanan');
+        
+        // Search functionality
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where('nama_laporan', 'like', '%' . $search . '%')
+                  ->orWhere('id_permintaan', 'like', '%' . $search . '%');
+        }
+        
+        // Status filter
+        if ($request->has('status') && $request->status) {
+            $status = $request->status;
+            $query->whereHas('permintaanLayanan', function($q) use ($status) {
+                $q->where('status', $status);
+            });
+        }
+        
+        $laporans = $query->get();
         $permintaans = PermintaanLayanan::where('status', 'diverifikasi')->get();
-        return view('laporan.index', compact('laporans', 'permintaans'));
+        return view('KepalaLab.Laporan.index', compact('laporans', 'permintaans'));
     }
 
     public function store(Request $request)
