@@ -37,6 +37,39 @@ class RiwayatPenelitianController extends Controller
     }
 
     /**
+     * Menampilkan daftar riwayat penelitian untuk Petugas Lab
+     */
+    public function indexPetugas()
+    {
+        $search = request('search');
+        
+        $query = RiwayatPenelitian::with('permintaanLayanan', 'laporanHasil')
+                                    ->where('status', 'selesai')
+                                    ->orderBy('created_at', 'desc');
+        
+        // Search functionality
+        if (!empty($search)) {
+            $query->where(function($builder) use ($search) {
+                $builder->where('id_permintaan', 'like', '%' . $search . '%')
+                        ->orWhere('nama_laporan', 'like', '%' . $search . '%')
+                        ->orWhereHas('permintaanLayanan', function($q) use ($search) {
+                            $q->where('jenis_permintaan', 'like', '%' . $search . '%');
+                        });
+            });
+        }
+        
+        $riwayatPenelitians = $query->paginate(10);
+        
+        \Log::info('Riwayat Search', [
+            'search' => $search,
+            'total' => $riwayatPenelitians->total(),
+            'per_page' => $riwayatPenelitians->perPage()
+        ]);
+        
+        return view('PetugasLab.riwayatpetugas.index', compact('riwayatPenelitians', 'search'));
+    }
+
+    /**
      * Menampilkan daftar riwayat penelitian untuk Kepala Lab
      */
     public function indexKepalaLab()

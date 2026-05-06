@@ -26,4 +26,11 @@ class RiwayatPenelitian extends Model
     {
         return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
+
+    // Riwayat ini memiliki 1 Laporan Hasil
+    public function laporanHasil()
+    {
+        return $this->hasOne(LaporanHasil::class, 'id_permintaan', 'id_permintaan');
+    }
+
 }

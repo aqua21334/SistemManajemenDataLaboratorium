@@ -47,7 +47,7 @@ class AuthController extends Controller
             } 
             elseif ($id_role == 3) { 
                 // 3 = Petugas
-                return redirect()->intended('/petugas/dashboard');
+                return redirect()->route('petugas.dashboard');
             } 
             elseif ($id_role == 4) { 
                 // 4 = Customer

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\LaporanHasil;
 use App\Models\PermintaanLayanan;
+use App\Models\RiwayatPenelitian;
 use Illuminate\Http\Request;
 
 class LaporanHasilController extends Controller
@@ -32,6 +33,47 @@ class LaporanHasilController extends Controller
         return view('KepalaLab.Laporan.index', compact('laporans', 'permintaans'));
     }
 
+    public function indexPetugas(Request $request)
+    {
+        $search = $request->input('search', '');
+        $status = $request->input('status', '');
+        
+        $query = \App\Models\PermintaanLayanan::with(['laporanHasil' => function ($q) {
+            $q->orderByDesc('id_laporan');
+        }])->orderByDesc('created_at');
+
+        if (!empty($search)) {
+            $query->where(function ($builder) use ($search) {
+                $builder->where('jenis_permintaan', 'like', '%' . $search . '%')
+                    ->orWhere('pemohon', 'like', '%' . $search . '%')
+                    ->orWhere('status', 'like', '%' . $search . '%')
+                    ->orWhere('id_permintaan', 'like', '%' . $search . '%');
+            });
+        }
+
+        if (!empty($status)) {
+            $query->where('status', $status);
+        }
+
+        $permintaans = $query->paginate(10)->appends($request->query());
+        
+        \Log::info('Laporan Search', [
+            'search' => $search,
+            'status' => $status,
+            'total' => $permintaans->total(),
+            'per_page' => $permintaans->perPage()
+        ]);
+        
+        return view('PetugasLab.laporanpetugas.index', compact('permintaans', 'search', 'status'));
+    }
+
+    public function editPetugas($id)
+    {
+        $permintaan = PermintaanLayanan::findOrFail($id);
+        $laporan = $permintaan->laporanHasil ? $permintaan->laporanHasil->first() : null;
+        return view('PetugasLab.laporanpetugas.upload', compact('permintaan', 'laporan'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -53,6 +95,65 @@ class LaporanHasilController extends Controller
         ]);
 
         return back()->with('success', 'Laporan hasil berhasil diunggah!');
+    }
+
+    public function uploadHasil(Request $request, $id)
+    {
+        $request->validate([
+            'hasil_penelitian' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,txt|max:5120', // Maksimal 5MB
+        ]);
+
+        try {
+            $permintaan = PermintaanLayanan::findOrFail($id);
+            
+            // Handle file upload
+            if ($request->hasFile('hasil_penelitian')) {
+                $file = $request->file('hasil_penelitian');
+                
+                // Pastikan folder ada
+                $uploadPath = public_path('uploads/laporan');
+                if (!file_exists($uploadPath)) {
+                    mkdir($uploadPath, 0755, true);
+                }
+                
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move($uploadPath, $filename);
+
+                // Create atau update laporan hasil
+                LaporanHasil::updateOrCreate(
+                    ['id_permintaan' => $id],
+                    [
+                        'id_permintaan' => $id,
+                        'nama_laporan' => $permintaan->jenis_permintaan ?? 'Laporan ' . date('Y-m-d'),
+                        'file_hasil' => $filename,
+                        'tanggal' => now()->format('Y-m-d'),
+                    ]
+                );
+
+                // Ubah status permintaan agar langsung tampil sebagai diverifikasi
+                $permintaan->update([
+                    'status' => 'diverifikasi',
+                ]);
+
+                // Update atau create riwayat penelitian dengan status diverifikasi dan tanggal selesai
+                RiwayatPenelitian::updateOrCreate(
+                    ['id_permintaan' => $id],
+                    [
+                        'id_permintaan' => $id,
+                        'id_user' => auth()->id(),
+                        'nama_laporan' => $permintaan->jenis_permintaan ?? 'Laporan ' . date('Y-m-d'),
+                        'tanggal_selesai' => now(),
+                        'status' => 'diverifikasi',
+                    ]
+                );
+
+                return redirect()->route('petugas.laporanpetugas.index')->with('success', 'File hasil berhasil diunggah!');
+            }
+
+            return back()->with('error', 'Gagal mengupload file: File tidak ditemukan.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal mengupload file: ' . $e->getMessage());
+        }
     }
 
     public function destroy($id)

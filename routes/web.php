@@ -42,6 +42,52 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 /*
 |--------------------------------------------------------------------------
+| PETUGAS LAB
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'petugas_lab'])->prefix('petugas')->name('petugas.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'indexPetugas'])
+        ->name('dashboard');
+    
+    // Absensi Petugas (halaman khusus Petugas Lab)
+    Route::get('/absensi', [\App\Http\Controllers\AbsensiController::class, 'indexPetugas'])
+        ->name('absensi.index');
+    Route::post('/absen-masuk', [\App\Http\Controllers\AbsensiController::class, 'absenMasukPetugas'])
+        ->name('absen.masuk');
+    Route::post('/absen-pulang', [\App\Http\Controllers\AbsensiController::class, 'absenPulangPetugas'])
+        ->name('absen.pulang');
+    
+    // Laporan Petugas
+    Route::get('/laporan', [\App\Http\Controllers\LaporanHasilController::class, 'indexPetugas'])
+        ->name('laporanpetugas.index');
+    Route::get('/laporan/{id}/edit', [\App\Http\Controllers\LaporanHasilController::class, 'editPetugas'])
+        ->name('laporanpetugas.edit');
+    Route::post('/laporan/{id}/upload', [\App\Http\Controllers\LaporanHasilController::class, 'uploadHasil'])
+        ->name('laporanpetugas.upload');
+
+    // SOP Petugas
+    Route::get('/sop', [\App\Http\Controllers\DaftarSopController::class, 'indexPetugas'])
+        ->name('sop.index');
+    
+    // Riwayat Penelitian (Petugas Lab)
+    Route::get('/riwayat', [\App\Http\Controllers\RiwayatPenelitianController::class, 'indexPetugas'])
+        ->name('riwayat.index');
+
+    // Peralatan (Petugas Lab)
+    Route::get('/peralatan', [\App\Http\Controllers\PeralatanController::class, 'indexPetugas'])
+        ->name('peralatan.index');
+    Route::get('/peralatan/create', [\App\Http\Controllers\PeralatanController::class, 'createPetugas'])
+        ->name('peralatan.create');
+    Route::post('/peralatan', [\App\Http\Controllers\PeralatanController::class, 'storePetugas'])
+        ->name('peralatan.store');
+    Route::get('/peralatan/{id}/edit', [\App\Http\Controllers\PeralatanController::class, 'editPetugas'])
+        ->name('peralatan.edit');
+    Route::put('/peralatan/{id}', [\App\Http\Controllers\PeralatanController::class, 'updatePetugas'])
+        ->name('peralatan.update');
+});
+
+/*
+|--------------------------------------------------------------------------
 | ROUTE LOGIN (ALL USER)
 |--------------------------------------------------------------------------
 */

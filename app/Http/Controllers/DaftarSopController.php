@@ -129,4 +129,34 @@ class DaftarSopController extends Controller
         
         return view('KepalaLab.sopkepala.index', compact('sops', 'search'));
     }
+
+            /**
+             * Menampilkan daftar SOP untuk Petugas Lab
+             */
+            public function indexPetugas()
+            {
+                $search = request('search');
+
+                $query = DaftarSop::with('user');
+
+                if (!empty($search)) {
+                    $query->where(function ($builder) use ($search) {
+                        $builder->where('id_sop', 'like', '%' . $search . '%')
+                            ->orWhere('jenis_sop', 'like', '%' . $search . '%')
+                            ->orWhere('judul_sop', 'like', '%' . $search . '%');
+                    });
+                }
+
+                $sops = $query->orderBy('judul_sop', 'asc')->paginate(10);
+                
+                // Debug info
+                \Log::info('SOP Search Debug', [
+                    'search_param' => $search,
+                    'total_results' => $sops->total(),
+                    'query_sql' => $query->toSql(),
+                    'query_bindings' => $query->getBindings()
+                ]);
+
+                return view('PetugasLab.soppetugas.index', compact('sops', 'search'));
+            }
 }
