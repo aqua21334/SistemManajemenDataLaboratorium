@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 // Controllers
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PermintaanLayananController;
 use App\Http\Controllers\PeralatanController;
@@ -26,27 +25,6 @@ use App\Http\Controllers\UserController;
 Route::get('/', function () {
     return view('utama');
 })->name('home');
-
-/*
-|--------------------------------------------------------------------------
-| AUTH
-|--------------------------------------------------------------------------
-*/
-Route::get('/login', [AuthController::class, 'index'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
-Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])
-    ->name('password.request');
-Route::post('/forgot-password', [AuthController::class, 'sendResetLinkEmail'])
-    ->name('password.email');
-Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])
-    ->name('password.reset');
-Route::post('/reset-password', [AuthController::class, 'resetPassword'])
-    ->name('password.update');
-
-Route::get('/register', [AuthController::class, 'showRegister']);
-Route::post('/register', [AuthController::class, 'register']);
-
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 /*
 |--------------------------------------------------------------------------
@@ -238,3 +216,5 @@ Route::middleware('auth')->group(function () {
     });
 
 });
+
+require __DIR__.'/auth.php';
