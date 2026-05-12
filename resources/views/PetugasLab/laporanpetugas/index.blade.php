@@ -142,7 +142,6 @@
                         <option value="">Status</option>
                         <option value="sedang diproses" {{ ($status ?? '') === 'sedang diproses' ? 'selected' : '' }}>Sedang Diproses</option>
                         <option value="diverifikasi" {{ ($status ?? '') === 'diverifikasi' ? 'selected' : '' }}>Diverifikasi</option>
-                        <option value="selesai" {{ ($status ?? '') === 'selesai' ? 'selected' : '' }}>Selesai</option>
                     </select>
                     <button type="submit" class="btn-custom">Cari</button>
                 </div>

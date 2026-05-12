@@ -44,6 +44,52 @@
         .table-custom { margin-bottom: 0; width: 100%; border-collapse: collapse; }
         .table-custom th { color: #345E6F; font-weight: bold; font-size: 15px; text-align: center; padding: 15px 10px; border-bottom: 2px solid #333 !important; }
         .table-custom td { padding: 12px 10px; text-align: center; border-bottom: 1px solid #333; vertical-align: middle; height: 50px; }
+
+        .pdf-file-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        .pdf-file-icon {
+            position: relative;
+            width: 30px;
+            height: 38px;
+            border: 2px solid #E11D48;
+            border-radius: 7px;
+            background: #fff;
+            display: inline-flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+        }
+        .pdf-file-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 11px;
+            height: 11px;
+            background: linear-gradient(135deg, #ffffff 0 50%, #E11D48 50% 100%);
+            border-top-right-radius: 5px;
+        }
+        .pdf-file-icon::after {
+            content: 'PDF';
+            position: relative;
+            z-index: 1;
+            font-size: 10px;
+            font-weight: 800;
+            color: #E11D48;
+            line-height: 1;
+            letter-spacing: 0.4px;
+        }
+        .pdf-file-link:hover .pdf-file-icon {
+            border-color: #BE123C;
+            background: #FFF1F4;
+            transform: translateY(-1px);
+        }
         
         /* Pagination */
         .pagination-area { padding: 15px 20px; display: flex; align-items: center; gap: 8px; background: white; }
@@ -126,21 +172,29 @@
                     <tr>
                         <th>Jenis Permintaan</th>
                         <th>Tanggal Selesai</th>
+                        <th>File Hasil</th>
                         <th>Status</th>
-                        <th>Petugas</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($riwayatPenelitians as $riwayat)
                     <tr>
                         <td>{{ $riwayat->permintaanLayanan->jenis_permintaan ?? '-' }}</td>
-                        <td>{{ $riwayat->tanggal_selesai ? \Carbon\Carbon::parse($riwayat->tanggal_selesai)->format('d-m-Y') : '-' }}</td>
+                        <td>{{ $riwayat->tanggal_selesai ? \Carbon\Carbon::parse($riwayat->tanggal_selesai)->format('d-m-Y H:i') : '-' }}</td>
+                        <td>
+                            @if($riwayat->laporanHasil && $riwayat->laporanHasil->file_hasil)
+                                <a href="{{ asset('uploads/laporan/' . $riwayat->laporanHasil->file_hasil) }}" target="_blank" class="pdf-file-link" title="Lihat {{ basename($riwayat->laporanHasil->file_hasil) }}">
+                                    <span class="pdf-file-icon" aria-hidden="true"></span>
+                                </a>
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
+                        </td>
                         <td>
                             <span class="badge bg-success">
                                 {{ ucfirst($riwayat->status) }}
                             </span>
                         </td>
-                        <td></td>
                     </tr>
                     @empty
                     <tr>

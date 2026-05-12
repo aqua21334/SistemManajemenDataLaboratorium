@@ -60,10 +60,13 @@
         <li class="nav-item"><a href="{{ route('admin.pnbp.index') }}" class="nav-link"><i class="bi bi-cash-stack me-2"></i> PNBP</a></li>
         <li class="nav-item"><a href="{{ route('admin.riwayat-absensi.index') }}" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
     </ul>
-    <div style="position: absolute; bottom: 30px; left: 25px;">
-        <button class="border-0 bg-transparent text-white d-flex align-items-center">
-            <i class="bi bi-box-arrow-left fs-4 me-2"></i> <span class="fw-bold">Keluar</span>
-        </button>
+     <div style="position: absolute; bottom: 30px; left: 25px;">
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="border-0 bg-transparent text-white d-flex align-items-center">
+                <i class="bi bi-box-arrow-left fs-4 me-2"></i> <span class="fw-bold">Keluar</span>
+            </button>
+        </form>
     </div>
 </div>
 
@@ -99,7 +102,6 @@
             <table class="table-riwayat">
                 <thead>
                     <tr>
-                        <th>Id Permintaan</th>
                         <th>Jenis Permintaan</th>
                         <th>Tanggal Selesai</th>
                         <th>File</th>
@@ -109,12 +111,11 @@
                 <tbody>
                     @forelse($riwayatPenelitians as $riwayat)
                     <tr>
-                        <td>{{ $riwayat->id_permintaan }}</td>
                         <td>{{ $riwayat->permintaanLayanan->jenis_permintaan ?? '-' }}</td>
-                        <td>{{ \Carbon\Carbon::parse($riwayat->tanggal_selesai)->format('d/m/Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($riwayat->tanggal_selesai)->format('d/m/Y H:i') }}</td>
                         <td>
-                            @if($riwayat->file)
-                                <a href="{{ asset('storage/riwayat/'.$riwayat->file) }}" class="text-danger"><i class="bi bi-file-earmark-pdf-fill fs-5"></i></a>
+                            @if($riwayat->laporanHasil && $riwayat->laporanHasil->file_hasil)
+                                <a href="{{ asset('uploads/laporan/' . $riwayat->laporanHasil->file_hasil) }}" class="text-danger" target="_blank"><i class="bi bi-file-earmark-pdf-fill fs-5"></i></a>
                             @else
                                 -
                             @endif
@@ -127,7 +128,7 @@
                         {{-- Baris kosong (dummy) agar sesuai dengan desain visual gambar --}}
                         @for($i=0; $i<6; $i++)
                         <tr>
-                            <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+                            <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
                         </tr>
                         @endfor
                     @endforelse

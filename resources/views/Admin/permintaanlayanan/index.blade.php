@@ -105,7 +105,6 @@
                 <option value="selesai" {{ request('status') === 'selesai' ? 'selected' : '' }}>Selesai</option>
             </select>
         </div>
-        <button type="button" class="btn-print shadow-sm" onclick="window.print()">Print</button>
     </form>
 
     <!-- Table -->
@@ -114,7 +113,6 @@
             <thead>
                 <tr>
                     <th width="50"></th>
-                    <th>Id Permintaan</th>
                     <th>Pemohon</th>
                     <th>Jenis Permintaan</th>
                     <th>No. HP</th>
@@ -128,7 +126,6 @@
                 @forelse($laporans as $lap)
                 <tr>
                     <td><input type="checkbox" class="form-check-input"></td>
-                    <td class="fw-bold">{{ $lap->id_permintaan }}</td>
                     <td>{{ $lap->pemohon ?? $lap->user->nama }}</td>
                     <td>{{ $lap->jenis_permintaan }}</td>
                     <td>{{ $lap->no_hp }}</td>
@@ -159,7 +156,7 @@
                     @for($i=0; $i<6; $i++)
                     <tr>
                         <td><input type="checkbox" class="form-check-input"></td>
-                        <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+                        <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
                     </tr>
                     @endfor
                 @endforelse

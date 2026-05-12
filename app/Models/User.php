@@ -33,6 +33,12 @@ class User extends Authenticatable
         return $this->hasOne(Personil::class, 'id_user', 'id_user');
     }
 
+    // Riwayat absensi milik user ini
+    public function absensis()
+    {
+        return $this->hasMany(Absensi::class, 'id_user', 'id_user');
+    }
+
     // Relasi ke Permintaan Layanan (jika dia customer yang mengajukan)
     public function permintaanLayanans()
     {

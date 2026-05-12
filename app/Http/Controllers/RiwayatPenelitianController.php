@@ -10,7 +10,7 @@ class RiwayatPenelitianController extends Controller
     // Hanya menampilkan daftar penelitian yang sudah selesai
     public function index()
     {
-        $query = RiwayatPenelitian::with('permintaanLayanan')->orderBy('created_at', 'desc');
+        $query = RiwayatPenelitian::with('permintaanLayanan', 'laporanHasil')->orderBy('created_at', 'desc');
         
         // Search functionality
         $search = request('search');
@@ -74,7 +74,10 @@ class RiwayatPenelitianController extends Controller
      */
     public function indexKepalaLab()
     {
-        $query = RiwayatPenelitian::with('permintaanLayanan')->where('status', 'selesai')->orderBy('created_at', 'desc');
+        $query = RiwayatPenelitian::with(['permintaanLayanan', 'user.personil', 'laporanHasil'])
+            ->where('status', 'selesai')
+            ->orderByDesc('tanggal_selesai')
+            ->orderByDesc('created_at');
         
         // Search functionality
         $search = request('search');

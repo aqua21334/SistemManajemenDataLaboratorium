@@ -2,31 +2,27 @@
 
 namespace App\Exports;
 
-use App\Models\Absensi;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings; // Untuk judul kolom
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class AbsensiExport implements FromCollection, WithHeadings
+class AbsensiExport implements WithMultipleSheets
 {
-    protected $start_date;
-    protected $end_date;
+    protected int $tahun;
+    protected ?int $idUser;
 
-    // Menangkap filter tanggal dari Controller
-    public function __construct($start_date, $end_date) {
-        $this->start_date = $start_date;
-        $this->end_date = $end_date;
+    // Menangkap filter tahun dan user dari Controller
+    public function __construct(int $tahun, ?int $idUser = null) {
+        $this->tahun = $tahun;
+        $this->idUser = $idUser;
     }
 
-    public function collection()
+    public function sheets(): array
     {
-        // Mengambil data absensi berdasarkan rentang tanggal
-        return Absensi::select('nama', 'jabatan', 'tanggal', 'lokasi')
-            ->whereBetween('tanggal', [$this->start_date, $this->end_date])
-            ->get();
-    }
+        $sheets = [];
 
-    public function headings(): array
-    {
-        return ["Nama Petugas", "Jabatan", "Tanggal Absen", "Lokasi"];
+        for ($bulan = 1; $bulan <= 12; $bulan++) {
+            $sheets[] = new AbsensiBulanSheet($this->tahun, $bulan, $this->idUser);
+        }
+
+        return $sheets;
     }
 }

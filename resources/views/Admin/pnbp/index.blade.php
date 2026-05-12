@@ -71,10 +71,13 @@
         <li class="nav-item"><a href="{{ route('admin.pnbp.index') }}" class="nav-link active"><i class="bi bi-cash-stack me-2"></i> PNBP</a></li>
         <li class="nav-item"><a href="{{ route('admin.riwayat-absensi.index') }}" class="nav-link"><i class="bi bi-person-badge-fill me-2"></i> Riwayat Absensi</a></li>
     </ul>
-    <div style="position: absolute; bottom: 30px; left: 25px;">
-        <button class="border-0 bg-transparent text-white d-flex align-items-center">
-            <i class="bi bi-box-arrow-left fs-4 me-2"></i> <span class="fw-bold">Keluar</span>
-        </button>
+     <div style="position: absolute; bottom: 30px; left: 25px;">
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="border-0 bg-transparent text-white d-flex align-items-center">
+                <i class="bi bi-box-arrow-left fs-4 me-2"></i> <span class="fw-bold">Keluar</span>
+            </button>
+        </form>
     </div>
 </div>
 
@@ -116,7 +119,6 @@
             <thead>
                 <tr>
                     <th width="60"></th>
-                    <th>Id Permintaan</th>
                     <th>Jenis Permintaan</th>
                     <th>Pemohon</th>
                     <th>Total Biaya</th>
@@ -130,7 +132,6 @@
                 @forelse($permintaans as $p)
                 <tr>
                     <td><input type="checkbox" class="form-check-input"></td>
-                    <td>{{ $p->id_permintaan }}</td>
                     <td>{{ $p->jenis_permintaan ?? '-' }}</td>
                     <td>{{ $p->pemohon ?? $p->user->nama ?? '-' }}</td>
                     <td>
@@ -176,7 +177,6 @@
                     @for($i=0; $i<7; $i++)
                     <tr>
                         <td><input type="checkbox" class="form-check-input"></td>
-                        <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>

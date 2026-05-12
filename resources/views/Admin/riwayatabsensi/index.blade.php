@@ -31,10 +31,6 @@
         .search-container i { background: #1F4557; color: white; padding: 5px 10px; border-radius: 5px; margin-left: -10px; margin-right: 10px; }
         .search-container input { border: none; outline: none; width: 100%; font-size: 14px; }
 
-        .btn-custom { border: 2px solid #333; border-radius: 10px; font-weight: bold; padding: 6px 25px; font-size: 14px; transition: 0.3s; text-decoration: none; display: inline-block; }
-        .btn-export { background: white; color: #333; }
-        .btn-export:hover { background: #f5f5f5; }
-
         /* Table */
         .white-table-card { background: white; border: 2px solid #333; border-radius: 15px; overflow: hidden; margin-top: 25px; }
         .table-absensi { margin-bottom: 0; width: 100%; border-collapse: collapse; }
@@ -105,11 +101,6 @@
                 </div>
             </div>
             <div>
-                <!-- Export Button -->
-                <input type="hidden" name="tahun" value="{{ date('Y') }}">
-                <a href="{{ route('admin.absensi.export') }}?tahun={{ date('Y') }}" class="btn-custom btn-export">
-                    <i class="bi bi-download me-2"></i> Export
-                </a>
             </div>
         </form>
     </div>
@@ -119,32 +110,34 @@
         <table class="table-absensi" id="absensiTable">
             <thead>
                 <tr>
-                    <th>Id Permintaan</th>
                     <th>Nama</th>
                     <th>Jabatan</th>
-                    <th>Tanggal</th>
                     <th>Rekab Absensi</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($absensis as $absensi)
                 <tr>
-                    <td>{{ $absensi->id_absensi }}</td>
                     <td style="display: flex; align-items: center; gap: 10px; text-align: left;">
-                        @if($absensi->foto)
-                            <img src="{{ asset('storage/' . $absensi->foto) }}" alt="{{ $absensi->nama }}" class="foto-avatar">
+                        @php
+                            $personil = $absensi->user?->personil;
+                            $namaPegawai = $personil?->nama_personil ?? $absensi->nama ?? '-';
+                            $jabatanPegawai = $personil?->jabatan ?? $absensi->jabatan ?? '-';
+                        @endphp
+                        @if($personil && $personil->foto)
+                            <img src="{{ asset('images/pegawai/' . $personil->foto) }}" alt="{{ $namaPegawai }}" class="foto-avatar">
                         @else
-                            <img src="https://ui-avatars.com/api/?name={{ $absensi->nama }}&background=345E6F&color=fff" alt="{{ $absensi->nama }}" class="foto-avatar">
+                            <img src="https://ui-avatars.com/api/?name={{ urlencode($namaPegawai) }}&background=345E6F&color=fff" alt="{{ $namaPegawai }}" class="foto-avatar">
                         @endif
                         <div style="text-align: left;">
-                            <div style="font-weight: bold; font-size: 14px;">{{ $absensi->nama }}</div>
-                            <div style="font-size: 12px; color: #666;">{{ $absensi->lokasi ?? '-' }}</div>
+                            <a href="{{ route('admin.absensi.show', $absensi->id_absensi) }}" style="font-weight: bold; font-size: 14px; color: inherit; text-decoration: none;">
+                                {{ $namaPegawai }}
+                            </a>
                         </div>
                     </td>
-                    <td>{{ $absensi->jabatan }}</td>
-                    <td>{{ \Carbon\Carbon::parse($absensi->tanggal)->format('d/m/Y') }}</td>
+                    <td>{{ $jabatanPegawai }}</td>
                     <td>
-                        <a href="#" class="btn btn-sm btn-outline-secondary">
+                        <a href="{{ route('admin.absensi.export', ['tahun' => date('Y'), 'id_user' => $absensi->id_user]) }}" class="btn btn-sm btn-outline-secondary" target="_blank">
                             <i class="bi bi-file-earmark-pdf me-1"></i> File
                         </a>
                     </td>
@@ -153,8 +146,6 @@
                     {{-- Dummy rows jika data kosong --}}
                     @for($i=0; $i<7; $i++)
                     <tr>
-                        <td>&nbsp;</td>
-                        <td style="display: flex; align-items: center; gap: 10px;">&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>

@@ -177,7 +177,9 @@ public function edit($id)
     // 10. Menampilkan data permintaan untuk Kepala Lab
     public function indexKepalaLab(Request $request)
     {
-        $query = PermintaanLayanan::with('user')->orderBy('created_at', 'desc');
+        $query = PermintaanLayanan::with('user')
+            ->whereIn('status', ['sedang diproses', 'diverifikasi'])
+            ->orderBy('created_at', 'desc');
         
         // Search functionality
         $search = $request->get('search');
@@ -199,5 +201,50 @@ public function edit($id)
         $permintaans = $query->get();
         
         return view('KepalaLab.PermintaanLayanan.index', compact('permintaans', 'search', 'status'));
+    }
+
+    public function editKepalaLab($id)
+    {
+        $permintaan = PermintaanLayanan::with(['user', 'laporanHasil', 'riwayats'])->findOrFail($id);
+
+        if ($permintaan->status !== 'diverifikasi' && $permintaan->status !== 'selesai') {
+            return redirect()->route('kepala.permintaan')->with('error', 'Permintaan ini belum bisa diperiksa oleh Kepala Lab.');
+        }
+
+        return view('KepalaLab.PermintaanLayanan.edit', compact('permintaan'));
+    }
+
+    public function updateKepalaLab(Request $request, $id)
+    {
+        $permintaan = PermintaanLayanan::findOrFail($id);
+
+        if ($permintaan->status !== 'diverifikasi') {
+            return redirect()->route('kepala.permintaan')->with('error', 'Hanya permintaan berstatus diverifikasi yang bisa diubah menjadi selesai.');
+        }
+
+        $request->validate([
+            'status' => 'required|in:selesai',
+        ]);
+
+        $permintaan->update([
+            'status' => 'selesai',
+        ]);
+
+        // Preferensi: gunakan id_user dari riwayat terbaru yang memiliki id_user (petugas yang mengunggah hasil).
+        // Jika tidak ada riwayat dengan id_user, biarkan null.
+        $petugasId = $permintaan->riwayats()->whereNotNull('id_user')->latest('updated_at')->value('id_user');
+
+        RiwayatPenelitian::updateOrCreate(
+            ['id_permintaan' => $permintaan->id_permintaan],
+            [
+                'id_permintaan' => $permintaan->id_permintaan,
+                'id_user' => $petugasId,
+                'nama_laporan' => $permintaan->jenis_permintaan,
+                'tanggal_selesai' => now(),
+                'status' => 'selesai',
+            ]
+        );
+
+        return redirect()->route('kepala.permintaan')->with('success', 'Permintaan berhasil ditandai selesai oleh Kepala Lab.');
     }
 }

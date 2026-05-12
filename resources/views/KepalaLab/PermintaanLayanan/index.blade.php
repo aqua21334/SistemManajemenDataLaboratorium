@@ -45,6 +45,7 @@
         .btn-custom { border: 2px solid #333; border-radius: 8px; font-weight: bold; font-size: 13px; height: 35px; padding: 0 25px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; color: #333; cursor: pointer; }
         .btn-print { background-color: white; }
         .btn-edit { background-color: #B2C3CF; }
+        .btn-edit:hover { background-color: #9fb4c4; }
         .btn-hapus { background-color: #E5A4A4; }
 
         /* Table Card */
@@ -60,6 +61,52 @@
         .pagination-area { padding: 15px 20px; display: flex; align-items: center; gap: 8px; background: white; }
         .page-item-custom { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border: 1px solid #333; border-radius: 50%; font-size: 13px; color: #333; text-decoration: none; font-weight: 500; }
         .page-item-custom.active { background-color: #345E6F; color: white; border-color: #345E6F; }
+
+        .pdf-file-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        .pdf-file-icon {
+            position: relative;
+            width: 30px;
+            height: 38px;
+            border: 2px solid #E11D48;
+            border-radius: 7px;
+            background: #fff;
+            display: inline-flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+        }
+        .pdf-file-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 11px;
+            height: 11px;
+            background: linear-gradient(135deg, #ffffff 0 50%, #E11D48 50% 100%);
+            border-top-right-radius: 5px;
+        }
+        .pdf-file-icon::after {
+            content: 'PDF';
+            position: relative;
+            z-index: 1;
+            font-size: 10px;
+            font-weight: 800;
+            color: #E11D48;
+            line-height: 1;
+            letter-spacing: 0.4px;
+        }
+        .pdf-file-link:hover .pdf-file-icon {
+            border-color: #BE123C;
+            background: #FFF1F4;
+            transform: translateY(-1px);
+        }
         
         .btn-keluar { border: none; background: transparent; color: white; display: flex; align-items: center; padding-left: 20px; }
     </style>
@@ -140,7 +187,6 @@
                             <option value="">Status</option>
                             <option value="sedang diproses" {{ ($status ?? '') === 'sedang diproses' ? 'selected' : '' }}>Sedang Diproses</option>
                             <option value="diverifikasi" {{ ($status ?? '') === 'diverifikasi' ? 'selected' : '' }}>Diverifikasi</option>
-                            <option value="selesai" {{ ($status ?? '') === 'selesai' ? 'selected' : '' }}>Selesai</option>
                         </select>
                     </div>
                 </div>
@@ -165,6 +211,7 @@
                         <th>Status</th>
                         <th>File</th>
                         <th>Tanggal Permintaan</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -181,18 +228,29 @@
                         </td>
                         <td>
                             @if($permintaan->file_layanan)
-                                <a href="{{ asset('uploads/permintaan/' . $permintaan->file_layanan) }}" target="_blank" class="btn btn-sm btn-primary">
-                                    <i class="bi bi-download"></i> Download
+                                <a href="{{ asset('uploads/permintaan/' . $permintaan->file_layanan) }}" target="_blank" class="pdf-file-link" title="Lihat {{ basename($permintaan->file_layanan) }}">
+                                    <span class="pdf-file-icon" aria-hidden="true"></span>
                                 </a>
                             @else
                                 <span class="text-muted">-</span>
                             @endif
                         </td>
                         <td>{{ $permintaan->tanggal_permintaan ? \Carbon\Carbon::parse($permintaan->tanggal_permintaan)->format('d-m-Y') : '-' }}</td>
+                        <td>
+                            @if($permintaan->status === 'diverifikasi')
+                                <a href="{{ route('kepala.permintaan.edit', $permintaan->id_permintaan) }}" class="btn btn-sm btn-edit">
+                                    <i class="bi bi-pencil-square me-1"></i> Edit
+                                </a>
+                            @elseif($permintaan->status === 'selesai')
+                                <span class="badge bg-success px-3 py-2">Selesai</span>
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
+                        </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center text-muted py-4">Tidak ada data permintaan</td>
+                        <td colspan="8" class="text-center text-muted py-4">Tidak ada data permintaan</td>
                     </tr>
                     @endforelse
                 </tbody>

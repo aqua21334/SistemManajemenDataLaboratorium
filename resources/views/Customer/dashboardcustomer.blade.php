@@ -68,6 +68,32 @@
             background-color: #1e3a5f;
             color: white;
         }
+
+        .invoice-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border: 1px solid #1e5bff;
+            border-radius: 6px;
+            background: #1e5bff;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .invoice-link:hover {
+            background: #1748cc;
+            border-color: #1748cc;
+            color: #fff;
+        }
+
+        .invoice-empty {
+            color: #6c757d;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -185,6 +211,7 @@
                     <th>Jenis Permintaan</th>
                     <th>Status</th>
                     <th>File</th>
+                    <th>Invoice</th>
                 </tr>
             </thead>
             <tbody>
@@ -206,7 +233,7 @@
                         </td>
                         <td class="align-middle">
                             @if($p->status == 'selesai' && $p->laporanHasil)
-                                <a href="{{ asset('uploads/hasil/' . $p->laporanHasil->file_laporan) }}" 
+                                <a href="{{ asset('uploads/laporan/' . $p->laporanHasil->file_hasil) }}" 
                                    class="btn btn-sm btn-primary" target="_blank">
                                     <i class="bi bi-download me-1"></i> Unduh Hasil
                                 </a>
@@ -216,10 +243,20 @@
                                 </span>
                             @endif
                         </td>
+                        <td class="align-middle">
+                            @if($p->pnbp)
+                                <a href="{{ route('customer.invoice', $p->pnbp->id_pnbp) }}" target="_blank" class="invoice-link">
+                                    <i class="bi bi-folder2-open"></i>
+                                    <span>Invoice</span>
+                                </a>
+                            @else
+                                <span class="invoice-empty">Belum Tersedia</span>
+                            @endif
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="py-4 text-muted fst-italic">
+                        <td colspan="5" class="py-4 text-muted fst-italic">
                             Belum ada riwayat permintaan layanan untuk akun Anda.
                         </td>
                     </tr>

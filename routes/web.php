@@ -34,6 +34,14 @@ Route::get('/', function () {
 */
 Route::get('/login', [AuthController::class, 'index'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])
+    ->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'sendResetLinkEmail'])
+    ->name('password.email');
+Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])
+    ->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])
+    ->name('password.update');
 
 Route::get('/register', [AuthController::class, 'showRegister']);
 Route::post('/register', [AuthController::class, 'register']);
@@ -137,9 +145,9 @@ Route::middleware('auth')->group(function () {
         ]);
 
         Route::resource('sop', DaftarSopController::class);
-        Route::resource('absensi', AbsensiController::class);
         Route::get('/absensi/export', [AbsensiController::class, 'exportExcel'])
             ->name('absensi.export');
+        Route::resource('absensi', AbsensiController::class);
 
         Route::get('/riwayat-penelitian', [RiwayatPenelitianController::class, 'index'])
             ->name('riwayat-penelitian.index');
@@ -169,6 +177,10 @@ Route::middleware('auth')->group(function () {
     // Permintaan Layanan
     Route::get('/permintaan', [PermintaanLayananController::class, 'indexKepalaLab'])
         ->name('kepala.permintaan');
+    Route::get('/permintaan/{id}/edit', [PermintaanLayananController::class, 'editKepalaLab'])
+        ->name('kepala.permintaan.edit');
+    Route::put('/permintaan/{id}', [PermintaanLayananController::class, 'updateKepalaLab'])
+        ->name('kepala.permintaan.update');
 
     // Monitoring Laporan
     Route::get('/laporan', [LaporanHasilController::class, 'index'])
@@ -209,6 +221,17 @@ Route::middleware('auth')->group(function () {
 
             return view('Customer.dashboardcustomer', compact('permintaanlayanans'));
         })->name('dashboard');
+
+        Route::get('/invoice/{id}', function ($id) {
+            $pnbp = \App\Models\Pnbp::with('permintaanLayanan.user')->findOrFail($id);
+
+            abort_unless(
+                $pnbp->permintaanLayanan && $pnbp->permintaanLayanan->id_user === Auth::user()->id_user,
+                403
+            );
+
+            return view('Admin.pnbp.invoice', compact('pnbp'));
+        })->name('invoice');
 
         Route::post('/permintaan', [PermintaanLayananController::class, 'store'])
             ->name('permintaan.store');

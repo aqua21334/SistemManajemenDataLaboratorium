@@ -171,7 +171,30 @@
                         </td>
                         <td>{{ $person->email }}</td>
                         <td>{{ $person->jabatan }}</td>
-                        <td class="text-dark">-</td>
+                        <td class="text-dark">
+                            @php
+                                $absensiHariIni = $person->user?->absensis?->first(function ($absensi) {
+                                    return $absensi->tanggal?->isToday();
+                                });
+                            @endphp
+
+                            @if($absensiHariIni)
+                                <div class="fw-bold">
+                                    {{ $absensiHariIni->status ? ucfirst($absensiHariIni->status) : 'Hadir' }}
+                                </div>
+                                <small class="text-muted d-block">
+                                    @if($absensiHariIni->jam_masuk)
+                                        Jam masuk: {{ \Carbon\Carbon::parse($absensiHariIni->jam_masuk)->format('H:i') }}
+                                    @elseif($absensiHariIni->jam_pulang)
+                                        Jam pulang: {{ \Carbon\Carbon::parse($absensiHariIni->jam_pulang)->format('H:i') }}
+                                    @else
+                                        Belum ada jam absen
+                                    @endif
+                                </small>
+                            @else
+                                <span class="text-muted fst-italic">Belum absen</span>
+                            @endif
+                        </td>
                     </tr>
                     @empty
                     <tr>

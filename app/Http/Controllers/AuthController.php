@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -69,6 +71,83 @@ class AuthController extends Controller
     public function showRegister()
     {
         return view('auth.register');
+    }
+
+    // Menampilkan form lupa password
+    public function showForgotPasswordForm()
+    {
+        return view('auth.forgot-password');
+    }
+
+    // Mengirim link reset password ke email customer
+    public function sendResetLinkEmail(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        $customer = User::where('email', $validated['email'])
+            ->whereHas('role', function ($query) {
+                $query->where('nama_role', 'Customer');
+            })
+            ->first();
+
+        if (! $customer) {
+            return back()->withErrors([
+                'email' => 'Email tidak ditemukan sebagai akun Customer.',
+            ])->onlyInput('email');
+        }
+
+        $status = Password::sendResetLink($validated);
+
+        if ($status === Password::RESET_LINK_SENT) {
+            return back()->with('success', __($status));
+        }
+
+        return back()->withErrors([
+            'email' => __($status),
+        ])->onlyInput('email');
+    }
+
+    // Menampilkan form reset password
+    public function showResetPasswordForm(Request $request, string $token)
+    {
+        return view('auth.reset-password', [
+            'token' => $token,
+            'email' => $request->email,
+        ]);
+    }
+
+    // Menyimpan password baru dari token reset
+    public function resetPassword(Request $request)
+    {
+        $validated = $request->validate([
+            'token' => ['required'],
+            'email' => ['required', 'email'],
+            'password' => ['required', 'confirmed', 'min:6'],
+        ], [
+            'password.required' => 'Password baru harus diisi',
+            'password.confirmed' => 'Password baru dan konfirmasi tidak sesuai',
+            'password.min' => 'Password harus minimal 6 karakter',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password),
+                    'remember_token' => Str::random(60),
+                ])->save();
+            }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            return redirect()->route('login')->with('success', 'Password berhasil diubah. Silakan masuk kembali.');
+        }
+
+        return back()->withErrors([
+            'email' => __($status),
+        ]);
     }
 
     // --- FUNGSI UNTUK MEMPROSES DATA PENDAFTARAN ---

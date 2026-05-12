@@ -15,6 +15,10 @@ class RiwayatPenelitian extends Model
         'id_permintaan', 'id_user', 'nama_laporan', 'tanggal_selesai', 'status'
     ];
 
+    protected $casts = [
+        'tanggal_selesai' => 'datetime',
+    ];
+
     // Riwayat ini milik 1 Permintaan Layanan
     public function permintaanLayanan()
     {

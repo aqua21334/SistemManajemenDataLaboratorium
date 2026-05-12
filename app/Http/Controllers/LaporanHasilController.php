@@ -37,10 +37,13 @@ class LaporanHasilController extends Controller
     {
         $search = $request->input('search', '');
         $status = $request->input('status', '');
+        $allowedStatuses = ['sedang diproses', 'diverifikasi'];
         
         $query = \App\Models\PermintaanLayanan::with(['laporanHasil' => function ($q) {
             $q->orderByDesc('id_laporan');
-        }])->orderByDesc('created_at');
+        }])
+            ->whereIn('status', $allowedStatuses)
+            ->orderByDesc('created_at');
 
         if (!empty($search)) {
             $query->where(function ($builder) use ($search) {
@@ -51,7 +54,7 @@ class LaporanHasilController extends Controller
             });
         }
 
-        if (!empty($status)) {
+        if (!empty($status) && in_array($status, $allowedStatuses, true)) {
             $query->where('status', $status);
         }
 

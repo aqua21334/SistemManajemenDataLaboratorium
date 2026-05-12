@@ -41,6 +41,49 @@
         .btn-action-edit { background-color: #B2C3CF; border: 2px solid #333; border-radius: 10px; padding: 4px 15px; font-size: 13px; font-weight: bold; color: #333; text-decoration: none; }
         .btn-action-hapus { background-color: #E5A4A4; border: 2px solid #333; border-radius: 10px; padding: 4px 15px; font-size: 13px; font-weight: bold; color: #333; }
 
+        .pdf-file-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        .pdf-file-icon {
+            position: relative;
+            width: 30px;
+            height: 38px;
+            border: 2px solid #E11D48;
+            border-radius: 7px;
+            background: #fff;
+            display: inline-flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+        }
+        .pdf-file-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 11px;
+            height: 11px;
+            background: linear-gradient(135deg, #ffffff 0 50%, #E11D48 50% 100%);
+            border-top-right-radius: 5px;
+        }
+        .pdf-file-icon span {
+            font-size: 10px;
+            font-weight: 800;
+            color: #E11D48;
+            line-height: 1;
+            letter-spacing: 0.4px;
+        }
+        .pdf-file-link:hover .pdf-file-icon {
+            border-color: #BE123C;
+            background: #FFF1F4;
+            transform: translateY(-1px);
+        }
+
         .form-check-input { border: 2px solid #333; width: 22px; height: 22px; border-radius: 6px; }
 
         /* Pagination Sesuai Gambar */
@@ -131,8 +174,8 @@
                     <td>{{ $sop->judul_sop }}</td>
                     <td>
                         @if($sop->file_sop)
-                            <a href="{{ asset('uploads/sop/'.$sop->file_sop) }}" target="_blank" class="text-decoration-none text-success fw-bold">
-                                <i class="bi bi-file-earmark-pdf-fill me-1"></i> Terlampir
+                            <a href="{{ asset('uploads/sop/'.$sop->file_sop) }}" target="_blank" class="pdf-file-link" title="Lihat {{ basename($sop->file_sop) }}">
+                                <span class="pdf-file-icon" aria-hidden="true"><span>PDF</span></span>
                             </a>
                         @else
                             <span class="text-muted">Kosong</span>

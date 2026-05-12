@@ -151,7 +151,9 @@
         </td>
         <td class="text-center">{{ $p->email ?? '-' }}</td>
         <td class="text-center">{{ $p->jabatan }}</td>
-        <td class="text-center fw-bold text-success">Hadir</td>
+        <td class="text-center fw-bold {{ in_array($p->id_user, $hadirUserIds ?? []) ? 'text-success' : 'text-danger' }}">
+            {{ in_array($p->id_user, $hadirUserIds ?? []) ? 'Hadir' : 'Belum Absen' }}
+        </td>
         <td class="text-center">
             <a href="{{ route('admin.personil.edit', $p->id_personil) }}" class="btn btn-custom btn-edit shadow-sm" style="padding: 4px 10px; font-size: 12px;">Edit</a>
             <form action="{{ route('admin.personil.destroy', $p->id_personil) }}" method="POST" style="display: inline;">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Absensi;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Exports\AbsensiExport;          // <-- WAJIB: Import class export yang sudah kita buat
 use Maatwebsite\Excel\Facades\Excel;    // <-- WAJIB: Import library Excel dari Maatwebsite
@@ -14,25 +15,41 @@ class AbsensiController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Absensi::query();
+        $search = trim((string) $request->input('search', ''));
 
-        // Search functionality
-        $search = request('search');
-        if ($search) {
-            $query->where(function($builder) use ($search) {
-                $builder->where('id_absensi', 'like', '%' . $search . '%')
-                        ->orWhere('nama', 'like', '%' . $search . '%')
-                        ->orWhere('jabatan', 'like', '%' . $search . '%')
-                        ->orWhere('lokasi', 'like', '%' . $search . '%');
-            });
-        }
+        $query = Absensi::with(['user.personil']);
 
-        // Logika tambahan: Jika ada filter tanggal dari halaman view, terapkan ke query
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('tanggal', [$request->start_date, $request->end_date]);
         }
 
-        $absensis = $query->orderBy('tanggal', 'desc')->get();
+        $absensis = $query->orderByDesc('tanggal')
+            ->orderByDesc('id_absensi')
+            ->get()
+            ->unique('id_user')
+            ->values();
+
+        if ($search !== '') {
+            $searchLower = mb_strtolower($search);
+
+            $absensis = $absensis->filter(function ($absensi) use ($searchLower) {
+                $personil = $absensi->user?->personil;
+
+                $namaPegawai = mb_strtolower((string) ($personil?->nama_personil ?? $absensi->user?->nama ?? ''));
+                $jabatanPegawai = mb_strtolower((string) ($personil?->jabatan ?? ''));
+                $lokasi = mb_strtolower((string) ($absensi->lokasi ?? ''));
+                $status = mb_strtolower((string) ($absensi->status ?? ''));
+                $idAbsensi = (string) $absensi->id_absensi;
+                $idUser = (string) $absensi->id_user;
+
+                return str_contains($namaPegawai, $searchLower)
+                    || str_contains($jabatanPegawai, $searchLower)
+                    || str_contains($lokasi, $searchLower)
+                    || str_contains($status, $searchLower)
+                    || str_contains($idAbsensi, $searchLower)
+                    || str_contains($idUser, $searchLower);
+            })->values();
+        }
         
         // Return view Admin panel (Riwayat Absensi)
         return view('Admin.riwayatabsensi.index', compact('absensis', 'search'));
@@ -54,13 +71,26 @@ class AbsensiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|max:100',
-            'jabatan' => 'required|string|max:50',
+            'id_user' => 'required|exists:users,id_user',
             'tanggal' => 'required|date',
-            'lokasi' => 'required|string|max:100',
+            'jam_masuk' => 'nullable|date_format:H:i:s',
+            'jam_pulang' => 'nullable|date_format:H:i:s',
+            'status' => 'nullable|string|max:20',
+            'lokasi' => 'nullable|string|max:255',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
         ]);
 
-        Absensi::create($request->all());
+        Absensi::create($request->only([
+            'id_user',
+            'tanggal',
+            'jam_masuk',
+            'jam_pulang',
+            'status',
+            'lokasi',
+            'latitude',
+            'longitude',
+        ]));
         return back()->with('success', 'Absensi berhasil dicatat!');
     }
 
@@ -69,17 +99,38 @@ class AbsensiController extends Controller
         Absensi::findOrFail($id)->delete();
         return back()->with('success', 'Data absensi dihapus!');
     }
+
+    public function show(Absensi $absensi)
+    {
+        $absensi->load(['user.personil']);
+
+        $personil = $absensi->user?->personil;
+        $riwayatAbsensi = Absensi::with(['user.personil'])
+            ->where('id_user', $absensi->id_user)
+            ->orderByDesc('tanggal')
+            ->get();
+
+        return view('Admin.riwayatabsensi.show', compact('absensi', 'personil', 'riwayatAbsensi'));
+    }
+
     // --- FUNGSI BARU UNTUK EXPORT EXCEL (VERSI MULTIPLE SHEETS) ---
     public function exportExcel(Request $request)
     {
-        // Menangkap input tahun dari URL/Form. Jika kosong, gunakan tahun saat ini
-        $tahun = $request->input('tahun', date('Y'));
+        // Menangkap input tahun dan user dari URL/Form. Jika kosong, gunakan tahun saat ini
+        $tahun = (int) $request->input('tahun', date('Y'));
+        $idUser = $request->filled('id_user') ? (int) $request->input('id_user') : null;
 
-        // Nama file akan dinamis, contoh: Rekap_Absensi_2026.xlsx
-        $namaFile = 'Rekap_Absensi_' . $tahun . '.xlsx';
+        if ($idUser) {
+            $user = User::with('personil')->find($idUser);
+            $namaPegawai = $user?->personil?->nama_personil ?? $user?->nama ?? 'Pegawai';
+            $namaPegawai = preg_replace('/[^A-Za-z0-9]+/', '_', trim($namaPegawai));
+            $namaFile = 'Rekap_Absensi_' . $namaPegawai . '.xlsx';
+        } else {
+            $namaFile = 'Rekap_Absensi_' . $tahun . '.xlsx';
+        }
 
         // Memanggil Master Export dan memberikan variabel tahun
-        return Excel::download(new AbsensiExport($tahun), $namaFile);
+        return Excel::download(new AbsensiExport($tahun, $idUser), $namaFile);
     }
 
     // Absen masuk untuk Petugas Lab (dengan lokasi)

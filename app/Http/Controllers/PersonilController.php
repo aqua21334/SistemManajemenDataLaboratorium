@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Absensi;
 use App\Models\Personil;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
@@ -33,9 +35,15 @@ class PersonilController extends Controller
         // 4. Ambil data dengan Pagination (misal 10 data per halaman)
         // Gunakan paginate() agar link di bawah tabel berfungsi otomatis
         $personils = $query->orderBy('nama_personil', 'asc')->paginate(10);
+
+        // Daftar id_user yang sudah absen masuk hari ini.
+        $hadirUserIds = Absensi::whereDate('tanggal', Carbon::today())
+            ->whereNotNull('jam_masuk')
+            ->pluck('id_user')
+            ->toArray();
         
         // Kirim data ke view
-        return view('Admin.pegawaiadmin.index', compact('personils'));
+        return view('Admin.pegawaiadmin.index', compact('personils', 'hadirUserIds'));
     }
 
     public function create()
@@ -196,7 +204,9 @@ class PersonilController extends Controller
         $search = $request->query('search');
 
         // 2. Gunakan Query Builder agar bisa memfilter
-        $query = Personil::query();
+        $query = Personil::with(['user.absensis' => function ($absensiQuery) {
+            $absensiQuery->orderByDesc('tanggal')->orderByDesc('id_absensi');
+        }]);
 
         // 3. Filter hanya Petugas Lab, exclude Kepala Lab
         $query->where('jabatan', '!=', 'Kepala Lab');
