@@ -64,7 +64,7 @@
 
 <div class="sidebar shadow">
     <div class="text-center mb-5 px-3">
-        <img src="{{ asset('images/logo-btr.jpg') }}" width="60" class="rounded-circle border border-2 border-white">
+        <img src="{{ asset('images/Logo-pupr.jpeg') }}" width="60" class="rounded-circle border border-2 border-white">
         <p class="sidebar-logo-text fw-semibold">Sistem Manajemen Data<br>Laboratorium Balai Teknik Rawa</p>
     </div>
     <ul class="nav flex-column px-2">
@@ -124,7 +124,6 @@
             <table class="table table-pegawai">
                 <thead>
                     <tr>
-                        <th width="60"></th>
                         <th>Nama</th>
                         <th>Email</th>
                         <th>Jabatan</th>
@@ -136,9 +135,6 @@
     {{-- Loop data personil dari database --}}
     @forelse($personils as $p)
     <tr>
-        <td class="text-center">
-            <input type="checkbox" class="form-check-input" name="selected_pegawai[]" value="{{ $p->id_personil }}">
-        </td>
         <td>
             <div class="d-flex align-items-center">
                 {{-- Foto: Jika ada di DB pakai itu, jika tidak pakai inisial nama --}}
@@ -166,7 +162,7 @@
     @empty
     {{-- Tampilan jika database kosong --}}
     <tr>
-        <td colspan="6" class="text-center py-5">
+        <td colspan="5" class="text-center py-5">
             <div class="text-muted">
                 <i class="bi bi-people fs-1 d-block mb-2"></i>
                 <p class="mb-0">Belum ada data pegawai di database.</p>
@@ -180,7 +176,6 @@
     @if(count($personils) > 0 && count($personils) < 5)
         @for($i = 0; $i < (5 - count($personils)); $i++)
         <tr>
-            <td class="text-center"><input type="checkbox" class="form-check-input" disabled></td>
             <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
         </tr>
         @endfor
@@ -189,15 +184,7 @@
             </table>
 
             <div class="pagination-area border-top">
-                <a href="#" class="text-dark me-2"><i class="bi bi-chevron-left"></i></a>
-                <a href="#" class="page-link-custom active">1</a>
-                <a href="#" class="page-link-custom">2</a>
-                <a href="#" class="page-link-custom">3</a>
-                <a href="#" class="page-link-custom">4</a>
-                <a href="#" class="page-link-custom">5</a>
-                <span class="mx-1">.....</span>
-                <a href="#" class="page-link-custom">10</a>
-                <a href="#" class="text-dark ms-2"><i class="bi bi-chevron-right"></i></a>
+                {{ $personils->appends(request()->query())->links('pagination::bootstrap-5') }}
             </div>
         </div>
     </div>
@@ -205,3 +192,4 @@
 
 </body>
 </html>
+

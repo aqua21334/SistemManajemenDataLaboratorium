@@ -173,25 +173,43 @@
         <form action="{{ route('customer.permintaan.store') }}" method="POST" enctype="multipart/form-data">
             @csrf 
             <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Jenis Permintaan</label>
-                    <input type="text" class="form-control border-dark" name="jenis_permintaan" required>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Jenis Layanan (Dokumen)</label>
-                    <div class="input-group">
-                        <input type="file" class="form-control border-dark" id="fileLayanan" name="file_layanan" accept=".pdf,.doc,.docx,.zip,.rar" required>
-                        <label class="input-group-text bg-white border-dark" for="fileLayanan">Unggah</label>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">No. HandPhone</label>
-                    <input type="text" class="form-control border-dark" name="no_hp" required>
-                </div>
-                <div class="col-md-6 d-flex align-items-end justify-content-between">
+
+    <!-- KOLOM KIRI -->
+    <div class="col-md-6">
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Jenis Permintaan</label>
+            <input type="text" class="form-control border-dark" name="jenis_permintaan" required>
+        </div>
+
+        <div>
+            <label class="form-label fw-semibold">No. HandPhone</label>
+            <input type="text" class="form-control border-dark" name="no_hp" required>
+        </div>
+
+    </div>
+
+    <!-- KOLOM KANAN -->
+    <div class="col-md-6">
+
+        <label class="form-label fw-semibold">File Pendukung (Dokumen)</label>
+        <div class="input-group mb-3">
+            <input type="file" class="form-control border-dark" id="fileLayanan" name="file_layanan" accept=".pdf,.doc,.docx,.zip,.rar" required>
+            <label class="input-group-text bg-white border-dark" for="fileLayanan">Unggah</label>
+        </div>
+
+        <label class="form-label fw-semibold">Bukti Pembayaran</label>
+        <div class="input-group">
+            <input type="file" class="form-control border-dark" id="buktiBayar" name="bukti_bayar" accept="image/*,.pdf">
+            <label class="input-group-text bg-white border-dark" for="buktiBayar">Unggah</label>
+        </div>
+
+        <small class="text-muted">Format: jpg, png, pdf. Maks 2MB.</small>
+
+    </div>
+</div>
+            <div class="row">
+                <div class="col-md-6 ms-auto d-flex align-items-center justify-content-between">
                     <div class="alert alert-info mb-0" role="alert">
                         <strong>Tarif:</strong> Rp 100.000
                     </div>
@@ -202,7 +220,7 @@
     </div>
 
    <div class="container section-border">
-    <h4 class="fw-bold mb-4">Daftar Pengaduan</h4>
+    <h4 class="fw-bold mb-4">Daftar Pengaduan Yang Telah Anda Ajukan</h4>
     <div class="table-responsive">
         <table class="table table-bordered table-custom text-center border-dark">
             <thead>

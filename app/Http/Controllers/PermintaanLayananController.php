@@ -23,8 +23,10 @@ public function index()
         return view('front.index', compact('permintaans'));
     }
 
-    // SESUAIKAN DENGAN FOTO: Admin/permintaanlayanan/index
-    $query = PermintaanLayanan::with('user')->orderBy('created_at', 'desc');
+    // Tampilkan hanya permintaan yang belum selesai (sedang diproses atau diverifikasi)
+    $query = PermintaanLayanan::with('user')
+        ->whereIn('status', ['sedang diproses', 'diverifikasi'])
+        ->orderBy('created_at', 'desc');
     
     // Search functionality
     $search = request('search');
@@ -43,7 +45,7 @@ public function index()
         $query->where('status', $status);
     }
     
-    $laporans = $query->get();
+    $laporans = $query->paginate(10);
     
     return view('Admin.permintaanlayanan.index', compact('laporans', 'search', 'status'));
 }
@@ -124,7 +126,8 @@ public function edit($id)
         $request->validate([
             'jenis_permintaan' => 'required|string|max:255',
             'no_hp' => 'required|string|max:20',
-            'file_layanan' => 'required|file|mimes:pdf,doc,docx,zip,rar|max:5120', 
+            'file_layanan' => 'required|file|mimes:pdf,doc,docx,zip,rar|max:5120',
+            'bukti_bayar' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
         $nama_file = null;
@@ -132,6 +135,14 @@ public function edit($id)
             $file = $request->file('file_layanan');
             $nama_file = time() . "_" . str_replace(' ', '_', $file->getClientOriginalName());
             $file->move(public_path('uploads/permintaan'), $nama_file);
+        }
+
+        // Handle bukti pembayaran upload
+        $bukti_bayar = null;
+        if ($request->hasFile('bukti_bayar')) {
+            $file = $request->file('bukti_bayar');
+            $bukti_bayar = time() . "_" . str_replace(' ', '_', $file->getClientOriginalName());
+            $file->move(public_path('uploads/pnbp'), $bukti_bayar);
         }
 
         // Tarif fixed untuk semua permintaan = Rp 100.000
@@ -154,10 +165,11 @@ public function edit($id)
             'total_biaya' => $tarif_fixed,
             'jumlah_bayar' => 0,
             'sisa_tagihan' => $tarif_fixed,
-            'status_pembayaran' => 'Belum Dibayar'
+            'status_pembayaran' => 'Belum Dibayar',
+            'bukti_bayar' => $bukti_bayar
         ]);
 
-        return redirect()->route('customer.dashboard')->with('success', 'Permintaan berhasil dikirim! Invoice otomatis dibuat dengan tarif Rp ' . number_format($tarif_fixed, 0, ',', '.'));
+        return redirect()->route('customer.dashboard')->with('success', 'Permintaan berhasil dikirim');
     }
 
     // 9. Menghapus Permintaan

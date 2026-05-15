@@ -55,7 +55,7 @@
 
 <div class="sidebar shadow">
     <div class="text-center mb-5 px-3">
-        <img src="{{ asset('images/logo-btr.jpg') }}" width="60" class="rounded-circle border border-2 border-white">
+        <img src="{{ asset('images/Logo-pupr.jpeg') }}" width="60" class="rounded-circle border border-2 border-white">
         <p class="sidebar-logo-text fw-semibold">Sistem Manajemen Data<br>Laboratorium Balai Teknik Rawa</p>
     </div>
     <ul class="nav flex-column px-2">
@@ -102,7 +102,6 @@
                 <option value="">Status</option>
                 <option value="sedang diproses" {{ request('status') === 'sedang diproses' ? 'selected' : '' }}>Sedang Diproses</option>
                 <option value="diverifikasi" {{ request('status') === 'diverifikasi' ? 'selected' : '' }}>Diverifikasi</option>
-                <option value="selesai" {{ request('status') === 'selesai' ? 'selected' : '' }}>Selesai</option>
             </select>
         </div>
     </form>
@@ -112,7 +111,6 @@
         <table class="table-laporan">
             <thead>
                 <tr>
-                    <th width="50"></th>
                     <th>Pemohon</th>
                     <th>Jenis Permintaan</th>
                     <th>No. HP</th>
@@ -125,7 +123,6 @@
             <tbody>
                 @forelse($laporans as $lap)
                 <tr>
-                    <td><input type="checkbox" class="form-check-input"></td>
                     <td>{{ $lap->pemohon ?? $lap->user->nama }}</td>
                     <td>{{ $lap->jenis_permintaan }}</td>
                     <td>{{ $lap->no_hp }}</td>
@@ -144,7 +141,7 @@
                     <td>{{ $lap->tanggal_permintaan ? \Carbon\Carbon::parse($lap->tanggal_permintaan)->format('d/m/Y') : \Carbon\Carbon::parse($lap->created_at)->format('d/m/Y') }}</td>
                     <td>
                         <div class="d-flex justify-content-center gap-1">
-                            <a href="{{ route('admin.permintaan.show', $lap->id_permintaan) }}" class="btn-action-edit">Lihat</a>
+                            <a href="{{ route('admin.permintaan.show', $lap->id_permintaan) }}" class="btn-action-edit">Edit</a>
                             <form action="{{ route('admin.permintaan.destroy', $lap->id_permintaan) }}" method="POST" class="d-inline">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn-action-hapus" onclick="return confirm('Hapus data permintaan ini?')">Hapus</button>
@@ -165,15 +162,7 @@
 
         <!-- Pagination -->
         <div class="pagination-area">
-            <a href="#" class="text-dark me-2"><i class="bi bi-chevron-left"></i></a>
-            <a href="#" class="page-link-custom active">1</a>
-            <a href="#" class="page-link-custom">2</a>
-            <a href="#" class="page-link-custom">3</a>
-            <a href="#" class="page-link-custom">4</a>
-            <a href="#" class="page-link-custom">5</a>
-            <span class="mx-1 text-muted">.....</span>
-            <a href="#" class="page-link-custom">10</a>
-            <a href="#" class="text-dark ms-2"><i class="bi bi-chevron-right"></i></a>
+            {{ $laporans->appends(request()->query())->links('pagination::bootstrap-5') }}
         </div>
     </div>
 </div>
@@ -199,3 +188,4 @@
 
 </body>
 </html>
+

@@ -30,7 +30,7 @@ class PnbpController extends Controller
             });
         }
         
-        $permintaans = $query->get();
+        $permintaans = $query->paginate(5);
         return view('Admin.pnbp.index', compact('permintaans', 'search'));
     }
 

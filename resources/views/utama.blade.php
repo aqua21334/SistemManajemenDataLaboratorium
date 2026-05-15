@@ -97,7 +97,7 @@
             </div>
             
             <div class="logo-tengah">
-    <img src="{{ asset('images/logo-btr.jpg') }}" alt="Logo PU" style="width: 82px; height: 82px; border-radius: 50%; object-fit: contain; padding: 2px;">
+    <img src="{{ asset('images/Logo-pupr.jpeg') }}" alt="Logo PU" style="width: 82px; height: 82px; border-radius: 50%; object-fit: contain; padding: 2px;">
 </div>
 
             <div class="nav-links">

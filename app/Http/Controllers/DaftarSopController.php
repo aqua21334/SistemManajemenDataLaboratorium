@@ -22,7 +22,7 @@ class DaftarSopController extends Controller
             });
         }
         
-        $sops = $query->orderBy('judul_sop', 'asc')->get();
+        $sops = $query->orderBy('judul_sop', 'asc')->paginate(5);
         
         return view('Admin.sop.index', compact('sops', 'search'));
     }

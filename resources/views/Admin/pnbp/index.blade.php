@@ -34,7 +34,6 @@
         .btn-custom { border: 2px solid #333; border-radius: 10px; font-weight: bold; padding: 6px 25px; font-size: 14px; transition: 0.3s; text-decoration: none; display: inline-block; }
         .btn-print { background: white; color: #333; }
         .btn-tambah { background: #1F4557; color: white; border: none; }
-        .btn-edit { background: #B2C3CF; color: #333; }
 
         /* Table PNBP */
         .white-table-card { background: white; border: 2px solid #333; border-radius: 15px; overflow: hidden; margin-top: 25px; }
@@ -58,7 +57,7 @@
 
 <div class="sidebar shadow">
     <div class="text-center mb-5 px-3">
-        <img src="{{ asset('images/logo-btr.jpg') }}" width="60" class="rounded-circle border border-2 border-white">
+        <img src="{{ asset('images/Logo-pupr.jpeg') }}" width="60" class="rounded-circle border border-2 border-white">
         <p class="sidebar-logo-text fw-semibold">Sistem Manajemen Data<br>Laboratorium Balai Teknik Rawa</p>
     </div>
     <ul class="nav flex-column px-2">
@@ -108,7 +107,6 @@
             <div class="d-flex gap-3">
                 <!-- Action Buttons -->
                 <a href="{{ route('admin.pnbp.create') }}" class="btn-custom btn-tambah">Tambah</a>
-                <button type="button" class="btn-custom btn-edit">Edit</button>
             </div>
         </form>
     </div>
@@ -118,11 +116,11 @@
         <table class="table-pnbp">
             <thead>
                 <tr>
-                    <th width="60"></th>
                     <th>Jenis Permintaan</th>
                     <th>Pemohon</th>
                     <th>Total Biaya</th>
                     <th>Sisa Tagihan</th>
+                    <th>Bukti Pembayaran</th>
                     <th>Status Pembayaran</th>
                     <th width="100">Aksi</th>
                 </tr>
@@ -131,7 +129,6 @@
                 {{-- Data Loop --}}
                 @forelse($permintaans as $p)
                 <tr>
-                    <td><input type="checkbox" class="form-check-input"></td>
                     <td>{{ $p->jenis_permintaan ?? '-' }}</td>
                     <td>{{ $p->pemohon ?? $p->user->nama ?? '-' }}</td>
                     <td>
@@ -144,6 +141,13 @@
                     <td>
                         @if($p->pnbp)
                             Rp {{ number_format($p->pnbp->sisa_tagihan, 0, ',', '.') }}
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td>
+                        @if($p->pnbp && $p->pnbp->bukti_bayar)
+                            <a href="{{ asset('uploads/pnbp/' . $p->pnbp->bukti_bayar) }}" target="_blank" style="text-decoration:none;">Lihat</a>
                         @else
                             -
                         @endif
@@ -174,15 +178,15 @@
                 </tr>
                 @empty
                     {{-- Dummy rows sesuai desain gambar jika data kosong --}}
-                    @for($i=0; $i<7; $i++)
+                    @for($i=0; $i<5; $i++)
                     <tr>
-                        <td><input type="checkbox" class="form-check-input"></td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
-                        <td><button class="btn-text-hapus">Hapus</button></td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
                     </tr>
                     @endfor
                 @endforelse
@@ -191,15 +195,7 @@
 
         <!-- Pagination -->
         <div class="pagination-area">
-            <a href="#" class="text-dark me-2"><i class="bi bi-chevron-left"></i></a>
-            <a href="#" class="page-link-custom active">1</a>
-            <a href="#" class="page-link-custom">2</a>
-            <a href="#" class="page-link-custom">3</a>
-            <a href="#" class="page-link-custom">4</a>
-            <a href="#" class="page-link-custom">5</a>
-            <span class="mx-1 text-muted">.....</span>
-            <a href="#" class="page-link-custom">10</a>
-            <a href="#" class="text-dark ms-2"><i class="bi bi-chevron-right"></i></a>
+            {{ $permintaans->appends(request()->query())->render('vendor.pagination.custom') }}
         </div>
     </div>
 </div>
@@ -220,3 +216,4 @@
 
 </body>
 </html>
+

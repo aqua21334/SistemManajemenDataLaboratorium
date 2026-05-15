@@ -28,7 +28,7 @@ class PeralatanController extends Controller
             $query->where('status', $status);
         }
 
-        $peralatans = $query->orderBy('nama_peralatan', 'asc')->get();
+        $peralatans = $query->orderBy('nama_peralatan', 'asc')->paginate(5);
 
         return view('Admin.peralatanadmin.index', compact('peralatans', 'search', 'status'));
     }

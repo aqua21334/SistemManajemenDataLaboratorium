@@ -32,9 +32,9 @@ class PersonilController extends Controller
             });
         }
 
-        // 4. Ambil data dengan Pagination (misal 10 data per halaman)
+        // 4. Ambil data dengan Pagination (5 data per halaman)
         // Gunakan paginate() agar link di bawah tabel berfungsi otomatis
-        $personils = $query->orderBy('nama_personil', 'asc')->paginate(10);
+        $personils = $query->orderBy('nama_personil', 'asc')->paginate(5);
 
         // Daftar id_user yang sudah absen masuk hari ini.
         $hadirUserIds = Absensi::whereDate('tanggal', Carbon::today())
@@ -221,7 +221,7 @@ class PersonilController extends Controller
         }
 
         // 5. Ambil data dengan Pagination
-        $personils = $query->orderBy('nama_personil', 'asc')->paginate(10);
+        $personils = $query->orderBy('nama_personil', 'asc')->paginate(5);
         
         // Kirim data ke view kepala lab
         return view('KepalaLab.pegawaikepala.index', compact('personils', 'search'));

@@ -51,6 +51,19 @@ class AbsensiController extends Controller
             })->values();
         }
         
+        // Paginate the collection manually
+        $perPage = 5;
+        $page = $request->get('page', 1);
+        $absensis = new \Illuminate\Pagination\Paginator(
+            $absensis->forPage($page, $perPage)->values(),
+            $perPage,
+            $page,
+            [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
+        
         // Return view Admin panel (Riwayat Absensi)
         return view('Admin.riwayatabsensi.index', compact('absensis', 'search'));
     }

@@ -53,7 +53,7 @@
 
 <div class="sidebar shadow">
     <div class="text-center mb-5 px-3">
-        <img src="{{ asset('images/logo-btr.jpg') }}" width="60" class="rounded-circle border border-2 border-white">
+        <img src="{{ asset('images/Logo-pupr.jpeg') }}" width="60" class="rounded-circle border border-2 border-white">
         <p class="sidebar-logo-text fw-semibold">Sistem Manajemen Data<br>Laboratorium Balai Teknik Rawa</p>
     </div>
     <ul class="nav flex-column px-2">
@@ -157,15 +157,7 @@
 
         <!-- Pagination -->
         <div class="pagination-area">
-            <a href="#" class="text-dark me-2"><i class="bi bi-chevron-left"></i></a>
-            <a href="#" class="page-link-custom active">1</a>
-            <a href="#" class="page-link-custom">2</a>
-            <a href="#" class="page-link-custom">3</a>
-            <a href="#" class="page-link-custom">4</a>
-            <a href="#" class="page-link-custom">5</a>
-            <span class="mx-1 text-muted">.....</span>
-            <a href="#" class="page-link-custom">10</a>
-            <a href="#" class="text-dark ms-2"><i class="bi bi-chevron-right"></i></a>
+            {{ $absensis->appends(request()->query())->render('vendor.pagination.custom') }}
         </div>
     </div>
 </div>
@@ -186,3 +178,5 @@
 
 </body>
 </html>
+
+

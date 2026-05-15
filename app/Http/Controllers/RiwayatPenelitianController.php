@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\RiwayatPenelitian;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class RiwayatPenelitianController extends Controller
 {
@@ -25,7 +26,21 @@ class RiwayatPenelitianController extends Controller
             });
         }
         
-        $riwayatPenelitians = $query->get();
+        // Ambil semua, hapus duplikat berdasarkan id_permintaan (tampilkan catatan terakhir per permintaan)
+        $all = $query->get()->unique('id_permintaan')->values();
+
+        // Paginate collection (5 per halaman)
+        $page = request()->get('page', 1);
+        $perPage = 5;
+        $slice = $all->slice(($page - 1) * $perPage, $perPage);
+        $riwayatPenelitians = new LengthAwarePaginator(
+            $slice->values(),
+            $all->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
         return view('Admin.riwayatpenelitian.index', compact('riwayatPenelitians', 'search'));
     }
 
@@ -58,7 +73,7 @@ class RiwayatPenelitianController extends Controller
             });
         }
         
-        $riwayatPenelitians = $query->paginate(10);
+        $riwayatPenelitians = $query->paginate(5);
         
         \Log::info('Riwayat Search', [
             'search' => $search,
@@ -92,7 +107,7 @@ class RiwayatPenelitianController extends Controller
             });
         }
         
-        $riwayatPenelitians = $query->paginate(10);
+        $riwayatPenelitians = $query->paginate(5);
         return view('KepalaLab.riwayatkepala.index', compact('riwayatPenelitians', 'search'));
     }
 }
