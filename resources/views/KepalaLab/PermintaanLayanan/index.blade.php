@@ -190,12 +190,6 @@
                         </select>
                     </div>
                 </div>
-
-                <!-- Kanan: Edit & Hapus -->
-                <div class="d-flex gap-3">
-                    <button class="btn-custom btn-hapus" onclick="deleteSelected()">Hapus</button>
-                </div>
-
             </div>
         </div>
 
@@ -204,7 +198,6 @@
             <table class="table-custom">
                 <thead>
                     <tr>
-                        <th width="50"></th>
                         <th>Pemohon</th>
                         <th>Jenis Permintaan</th>
                         <th>No HP</th>
@@ -216,8 +209,6 @@
                 </thead>
                 <tbody>
                     @forelse($permintaans as $permintaan)
-                    <tr>
-                        <td><input type="checkbox" class="form-check-input-custom" value="{{ $permintaan->id_permintaan }}"></td>
                         <td>{{ $permintaan->pemohon }}</td>
                         <td>{{ $permintaan->jenis_permintaan }}</td>
                         <td>{{ $permintaan->no_hp }}</td>
@@ -258,7 +249,7 @@
 
             <!-- Pagination -->
             <div class="pagination-area">
-                {{-- Pagination bisa ditambahkan jika menggunakan pagination --}}
+                {{ $permintaans->links() }}
             </div>
         </div>
 

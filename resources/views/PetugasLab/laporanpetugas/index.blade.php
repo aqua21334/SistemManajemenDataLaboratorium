@@ -153,7 +153,6 @@
             <table class="table-custom">
                 <thead>
                     <tr>
-                        <th width="50"></th>
                         <th>Nama Laporan</th>
                         <th>Pemohon</th>
                         <th>Status</th>
@@ -166,7 +165,6 @@
                     @if(isset($permintaans) && count($permintaans) > 0)
                         @foreach($permintaans as $permintaan)
                         <tr>
-                            <td><input type="checkbox" class="form-check-input-custom"></td>
                             <td>{{ $permintaan->jenis_permintaan }}</td>
                             <td>{{ $permintaan->pemohon }}</td>
                             <td>{{ $permintaan->status }}</td>

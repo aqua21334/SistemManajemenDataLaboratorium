@@ -117,7 +117,7 @@ class PeralatanController extends Controller
             $query->where('status', $status);
         }
 
-        $peralatans = $query->orderBy('nama_peralatan', 'asc')->paginate(10);
+        $peralatans = $query->orderBy('nama_peralatan', 'asc')->paginate(5);
 
         return view('KepalaLab.peralatankepala.index', compact('peralatans', 'search', 'status'));
     }

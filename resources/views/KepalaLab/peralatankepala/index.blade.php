@@ -143,7 +143,6 @@
             <table class="table-custom">
                 <thead>
                     <tr>
-                        <th width="50"></th>
                         <th>Kode BMN</th>
                         <th>Nama Peralatan</th>
                         <th>Tanggal Kalibrasi</th>
@@ -154,7 +153,6 @@
                     <!-- Baris Berisi Data dari Database -->
                     @forelse($peralatans as $peralatan)
                     <tr>
-                        <td><input type="checkbox" class="form-check-input-custom"></td>
                         <td>{{ $peralatan->kode_bmn }}</td>
                         <td>{{ $peralatan->nama_peralatan }}</td>
                         <td>{{ $peralatan->tanggal_kalibrasi ? \Carbon\Carbon::parse($peralatan->tanggal_kalibrasi)->format('d-m-Y') : '-' }}</td>
@@ -178,7 +176,7 @@
 
             <!-- Pagination -->
             <div class="pagination-area">
-                {!! $peralatans->links() !!}
+                {!! $peralatans->appends(request()->query())->links() !!}
             </div>
         </div>
 

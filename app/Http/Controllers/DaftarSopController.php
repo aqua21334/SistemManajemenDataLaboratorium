@@ -125,7 +125,7 @@ class DaftarSopController extends Controller
             });
         }
         
-        $sops = $query->orderBy('judul_sop', 'asc')->paginate(10);
+        $sops = $query->orderBy('judul_sop', 'asc')->paginate(5);
         
         return view('KepalaLab.sopkepala.index', compact('sops', 'search'));
     }

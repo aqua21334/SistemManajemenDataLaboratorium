@@ -143,7 +143,6 @@
             <table class="table-custom">
                 <thead>
                     <tr>
-                        <th width="50"></th>
                         <th>Nama</th>
                         <th>Email</th>
                         <th>Jabatan</th>
@@ -154,7 +153,6 @@
                     <!-- Baris Berisi Data dari Database -->
                     @forelse($personils as $person)
                     <tr>
-                        <td><input type="checkbox" class="form-check-input-custom"></td>
                         <td>
                             <div class="nama-wrapper">
                                 <!-- Avatar -->

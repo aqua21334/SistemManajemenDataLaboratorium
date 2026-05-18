@@ -178,7 +178,6 @@
             <table class="table-custom">
                 <thead>
                     <tr>
-                        <th width="50"></th>
                         <th>Id Dokumen</th>
                         <th>Jenis Dokumen</th>
                         <th>Judul</th>
@@ -189,7 +188,6 @@
                     <!-- Baris Berisi Data dari Database -->
                     @forelse($sops as $sop)
                     <tr>
-                        <td><input type="checkbox" class="form-check-input-custom"></td>
                         <td>{{ $sop->id_sop }}</td>
                         <td>{{ $sop->jenis_sop }}</td>
                         <td>{{ $sop->judul_sop }}</td>
@@ -213,7 +211,7 @@
 
             <!-- Pagination -->
             <div class="pagination-area">
-                {!! $sops->links() !!}
+                {!! $sops->appends(request()->query())->links() !!}
             </div>
         </div>
 

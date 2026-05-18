@@ -210,7 +210,7 @@ public function edit($id)
             $query->where('status', $status);
         }
         
-        $permintaans = $query->get();
+        $permintaans = $query->paginate(5)->appends($request->query());
         
         return view('KepalaLab.PermintaanLayanan.index', compact('permintaans', 'search', 'status'));
     }

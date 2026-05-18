@@ -9,7 +9,7 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <!-- Leaflet (OpenStreetMap) -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-VuH6k3L1+1kWgG5H0y7G6kA1sQ0nXgS0jGg5Q8X+Y2M=" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
     <style>
         body { background-color: #B2C3CF; font-family: 'Inter', sans-serif; overflow-x: hidden; }
@@ -44,27 +44,25 @@
         .btn-icon-dark:hover { background-color: #1f3744; color: white;}
 
         .box-lokasi-wrapper { 
-            border: 2px solid #000; 
-            border-radius: 6px; 
-            height: 220px; 
-            max-width: 360px;
-            margin: 0 auto;
-            position: relative; 
-            background-color: #e0e0e0; 
-            width: 100%; 
-            overflow: hidden;
-            display: block;
-        }
-        
-        .lokasi-map { 
-            width: 100%; 
-            height: 100%; 
-            z-index: 1;
-            display: block;
-            position: relative;
-        }
+    border: 2px solid #000; 
+    border-radius: 6px; 
+    height: 320px;
+    width: 100%;
+    max-width: 100%;
+    position: relative;
+    overflow: hidden;
+    background: #ddd;
+}
+
+#lokasi-map {
+    width: 100%;
+    height: 100%;
+    min-height: 320px;
+    z-index: 1;
+}
         .lokasi-overlay { position: absolute; left: 12px; bottom: 10px; z-index: 500; background: rgba(255,255,255,0.9); padding: 6px 10px; border-radius: 6px; border: 1px solid #000; font-size: 12px; color: #345E6F; }
-        .btn-lokasi { position: absolute; top: -2px; right: -2px; background-color: #2A4B5C; color: white; border: 2px solid #000; border-radius: 0 6px 0 6px; padding: 5px 15px; font-size: 16px; cursor: pointer; }
+        .btn-lokasi { position: absolute; top: 8px; right: 8px; z-index: 510; background-color: #2A4B5C; color: white; border: 2px solid #000; border-radius: 6px; padding: 8px 12px; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        .btn-lokasi:hover { background-color: #1f3744; }
 
         /* Info Card */
         .info-card { background: white; border: 2px solid #000; border-radius: 12px; padding: 20px 25px; margin-bottom: 25px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
@@ -192,15 +190,28 @@
                 @endunless
 
                 <!-- Tombol Status -->
-                <div class="d-flex justify-content-center gap-3 mt-5 pt-3">
+                <div class="d-flex justify-content-center gap-3 mt-5 pt-3 flex-wrap">
                     <button type="button" id="btn-masuk" 
                         class="btn btn-status {{ $hasMasuk ? 'btn-hadir-done' : 'btn-status-masuk' }}"
                         {{ $hasMasuk ? 'disabled' : '' }}>
                         <i class="bi bi-check-circle me-2"></i> Absen Masuk
                     </button>
 
+                    <button type="button" id="btn-sakit" 
+                        class="btn btn-status btn-izin"
+                        {{ $hasMasuk ? 'disabled' : '' }}>
+                        <i class="bi bi-hospital me-2"></i> Sakit
+                    </button>
+
+                    <button type="button" id="btn-izin" 
+                        class="btn btn-status btn-izin"
+                        {{ $hasMasuk ? 'disabled' : '' }}>
+                        <i class="bi bi-file-earmark-check me-2"></i> Izin
+                    </button>
+
                     <button type="button" id="btn-pulang" 
                         class="btn btn-status btn-status-pulang"
+                        style="{{ !$hasMasuk ? 'display: none;' : '' }}"
                         {{ (!$hasMasuk || $hasPulang) ? 'disabled' : '' }}>
                         <i class="bi bi-x-circle me-2"></i> Absen Pulang
                     </button>
@@ -234,7 +245,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Inisialisasi Map jika container ada
@@ -242,13 +253,10 @@
         const mapContainer = document.getElementById('lokasi-map');
         let map = null;
         let marker = null;
+        let userMarker = null; // Marker khusus untuk lokasi GPS user
 
         if (mapContainer) {
-            map = L.map('lokasi-map', { 
-                zoomControl: true,
-                maxZoom: 19,
-                minZoom: 3
-            }).setView(defaultCenter, 5);
+            map = L.map('lokasi-map').setView(defaultCenter, 5);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
@@ -256,9 +264,12 @@
             }).addTo(map);
 
             marker = L.marker(defaultCenter).addTo(map);
+            map.whenReady(function () {
+    map.invalidateSize();
+});
 
             // Invalidate map size setelah rendering, dan juga on resize
-            setTimeout(function() { map.invalidateSize(); }, 300);
+            setTimeout(() => {map.invalidateSize();}, 800);
             window.addEventListener('resize', function() { setTimeout(function() { map.invalidateSize(); }, 150); });
         }
 
@@ -345,6 +356,29 @@
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
                     setCoordinates(lat, lng);
+
+                    // Buat atau update marker khusus user dengan popup "Lokasi Saya"
+                    if (map) {
+                        // Buat custom icon biru untuk user location
+                        const userIcon = L.icon({
+                            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                            iconSize: [25, 41],
+                            iconAnchor: [12, 41],
+                            popupAnchor: [1, -34],
+                            shadowSize: [41, 41]
+                        });
+
+                        if (userMarker) {
+                            userMarker.setLatLng([lat, lng]).setIcon(userIcon).openPopup();
+                        } else {
+                            userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(map)
+                                .bindPopup('Lokasi Saya').openPopup();
+                        }
+
+                        // Pindahkan map ke lokasi user
+                        map.setView([lat, lng], 17);
+                    }
                 }, function(err) {
                     alert('Gagal mendapatkan lokasi: ' + err.message);
                 }, { enableHighAccuracy: true });
@@ -366,6 +400,28 @@
                 }
 
                 document.getElementById('status-input').value = 'hadir';
+                document.getElementById('type-input').value = 'masuk';
+                document.getElementById('form-absen-masuk').action = "{{ route('petugas.absen.masuk') }}";
+                document.getElementById('form-absen-masuk').submit();
+            });
+        }
+
+        // Handle tombol Sakit (tidak perlu lokasi)
+        const btnSakit = document.getElementById('btn-sakit');
+        if (btnSakit) {
+            btnSakit.addEventListener('click', function() {
+                document.getElementById('status-input').value = 'sakit';
+                document.getElementById('type-input').value = 'masuk';
+                document.getElementById('form-absen-masuk').action = "{{ route('petugas.absen.masuk') }}";
+                document.getElementById('form-absen-masuk').submit();
+            });
+        }
+
+        // Handle tombol Izin (tidak perlu lokasi)
+        const btnIzin = document.getElementById('btn-izin');
+        if (btnIzin) {
+            btnIzin.addEventListener('click', function() {
+                document.getElementById('status-input').value = 'izin';
                 document.getElementById('type-input').value = 'masuk';
                 document.getElementById('form-absen-masuk').action = "{{ route('petugas.absen.masuk') }}";
                 document.getElementById('form-absen-masuk').submit();

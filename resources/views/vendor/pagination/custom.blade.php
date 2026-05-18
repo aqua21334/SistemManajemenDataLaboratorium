@@ -1,10 +1,14 @@
 @if ($paginator->hasPages())
-    <div class="d-flex align-items-center justify-content-flex-start gap-2" role="navigation">
+    <div class="d-flex align-items-center justify-content-start gap-2 flex-wrap" role="navigation">
         {{-- Previous Page Link --}}
         @if ($paginator->onFirstPage())
-            <span class="text-dark"><i class="bi bi-chevron-left"></i></span>
+            <span class="page-item-custom text-dark" aria-disabled="true" aria-label="Previous page">
+                <i class="bi bi-chevron-left fs-6 lh-1"></i>
+            </span>
         @else
-            <a href="{{ $paginator->previousPageUrl() }}" class="text-dark"><i class="bi bi-chevron-left"></i></a>
+            <a href="{{ $paginator->previousPageUrl() }}" class="page-item-custom text-dark" aria-label="Previous page">
+                <i class="bi bi-chevron-left fs-6 lh-1"></i>
+            </a>
         @endif
 
         {{-- Pagination Elements --}}
@@ -18,9 +22,9 @@
             @if (is_array($element))
                 @foreach ($element as $page => $url)
                     @if ($page == $paginator->currentPage())
-                        <a href="#" class="page-link-custom active">{{ $page }}</a>
+                        <a href="#" class="page-item-custom active" aria-current="page">{{ $page }}</a>
                     @else
-                        <a href="{{ $url }}" class="page-link-custom">{{ $page }}</a>
+                        <a href="{{ $url }}" class="page-item-custom">{{ $page }}</a>
                     @endif
                 @endforeach
             @endif
@@ -28,9 +32,13 @@
 
         {{-- Next Page Link --}}
         @if ($paginator->hasMorePages())
-            <a href="{{ $paginator->nextPageUrl() }}" class="text-dark"><i class="bi bi-chevron-right"></i></a>
+            <a href="{{ $paginator->nextPageUrl() }}" class="page-item-custom text-dark" aria-label="Next page">
+                <i class="bi bi-chevron-right fs-6 lh-1"></i>
+            </a>
         @else
-            <span class="text-dark"><i class="bi bi-chevron-right"></i></span>
+            <span class="page-item-custom text-dark" aria-disabled="true" aria-label="Next page">
+                <i class="bi bi-chevron-right fs-6 lh-1"></i>
+            </span>
         @endif
     </div>
 @endif

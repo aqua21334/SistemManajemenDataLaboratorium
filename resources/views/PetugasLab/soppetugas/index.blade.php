@@ -204,7 +204,6 @@
             <table class="table-custom">
                 <thead>
                     <tr>
-                        <th width="50"></th> <!-- Kolom Checkbox -->
                         <th>Id Dokumen</th>
                         <th>Jenis Dokumen</th>
                         <th>Judul</th>
@@ -215,7 +214,6 @@
                 <tbody>
                     @forelse($sops as $sop)
                     <tr>
-                        <td><input type="checkbox" class="form-check-input-custom"></td>
                         <td>{{ $sop->id_sop }}</td>
                         <td>{{ $sop->jenis_sop }}</td>
                         <td>{{ $sop->judul_sop }}</td>

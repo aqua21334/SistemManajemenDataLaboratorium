@@ -150,7 +150,7 @@ class AbsensiController extends Controller
     public function absenMasukPetugas(Request $request)
     {
         $request->validate([
-            'status' => 'nullable|in:hadir,izin',
+            'status' => 'nullable|in:hadir,izin,sakit',
             'lokasi' => 'nullable|string|max:255',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',

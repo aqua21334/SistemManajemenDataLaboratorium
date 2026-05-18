@@ -164,7 +164,6 @@
             <table class="table-custom">
                 <thead>
                     <tr>
-                        <th width="50"></th> <!-- Kolom Checkbox -->
                         <th>Kode BMN</th>
                         <th>Nama Peralatan</th>
                         <th>Tanggal Kalibrasi</th>
@@ -175,7 +174,6 @@
                 <tbody>
                     @forelse($peralatans as $peralatan)
                     <tr>
-                        <td><input type="checkbox" class="form-check-input-custom"></td>
                         <td>{{ $peralatan->kode_bmn }}</td>
                         <td>{{ $peralatan->nama_peralatan }}</td>
                         <td>{{ $peralatan->tanggal_kalibrasi }}</td>

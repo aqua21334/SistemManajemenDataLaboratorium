@@ -93,7 +93,7 @@
         
         /* Pagination */
         .pagination-area { padding: 15px 20px; display: flex; align-items: center; gap: 8px; background: white; }
-        .page-item-custom { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border: 1px solid #333; border-radius: 50%; font-size: 13px; color: #333; text-decoration: none; font-weight: 500; }
+        .page-item-custom { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #333; border-radius: 50%; font-size: 13px; color: #333; text-decoration: none; font-weight: 500; line-height: 1; }
         .page-item-custom.active { background-color: #345E6F; color: white; border-color: #345E6F; }
         
         .btn-keluar { border: none; background: transparent; color: white; display: flex; align-items: center; padding-left: 20px; }
@@ -206,7 +206,7 @@
 
             <!-- Pagination -->
             <div class="pagination-area">
-                {!! $riwayatPenelitians->links() !!}
+                {!! $riwayatPenelitians->appends(request()->query())->links('pagination::custom') !!}
             </div>
         </div>
 

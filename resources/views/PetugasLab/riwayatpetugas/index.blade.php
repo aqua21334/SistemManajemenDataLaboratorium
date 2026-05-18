@@ -221,7 +221,7 @@
 
             <!-- Pagination -->
             <div class="pagination-area">
-                {{ $riwayatPenelitians->appends(request()->query())->links() }}
+                {!! $riwayatPenelitians->appends(request()->query())->links('pagination::custom') !!}
             </div>
         </div>
 
