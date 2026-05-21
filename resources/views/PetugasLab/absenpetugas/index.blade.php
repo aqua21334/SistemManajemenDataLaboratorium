@@ -169,10 +169,12 @@
                 @php
                     $hasMasuk = isset($absenToday) && !empty($absenToday->jam_masuk);
                     $hasPulang = isset($absenToday) && !empty($absenToday->jam_pulang);
+                    $statusToday = isset($absenToday) ? ($absenToday->status ?? null) : null;
+                    $isIzinOrSakit = in_array($statusToday, ['sakit', 'izin']);
                 @endphp
                 
                 <!-- Input Lokasi dengan Map -->
-                @unless($hasMasuk)
+                @if(!$hasMasuk && !$isIzinOrSakit)
                 <div class="mb-5">
                     <label class="custom-label">Pilih Lokasi di Map</label>
                     <div class="box-lokasi-wrapper">
@@ -187,10 +189,11 @@
                         </button>
                     </div>
                 </div>
-                @endunless
+                @endif
 
                 <!-- Tombol Status -->
                 <div class="d-flex justify-content-center gap-3 mt-5 pt-3 flex-wrap">
+                    @if(!$isIzinOrSakit)
                     <button type="button" id="btn-masuk" 
                         class="btn btn-status {{ $hasMasuk ? 'btn-hadir-done' : 'btn-status-masuk' }}"
                         {{ $hasMasuk ? 'disabled' : '' }}>
@@ -211,10 +214,14 @@
 
                     <button type="button" id="btn-pulang" 
                         class="btn btn-status btn-status-pulang"
-                        style="{{ !$hasMasuk ? 'display: none;' : '' }}"
+                        style="{{ (!$hasMasuk) ? 'display: none;' : '' }}"
                         {{ (!$hasMasuk || $hasPulang) ? 'disabled' : '' }}>
                         <i class="bi bi-x-circle me-2"></i> Absen Pulang
                     </button>
+                    @else
+                    <!-- Jika sudah sakit/izin, jangan tampilkan tombol Absen Masuk/Pulang -->
+                    <div class="text-center text-muted">Keterangan: {{ ucfirst($statusToday) }}</div>
+                    @endif
                 </div>
 
                 <!-- Alert Messages -->
