@@ -17,7 +17,7 @@
             background-image: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url("{{ asset('images/hero-btr.jpg') }}");
             background-size: cover;
             background-position: center;
-            height: 300px;
+            height: 450px;
             display: flex;
             align-items: center;
             color: white;
@@ -75,7 +75,7 @@
         /* Footer membentang 100% */
         .footer-section {
             background-color: #2b4c65;
-            color: white;
+            color: #ffffff;
             padding: 50px 0 20px 0;
             margin-top: 50px;
         }
@@ -94,14 +94,15 @@
             <div class="nav-links">
                 <a href="#">Beranda</a>
                 <a href="#">Layanan</a>
+                <a href="#">Dokumentasi</a>
             </div>
             
             <div class="logo-tengah">
-    <img src="{{ asset('images/Logo-pupr.jpeg') }}" alt="Logo PU" style="width: 82px; height: 82px; border-radius: 50%; object-fit: contain; padding: 2px;">
+    <img src="{{ asset('images/logo-pupr-copy.jpg') }}" alt="Logo PU" style="width: 82px; height: 82px; border-radius: 50%; object-fit: contain; padding: 2px;">
 </div>
 
             <div class="nav-links">
-                <a href="#">Dokumentasi</a>
+                
                @guest
                     <a href="/login" class="btn btn-masuk btn-sm px-3 ms-2">Masuk</a>
                     <a href="/register" class="btn btn-daftar btn-sm px-3 ms-1">Daftar</a>
@@ -127,7 +128,7 @@
         <div class="content-box">
             <div class="row">
                 <div class="col-md-6 garis-tengah pe-md-4 mb-4 mb-md-0">
-                    <h5>Profil Singkat:</h5>
+                    <h5>Profil Singkat</h5>
                     <p class="mb-0">Balai Teknik Rawa merupakan unit kerja teknis yang bergerak di bidang penelitian, pengembangan, dan pengelolaan sumber daya rawa serta lahan basah. Instansi ini berperan dalam mendukung pengembangan teknologi dan inovasi untuk pengelolaan rawa yang berkelanjutan, ramah lingkungan, serta bermanfaat bagi masyarakat.</p>
                 </div>
                 <div class="col-md-6 ps-md-4">
@@ -138,7 +139,7 @@
         </div>
 
         <div class="content-box">
-            <h5 class="mb-4 border-bottom pb-2">Layanan:</h5>
+            <h5 class="mb-4 border-bottom pb-2">Layanan</h5>
             <form action="#" method="POST">
                 <div class="row mb-4">
                     <div class="col-md-5">
@@ -166,49 +167,90 @@
                         @endguest
                     </div>
                 </div>
+            @php
+                $data_dokumentasi = [
+                    [
+                        'foto' => 'images/dokumentasi1.jpg', // Sesuaikan dengan nama file foto 1
+                        'judul' => 'Layanan Pelanggan',
+                        'keterangan' => 'Layanan pelanggan di Balai Teknik Rawa merupakan bagian penting dalam memberikan informasi, bantuan, dan pelayanan kepada masyarakat maupun pihak terkait. Layanan ini bertujuan untuk membantu pengguna memperoleh informasi mengenai kegiatan, layanan laboratorium, konsultasi teknis, serta berbagai kebutuhan administrasi yang berkaitan dengan Balai Teknik Rawa.'
+                    ],
+                    [
+                        'foto' => 'images/dokumentasi2.jpg', // Sesuaikan dengan nama file foto 2
+                        'judul' => 'Pengukuran Topografi',
+                        'keterangan' => 'Surveyor Laboratorium Balai Teknik Rawa melaksanakan kegiatan pengukuran topografi menggunakan peralatan GPS RTK Trimble R10 GNSS di Dadahup, Kalimantan Tengah. Kegiatan ini dilakukan untuk memperoleh data posisi dan kondisi permukaan lahan secara akurat sebagai dasar perencanaan dan pengelolaan wilayah. Pengukuran topografi bertujuan mengetahui karakteristik medan, seperti elevasi, kontur tanah, batas area, serta kondisi fisik lingkungan di lokasi pengukuran.'
+                    ],
+                    [
+                        'foto' => 'images/dokumentasi3.jpg', // Sesuaikan dengan nama file foto 3
+                        'judul' => 'Pengoprasian Peralatan Kualitas Air',
+                        'keterangan' => 'Surveyor Laboratorium Balai Teknik Rawa melaksanakan pengoperasian peralatan kualitas air Horiba U50 di Jejangkit, Kalimantan Selatan, untuk menguji kualitas air pada saluran irigasi. Kegiatan ini bertujuan memperoleh data kualitas air secara akurat sebagai bahan analisis dan evaluasi kondisi perairan. Pengujian ini penting untuk mendukung pengelolaan sumber daya air, khususnya pada wilayah dengan sistem irigasi.'
+                    ],
+                    [
+                        'foto' => 'images/dokumentasi4.jpg', // Sesuaikan dengan nama file foto 4
+                        'judul' => 'Pengoprasian Peralatan Acoustic Doppler Current Profiler',
+                        'keterangan' => 'Surveyor Laboratorium Balai Teknik Rawa melaksanakan pengoperasian peralatan kualitas air Horiba U50 di Jejangkit, Kalimantan Selatan, untuk menguji kualitas air pada saluran irigasi. Kegiatan ini dilakukan guna memperoleh data kualitas air secara akurat sebagai bahan analisis dan evaluasi kondisi perairan di lokasi pengukuran.'
+                    ],
+                ];
+            @endphp
+                </div>
             </form>
-        </div>
-            @for ($i = 0; $i < 3; $i++)
-            <div class="row mb-4 align-items-center">
-                <div class="col-md-4">
-                    <div style="background-color: #0dcaf0; height: 140px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; border-radius:8px;">
-                        Imagine LIFE without THIS?
-                    </div>
-                </div>
-                <div class="col-md-8">
-                    <h5 class="mb-2">Daftar Pengaduan</h5>
-                    <p class="text-muted text-justify">Balai Teknik Rawa merupakan unit kerja teknis yang bergerak di bidang penelitian, pengembangan, dan pengelolaan sumber daya rawa serta lahan basah. Instansi ini berperan dalam mendukung pengembangan teknologi dan inovasi untuk pengelolaan rawa yang berkelanjutan, ramah lingkungan, serta bermanfaat bagi masyarakat.</p>
-                </div>
-            </div>
-            @endfor
+        <h5 class="mb-4 border-bottom pb-2">Dokumentasi</h5>
+
+@foreach ($data_dokumentasi as $item)
+<div class="row mb-4 align-items-center">
+
+    <div class="col-md-4">
+        <!-- Memanggil foto dari array -->
+        <img src="{{ asset($item['foto']) }}" 
+            alt="{{ $item['judul'] }}"
+            class="img-fluid rounded"
+            style="height: 280%; width:100%; object-fit:cover;"> 
+    </div>
+
+    <div class="col-md-8">
+        <!-- Memanggil judul dari array -->
+        <h5 class="mb-2" style="font-family: 'Times New Roman', Times, serif; font-size: 30px;">
+            {{ $item['judul'] }}
+        </h5>
+        
+        <!-- Memanggil keterangan dari array -->
+        <p class="text-muted" style="font-family: 'Times New Roman', Times, serif;font-size: 20px;">
+            {{ $item['keterangan'] }}
+        </p>
+    </div>
+
+</div>
+@endforeach
         </div>
 
     </div>
 
-      <footer class="container py-5 mt-5" style="border-top: 1px solid #d1d5db;">
-        <div class="row gy-5"> <div class="col-md-6">
-                <h5 class="fw-bold text-dark mb-3">Balai Teknik Rawa</h5>
-                <p class="text-dark" style="line-height: 1.8;">Kementerian Pekerjaan Umum dan<br>Perumahan Rakyat Direktorat Sumber<br>Daya Air</p>
+    <!-- FOOTER -->
+    <footer class="footer-section">
+        <div class="container">
+            <div class="row gy-4"> 
+                <div class="col-md-6">
+                    <h5 class="fw-bold mb-3">Balai Teknik Rawa</h5>
+                    <p style="line-height: 1.8;">Kementerian Pekerjaan Umum dan<br>Perumahan Rakyat Direktorat Sumber<br>Daya Air</p>
+                </div>
+                
+                <div class="col-md-6">
+                    <h5 class="fw-bold mb-3">Alamat</h5>
+                    <p style="line-height: 1.8;">Jl. Gatot Subroto No. 6, Kebun Bunga, Kec.<br>Banjarmasin Timur Kota Banjarmasin,<br>Kalimantan Selatan 70235</p>
+                </div>
+                
+                <div class="col-md-6">
+                    <h5 class="fw-bold mb-3">Contact Us</h5>
+                    <p>Phone : 0511 - 3256623</p>
+                </div>
+                
+                <div class="col-md-6">
+                    <h5 class="fw-bold mb-3">Email</h5>
+                    <p>balaiteknikrawa@pu.go.id</p>
+                </div>
             </div>
-            
-            <div class="col-md-6">
-                <h5 class="fw-bold text-dark mb-3">Alamat</h5>
-                <p class="text-dark" style="line-height: 1.8;">Jl. Gatot Subroto No. 6, Kebun Bunga, Kec.<br>Banjarmasin Timur Kota Banjarmasin,<br>Kalimantan Selatan 70235</p>
-            </div>
-            
-            <div class="col-md-6">
-                <h5 class="fw-bold text-dark mb-3">Contact Us</h5>
-                <p class="text-dark">Phone : 0511 - 3256623</p>
-            </div>
-            
-            <div class="col-md-6">
-                <h5 class="fw-bold text-dark mb-3">Email</h5>
-                <p class="text-dark">balaiteknikrawa@pu.go.id</p>
-            </div>
-            
         </div>
     </footer>
-    
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

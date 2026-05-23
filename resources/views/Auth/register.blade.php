@@ -25,7 +25,7 @@
         
         .logo-header { position: absolute; top: 30px; left: 30px; display: flex; align-items: center; gap: 10px; z-index: 10;}
         .logo-header img { width: 40px; }
-        .logo-header p { margin: 0; font-size: 10px; font-family: sans-serif; font-weight: bold; line-height: 1.2; color: #fff; }
+        .logo-header p { margin: 0; font-size: 10px; font-family: sans-serif; font-weight: bold; line-height: 1.2; color: #fff; text-align: left; }
         
         h3 { font-weight: bold; color: #2b4c65; text-align: center; }
         .sub-text { font-family: sans-serif; font-size: 12px; color: #666; text-align: center; margin-bottom: 30px; }
