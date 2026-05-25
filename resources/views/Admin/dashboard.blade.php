@@ -31,8 +31,8 @@
 <body>
 
 <div class="sidebar shadow">
-    <div class="text-center mb-5 px-3">
-        <img src="{{ asset('images/Logo-pupr.jpeg') }}" width="60" class="rounded-circle border border-2 border-white">
+    <div class="text-center mb-4 px-3" style="padding-right: 15px;">
+        <img src="{{ asset('images/logo-btr.jpg') }}" width="60" class="rounded-circle border border-2 border-white">
         <p class="sidebar-logo-text fw-semibold">Sistem Manajemen Data<br>Laboratorium Balai Teknik Rawa</p>
     </div>
 

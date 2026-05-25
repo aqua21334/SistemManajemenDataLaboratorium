@@ -56,8 +56,8 @@
 <body>
 
 <div class="sidebar shadow">
-    <div class="text-center mb-5 px-3">
-        <img src="{{ asset('images/Logo-pupr.jpeg') }}" width="60" class="rounded-circle border border-2 border-white">
+    <div class="text-center mb-4 px-3" style="padding-right: 15px;">
+        <img src="{{ asset('images/logo-btr.jpg') }}" width="60" class="rounded-circle border border-2 border-white">
         <p class="sidebar-logo-text fw-semibold">Sistem Manajemen Data<br>Laboratorium Balai Teknik Rawa</p>
     </div>
     <ul class="nav flex-column px-2">
@@ -166,10 +166,6 @@
                             <div style="display: flex; gap: 5px;">
                                 <a href="{{ route('admin.pnbp.edit', $p->pnbp->id_pnbp) }}" class="btn-text-hapus" style="color: #0d6efd; text-decoration: none;" title="Edit Status">✏️</a>
                                 <a href="{{ route('admin.pnbp.invoice', $p->pnbp->id_pnbp) }}" class="btn-text-hapus" style="color: #28a745; text-decoration: none;" title="Lihat Invoice">📄</a>
-                                <form action="{{ route('admin.pnbp.destroy', $p->pnbp->id_pnbp) }}" method="POST" style="display:inline;">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="btn-text-hapus" onclick="return confirm('Hapus data?')">🗑️</button>
-                                </form>
                             </div>
                         @else
                             <a href="{{ route('admin.pnbp.create') }}?id_permintaan={{ $p->id_permintaan }}" class="btn-text-hapus" style="color: #0d6efd; text-decoration: none;">+ Buat</a>
