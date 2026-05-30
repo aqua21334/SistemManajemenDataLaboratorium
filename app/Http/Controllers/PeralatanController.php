@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Peralatan;
+use App\Models\StatusPeralatan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class PeralatanController extends Controller
@@ -13,7 +16,7 @@ class PeralatanController extends Controller
         $search = request('search');
         $status = request('status');
 
-        $query = Peralatan::query();
+        $query = Peralatan::with('latestStatusPeralatan');
 
         if (!empty($search)) {
             $query->where(function ($builder) use ($search) {
@@ -73,7 +76,7 @@ class PeralatanController extends Controller
             'kode_bmn' => 'required|string|max:50|unique:peralatans,kode_bmn,'.$peralatan->id,
             'nama_peralatan' => 'required|string|max:100',
             'tanggal_kalibrasi' => 'required|date',
-            'status' => 'required|in:belum dikalibrasi,terkalibrasi',
+            'status' => 'required|in:belum dikalibrasi,terkalibrasi,sudah dikalibrasi',
         ]);
 
         // Status dapat diubah oleh petugas lab
@@ -81,7 +84,7 @@ class PeralatanController extends Controller
             'kode_bmn' => $request->kode_bmn,
             'nama_peralatan' => $request->nama_peralatan,
             'tanggal_kalibrasi' => $request->tanggal_kalibrasi,
-            'status' => $request->status,
+            'status' => $request->status === 'sudah dikalibrasi' ? 'terkalibrasi' : $request->status,
         ]);
 
         return redirect()->route('admin.peralatan.index')->with('success', 'Data peralatan berhasil diperbarui!');
@@ -102,7 +105,7 @@ class PeralatanController extends Controller
         $search = request('search');
         $status = request('status');
 
-        $query = Peralatan::query();
+        $query = Peralatan::with('latestStatusPeralatan');
 
         if (!empty($search)) {
             $query->where(function ($builder) use ($search) {
@@ -130,7 +133,7 @@ class PeralatanController extends Controller
         $search = request('search');
         $status = request('status');
 
-        $query = Peralatan::query();
+        $query = Peralatan::with('latestStatusPeralatan');
 
         if (!empty($search)) {
             $query->where(function ($builder) use ($search) {
@@ -212,20 +215,30 @@ class PeralatanController extends Controller
     public function updatePetugas(Request $request, $id)
     {
         $peralatan = Peralatan::findOrFail($id);
+        $statusLama = $peralatan->status;
 
         $request->validate([
             'kode_bmn' => 'required|string|max:50',
             'nama_peralatan' => 'required|string|max:100',
             'tanggal_kalibrasi' => 'required|date',
-            'status' => 'required|in:belum dikalibrasi,sudah dikalibrasi',
+            'status' => 'required|in:belum dikalibrasi,terkalibrasi',
         ]);
 
-        $peralatan->update([
-            'kode_bmn' => $request->kode_bmn,
-            'nama_peralatan' => $request->nama_peralatan,
-            'tanggal_kalibrasi' => $request->tanggal_kalibrasi,
-            'status' => $request->status,
-        ]);
+        DB::transaction(function () use ($request, $peralatan, $statusLama) {
+            $peralatan->update([
+                'kode_bmn' => $request->kode_bmn,
+                'nama_peralatan' => $request->nama_peralatan,
+                'tanggal_kalibrasi' => $request->tanggal_kalibrasi,
+                'status' => $request->status,
+            ]);
+
+            if ($request->status === 'terkalibrasi' && $statusLama !== 'terkalibrasi') {
+                StatusPeralatan::create([
+                    'kode_bmn' => $request->kode_bmn,
+                    'petugas' => Auth::user()->nama ?? Auth::user()->name ?? 'Petugas Lab',
+                ]);
+            }
+        });
 
         return redirect()->route('petugas.peralatan.index')->with('success', 'Data peralatan berhasil diperbarui.');
     }

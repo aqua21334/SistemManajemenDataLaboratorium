@@ -147,6 +147,7 @@
                         <th>Nama Peralatan</th>
                         <th>Tanggal Kalibrasi</th>
                         <th>Status Kalibrasi</th>
+                        <th>Petugas Kalibrasi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -157,10 +158,10 @@
                         <td>{{ $peralatan->nama_peralatan }}</td>
                         <td>{{ $peralatan->tanggal_kalibrasi ? \Carbon\Carbon::parse($peralatan->tanggal_kalibrasi)->format('d-m-Y') : '-' }}</td>
                         <td>
-                            @if($peralatan->status == 'terkalibrasi')
-                                <span class="badge bg-success">{{ ucfirst($peralatan->status) }}</span>
+                            @if(in_array($peralatan->status, ['terkalibrasi', 'sudah dikalibrasi']))
+                                <span class="badge bg-success">Sudah dikalibrasi</span>
                             @elseif($peralatan->status == 'belum dikalibrasi')
-                                <span class="badge bg-danger">{{ ucwords($peralatan->status) }}</span>
+                                <span class="badge bg-danger">Belum dikalibrasi</span>
                             @else
                                 <span class="badge bg-secondary">{{ $peralatan->status ?? '-' }}</span>
                             @endif
@@ -169,17 +170,31 @@
                     @empty
                     <tr>
                         <td colspan="5" class="text-center text-muted py-4">Tidak ada data peralatan</td>
+                            <th>Petugas Kalibrasi</th>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
 
+                        <td>
+                            @if(in_array($peralatan->status, ['terkalibrasi', 'sudah dikalibrasi']))
+                                {{ $peralatan->latestStatusPeralatan->petugas ?? '-' }}
+                            @else
+                                -
+                            @endif
+                        </td>
             <!-- Pagination -->
             <div class="pagination-area">
                 {!! $peralatans->appends(request()->query())->links() !!}
             </div>
         </div>
 
+                        <td colspan="6" class="text-center text-muted py-4">Tidak ada data peralatan</td>
+                                {{ $peralatan->latestStatusPeralatan->petugas ?? '-' }}
+                            @else
+                                -
+                            @endif
+                        </td>
     </div>
 </div>
 

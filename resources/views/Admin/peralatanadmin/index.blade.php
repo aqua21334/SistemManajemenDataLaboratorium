@@ -102,7 +102,7 @@
             <select class="custom-select shadow-sm" name="status" id="statusFilter">
                 <option value="">Status</option>
                 <option value="belum dikalibrasi" {{ request('status') == 'belum dikalibrasi' ? 'selected' : '' }}>Belum Dikalibrasi</option>
-                <option value="terkalibrasi" {{ request('status') == 'terkalibrasi' ? 'selected' : '' }}>Terkalibrasi</option>
+                <option value="terkalibrasi" {{ request('status') == 'sudah dikalibrasi' ? 'selected' : '' }}>Sudah Dikalibrasi</option>
             </select>
             <a href="{{ route('admin.peralatan.create') }}" class="btn btn-tambah shadow-sm">Tambah</a>
         </div>
@@ -117,6 +117,7 @@
                     <th>Nama Peralatan</th>
                     <th>Tgl Selesai Kalibrasi</th>
                     <th>Status Kalibrasi</th>
+                    <th>Petugas Kalibrasi</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -126,8 +127,21 @@
                     <td class="fw-bold">{{ $item->kode_bmn }}</td>
                     <td>{{ $item->nama_peralatan }}</td>
                     <td>{{ $item->tanggal_kalibrasi }}</td>
-                    <td class="fw-bold {{ $item->status == 'terkalibrasi' ? 'text-success' : 'text-danger' }}">
-                        {{ $item->status == 'terkalibrasi' ? 'Sudah dikalibrasi' : 'Belum dikalibrasi' }}
+                    <td>
+                        @if(in_array($item->status, ['terkalibrasi', 'sudah dikalibrasi']))
+                            <span class="badge bg-success">Sudah dikalibrasi</span>
+                        @elseif($item->status == 'belum dikalibrasi')
+                            <span class="badge bg-danger">Belum dikalibrasi</span>
+                        @else
+                            <span class="badge bg-secondary">{{ $item->status ?? '-' }}</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if(in_array($item->status, ['terkalibrasi', 'sudah dikalibrasi']))
+                            {{ $item->latestStatusPeralatan->petugas ?? '-' }}
+                        @else
+                            -
+                        @endif
                     </td>
                     <td>
                         <div class="d-flex justify-content-center gap-2">
@@ -143,6 +157,7 @@
                     @for($i=0; $i<5; $i++)
                     <tr>
                         <td><input type="checkbox" class="form-check-input"></td>
+                        <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>

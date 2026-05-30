@@ -147,11 +147,7 @@
                                 <i class="bi bi-calendar-event calendar-icon"></i>
                             </div>
                         </div>
-                        <div>
-                            <label class="custom-label">Status Kalibrasi</label>
-                            <input type="text" class="custom-input" value="Belum Kalibrasi" readonly>
-                            <input type="hidden" name="status" value="belum dikalibrasi">
-                        </div>
+                        
                     </div>
                 </div>
 

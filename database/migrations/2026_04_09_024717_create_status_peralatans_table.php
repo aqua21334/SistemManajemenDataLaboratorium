@@ -13,7 +13,7 @@ return new class extends Migration
 {
     Schema::create('status_peralatans', function (Blueprint $table) {
         $table->id('id_status');
-        $table->string('kode_bmn', 50); // FK ke Peralatan - harus string seperti di peralatans table
+        $table->string('kode_bmn', 50)->charset('utf8mb4')->collation('utf8mb4_unicode_ci'); // FK ke Peralatan - harus string seperti di peralatans table
         $table->string('petugas', 100);
         $table->timestamps();
 

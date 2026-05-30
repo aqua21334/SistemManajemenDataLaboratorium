@@ -168,6 +168,7 @@
                         <th>Nama Peralatan</th>
                         <th>Tanggal Kalibrasi</th>
                         <th>Status Kalibrasi</th>
+                        <th>Petugas Kalibrasi</th>
                         <th width="100"></th> <!-- Kolom Hapus -->
                     </tr>
                 </thead>
@@ -177,14 +178,29 @@
                         <td>{{ $peralatan->kode_bmn }}</td>
                         <td>{{ $peralatan->nama_peralatan }}</td>
                         <td>{{ $peralatan->tanggal_kalibrasi }}</td>
-                        <td>{{ $peralatan->status }}</td>
+                        <td>
+                            @if(in_array($peralatan->status, ['terkalibrasi', 'sudah dikalibrasi']))
+                                <span class="badge bg-success">Sudah dikalibrasi</span>
+                            @elseif($peralatan->status == 'belum dikalibrasi')
+                                <span class="badge bg-danger">Belum dikalibrasi</span>
+                            @else
+                                <span class="badge bg-secondary">{{ $peralatan->status ?? '-' }}</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if(in_array($peralatan->status, ['terkalibrasi', 'sudah dikalibrasi']))
+                                {{ $peralatan->latestStatusPeralatan->petugas ?? '-' }}
+                            @else
+                                -
+                            @endif
+                        </td>
                         <td>
                             <a href="{{ route('petugas.peralatan.edit', $peralatan->id) }}" class="btn-custom btn-edit" style="height: 30px; padding: 0 16px;">Edit</a>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center py-4 text-muted">Data peralatan belum tersedia.</td>
+                        <td colspan="7" class="text-center py-4 text-muted">Data peralatan belum tersedia.</td>
                     </tr>
                     @endforelse
                 </tbody>

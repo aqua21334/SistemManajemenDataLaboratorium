@@ -142,7 +142,7 @@
                             <label class="custom-label">Status Kalibrasi</label>
                             <select name="status" class="custom-select-form" required>
                                 <option value="" disabled>Pilih Status...</option>
-                                <option value="sudah dikalibrasi" @selected(old('status', $peralatan->status) === 'sudah dikalibrasi')>Sudah Kalibrasi</option>
+                                <option value="terkalibrasi" @selected(in_array(old('status', $peralatan->status), ['terkalibrasi', 'sudah dikalibrasi']))>Sudah Kalibrasi</option>
                                 <option value="belum dikalibrasi" @selected(old('status', $peralatan->status) === 'belum dikalibrasi')>Belum Kalibrasi</option>
                             </select>
                         </div>

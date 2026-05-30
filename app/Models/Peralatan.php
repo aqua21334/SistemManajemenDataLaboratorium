@@ -21,4 +21,10 @@ class Peralatan extends Model
     {
         return $this->hasMany(StatusPeralatan::class, 'kode_bmn', 'kode_bmn');
     }
+
+    // Ambil status kalibrasi terakhir beserta petugas yang menanganinya
+    public function latestStatusPeralatan()
+    {
+        return $this->hasOne(StatusPeralatan::class, 'kode_bmn', 'kode_bmn')->latestOfMany('id_status');
+    }
 }

@@ -102,7 +102,7 @@
                             <label>Status Kalibrasi</label>
                             <select class="form-control-custom shadow-sm" name="status" required>
                                 <option value="belum dikalibrasi" {{ $peralatan->status == 'belum dikalibrasi' ? 'selected' : '' }}>Belum Dikalibrasi</option>
-                                <option value="terkalibrasi" {{ $peralatan->status == 'terkalibrasi' ? 'selected' : '' }}>Terkalibrasi</option>
+                                <option value="terkalibrasi" {{ in_array($peralatan->status, ['terkalibrasi', 'sudah dikalibrasi']) ? 'selected' : '' }}>Terkalibrasi</option>
                             </select>
                         </div>
                     </div>
