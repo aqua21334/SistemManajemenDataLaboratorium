@@ -104,8 +104,8 @@
 
                     <div class="col-md-6">
                         <div class="form-group-custom mb-4">
-                            <label>Tanggal Penyelesaian Kalibrasi</label>
-                            <input type="date" class="form-control-custom shadow-sm" name="tanggal_kalibrasi" value="{{ old('tanggal_kalibrasi') }}" required>
+                            <label>Tanggal Peralatan Masuk</label>
+                            <input type="date" class="form-control-custom shadow-sm" name="tanggal_masuk" value="{{ old('tanggal_masuk') }}" required>
                         </div>
                     </div>
                 </div>

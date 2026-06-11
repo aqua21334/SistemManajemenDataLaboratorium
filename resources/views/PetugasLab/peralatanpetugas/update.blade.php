@@ -131,6 +131,13 @@
                     <!-- Kolom Kanan -->
                     <div class="col-md-6">
                         <div class="mb-4">
+                            <label class="custom-label">Tanggal Peralatan Masuk</label>
+                            <div class="date-input-wrapper">
+                                <input type="date" name="tanggal_masuk" class="custom-input" value="{{ old('tanggal_masuk', $peralatan->tanggal_masuk) }}" required>
+                                <i class="bi bi-calendar-event calendar-icon"></i>
+                            </div>
+                        </div>
+                        <div class="mb-4">
                             <label class="custom-label">Tanggal Kalibrasi</label>
                             <div class="date-input-wrapper">
                                 <input type="date" name="tanggal_kalibrasi" class="custom-input" value="{{ old('tanggal_kalibrasi', $peralatan->tanggal_kalibrasi) }}" required>

@@ -95,6 +95,10 @@
 
                     <div class="col-md-6">
                         <div class="form-group-custom mb-4">
+                            <label>Tanggal Peralatan Masuk</label>
+                            <input type="date" class="form-control-custom shadow-sm" name="tanggal_masuk" value="{{ $peralatan->tanggal_masuk }}" required>
+                        </div>
+                        <div class="form-group-custom mb-4">
                             <label>Tanggal Penyelesaian Kalibrasi</label>
                             <input type="date" class="form-control-custom shadow-sm" name="tanggal_kalibrasi" value="{{ $peralatan->tanggal_kalibrasi }}" required>
                         </div>

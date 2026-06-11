@@ -50,6 +50,28 @@
             border: 1px solid #333; border-radius: 50%; text-decoration: none; color: black; font-size: 14px; font-weight: 500;
         }
         .page-link-custom.active { background: #345E6F; color: white; border-color: #333; }
+
+        /* Delete confirmation modal */
+        .delete-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+        .delete-modal-overlay.show { display: flex; }
+        .delete-modal-card {
+            width: min(420px, 100%);
+            background: #fff;
+            border: 2px solid #333;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 16px 34px rgba(0, 0, 0, 0.22);
+        }
+        .delete-modal-text { margin: 0; font-weight: 600; color: #333; text-align: center; }
     </style>
 </head>
 <body>
@@ -115,6 +137,7 @@
                 <tr>
                     <th>Kode BMN</th>
                     <th>Nama Peralatan</th>
+                    <th>Tgl Peralatan Masuk</th>
                     <th>Tgl Selesai Kalibrasi</th>
                     <th>Status Kalibrasi</th>
                     <th>Petugas Kalibrasi</th>
@@ -126,6 +149,7 @@
                 <tr>
                     <td class="fw-bold">{{ $item->kode_bmn }}</td>
                     <td>{{ $item->nama_peralatan }}</td>
+                    <td>{{ $item->tanggal_masuk ?? '-' }}</td>
                     <td>{{ $item->tanggal_kalibrasi }}</td>
                     <td>
                         @if(in_array($item->status, ['terkalibrasi', 'sudah dikalibrasi']))
@@ -146,9 +170,9 @@
                     <td>
                         <div class="d-flex justify-content-center gap-2">
                             <a href="{{ route('admin.peralatan.edit', $item->id) }}" class="btn-action-edit">Edit</a>
-                            <form action="{{ route('admin.peralatan.destroy', $item->id) }}" method="POST" class="d-inline">
+                            <form action="{{ route('admin.peralatan.destroy', $item->id) }}" method="POST" class="d-inline delete-form">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn-action-hapus" onclick="return confirm('Hapus data ini?')">Hapus</button>
+                                <button type="submit" class="btn-action-hapus">Hapus</button>
                             </form>
                         </div>
                     </td>
@@ -156,7 +180,7 @@
                 @empty
                     @for($i=0; $i<5; $i++)
                     <tr>
-                        <td><input type="checkbox" class="form-check-input"></td>
+                        <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
@@ -172,6 +196,16 @@
         <!-- Pagination -->
         <div class="pagination-area">
             {{ $peralatans->appends(request()->query())->render('vendor.pagination.custom') }}
+        </div>
+    </div>
+</div>
+
+<div class="delete-modal-overlay" id="deleteConfirmModal" aria-hidden="true">
+    <div class="delete-modal-card">
+        <p class="delete-modal-text">Apakah Yakin Ingin Hapus</p>
+        <div class="d-flex justify-content-center gap-2 mt-4">
+            <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">Batal</button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Hapus</button>
         </div>
     </div>
 </div>
@@ -192,6 +226,51 @@
 
     statusFilter.addEventListener('change', function () {
         filterForm.submit();
+    });
+
+    const modal = document.getElementById('deleteConfirmModal');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+    const deleteForms = document.querySelectorAll('.delete-form');
+    let selectedForm = null;
+
+    function openModal(form) {
+        selectedForm = form;
+        modal.classList.add('show');
+        modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeModal() {
+        selectedForm = null;
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+    }
+
+    deleteForms.forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            openModal(form);
+        });
+    });
+
+    confirmDeleteBtn.addEventListener('click', function () {
+        if (selectedForm) {
+            selectedForm.submit();
+        }
+    });
+
+    cancelDeleteBtn.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', function (event) {
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && modal.classList.contains('show')) {
+            closeModal();
+        }
     });
 </script>
 

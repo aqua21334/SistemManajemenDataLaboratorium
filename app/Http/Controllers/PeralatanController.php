@@ -22,13 +22,18 @@ class PeralatanController extends Controller
             $query->where(function ($builder) use ($search) {
                 $builder->where('kode_bmn', 'like', '%' . $search . '%')
                     ->orWhere('nama_peralatan', 'like', '%' . $search . '%')
+                    ->orWhere('tanggal_masuk', 'like', '%' . $search . '%')
                     ->orWhere('tanggal_kalibrasi', 'like', '%' . $search . '%')
                     ->orWhere('status', 'like', '%' . $search . '%');
             });
         }
 
         if (!empty($status)) {
-            $query->where('status', $status);
+            if ($status === 'terkalibrasi') {
+                $query->whereIn('status', ['terkalibrasi', 'sudah dikalibrasi']);
+            } else {
+                $query->where('status', $status);
+            }
         }
 
         $peralatans = $query->orderBy('nama_peralatan', 'asc')->paginate(5);
@@ -46,7 +51,8 @@ class PeralatanController extends Controller
         $request->validate([
             'kode_bmn' => 'required|string|max:50|unique:peralatans,kode_bmn',
             'nama_peralatan' => 'required|string|max:100',
-            'tanggal_kalibrasi' => 'required|date',
+            'tanggal_masuk' => 'required|date',
+            'tanggal_kalibrasi' => 'nullable|date',
         ], [
             'kode_bmn.unique' => 'Gagal! Kode BMN ' . $request->kode_bmn . ' sudah terdaftar di sistem.',
         ]);
@@ -55,7 +61,8 @@ class PeralatanController extends Controller
         Peralatan::create([
             'kode_bmn' => $request->kode_bmn,
             'nama_peralatan' => $request->nama_peralatan,
-            'tanggal_kalibrasi' => $request->tanggal_kalibrasi,
+            'tanggal_masuk' => $request->tanggal_masuk,
+            'tanggal_kalibrasi' => null,
             'status' => 'belum dikalibrasi',
         ]);
 
@@ -75,6 +82,7 @@ class PeralatanController extends Controller
         $request->validate([
             'kode_bmn' => 'required|string|max:50|unique:peralatans,kode_bmn,'.$peralatan->id,
             'nama_peralatan' => 'required|string|max:100',
+            'tanggal_masuk' => 'required|date',
             'tanggal_kalibrasi' => 'required|date',
             'status' => 'required|in:belum dikalibrasi,terkalibrasi,sudah dikalibrasi',
         ]);
@@ -83,7 +91,8 @@ class PeralatanController extends Controller
         $peralatan->update([
             'kode_bmn' => $request->kode_bmn,
             'nama_peralatan' => $request->nama_peralatan,
-            'tanggal_kalibrasi' => $request->tanggal_kalibrasi,
+            'tanggal_masuk' => $request->tanggal_masuk,
+                'tanggal_kalibrasi' => $request->filled('tanggal_kalibrasi') ? $request->tanggal_kalibrasi : now()->toDateString(),
             'status' => $request->status === 'sudah dikalibrasi' ? 'terkalibrasi' : $request->status,
         ]);
 
@@ -111,13 +120,18 @@ class PeralatanController extends Controller
             $query->where(function ($builder) use ($search) {
                 $builder->where('kode_bmn', 'like', '%' . $search . '%')
                     ->orWhere('nama_peralatan', 'like', '%' . $search . '%')
+                    ->orWhere('tanggal_masuk', 'like', '%' . $search . '%')
                     ->orWhere('tanggal_kalibrasi', 'like', '%' . $search . '%')
                     ->orWhere('status', 'like', '%' . $search . '%');
             });
         }
 
         if (!empty($status)) {
-            $query->where('status', $status);
+            if ($status === 'terkalibrasi') {
+                $query->whereIn('status', ['terkalibrasi', 'sudah dikalibrasi']);
+            } else {
+                $query->where('status', $status);
+            }
         }
 
         $peralatans = $query->orderBy('nama_peralatan', 'asc')->paginate(5);
@@ -139,6 +153,7 @@ class PeralatanController extends Controller
             $query->where(function ($builder) use ($search) {
                 $builder->where('kode_bmn', 'like', '%' . $search . '%')
                     ->orWhere('nama_peralatan', 'like', '%' . $search . '%')
+                    ->orWhere('tanggal_masuk', 'like', '%' . $search . '%')
                     ->orWhere('tanggal_kalibrasi', 'like', '%' . $search . '%')
                     ->orWhere('status', 'like', '%' . $search . '%');
             });
@@ -176,7 +191,8 @@ class PeralatanController extends Controller
         $request->validate([
             'kode_bmn' => 'required|string|max:50|unique:peralatans,kode_bmn',
             'nama_peralatan' => 'required|string|max:100',
-            'tanggal_kalibrasi' => 'required|date',
+            'tanggal_masuk' => 'required|date',
+            'tanggal_kalibrasi' => 'nullable|date',
         ], [
             'kode_bmn.unique' => 'Gagal! Kode BMN ' . $request->kode_bmn . ' sudah terdaftar di sistem.',
         ]);
@@ -185,7 +201,8 @@ class PeralatanController extends Controller
             Peralatan::create([
                 'kode_bmn' => $request->kode_bmn,
                 'nama_peralatan' => $request->nama_peralatan,
-                'tanggal_kalibrasi' => $request->tanggal_kalibrasi,
+                'tanggal_masuk' => $request->tanggal_masuk,
+                'tanggal_kalibrasi' => $request->filled('tanggal_kalibrasi') ? $request->tanggal_kalibrasi : now()->toDateString(),
                 'status' => 'belum dikalibrasi',
             ]);
 
@@ -220,6 +237,7 @@ class PeralatanController extends Controller
         $request->validate([
             'kode_bmn' => 'required|string|max:50',
             'nama_peralatan' => 'required|string|max:100',
+            'tanggal_masuk' => 'required|date',
             'tanggal_kalibrasi' => 'required|date',
             'status' => 'required|in:belum dikalibrasi,terkalibrasi',
         ]);
@@ -228,6 +246,7 @@ class PeralatanController extends Controller
             $peralatan->update([
                 'kode_bmn' => $request->kode_bmn,
                 'nama_peralatan' => $request->nama_peralatan,
+                'tanggal_masuk' => $request->tanggal_masuk,
                 'tanggal_kalibrasi' => $request->tanggal_kalibrasi,
                 'status' => $request->status,
             ]);

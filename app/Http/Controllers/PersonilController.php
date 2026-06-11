@@ -36,14 +36,24 @@ class PersonilController extends Controller
         // Gunakan paginate() agar link di bawah tabel berfungsi otomatis
         $personils = $query->orderBy('nama_personil', 'asc')->paginate(5);
 
-        // Daftar id_user yang sudah absen masuk hari ini.
-        $hadirUserIds = Absensi::whereDate('tanggal', Carbon::today())
-            ->whereNotNull('jam_masuk')
-            ->pluck('id_user')
+        // Status absensi per user untuk hari ini (hadir / sakit / izin)
+        $statusAbsensiUser = Absensi::whereDate('tanggal', Carbon::today())
+            ->orderByDesc('id_absensi')
+            ->get()
+            ->unique('id_user')
+            ->mapWithKeys(function ($absensi) {
+                $status = $absensi->status;
+
+                if (empty($status) && !empty($absensi->jam_masuk)) {
+                    $status = 'hadir';
+                }
+
+                return [$absensi->id_user => $status];
+            })
             ->toArray();
         
         // Kirim data ke view
-        return view('Admin.pegawaiadmin.index', compact('personils', 'hadirUserIds'));
+        return view('Admin.pegawaiadmin.index', compact('personils', 'statusAbsensiUser'));
     }
 
     public function create()

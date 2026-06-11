@@ -137,8 +137,8 @@
                     </td>
                     <td>{{ $jabatanPegawai }}</td>
                     <td>
-                        <a href="{{ route('admin.absensi.export', ['tahun' => date('Y'), 'id_user' => $absensi->id_user]) }}" class="btn btn-sm btn-outline-secondary" target="_blank">
-                            <i class="bi bi-file-earmark-pdf me-1"></i> File
+                        <a href="{{ route('admin.absensi.export', ['tahun' => date('Y'), 'id_user' => $absensi->id_user]) }}" class="btn btn-sm btn-outline-success" target="_blank">
+                            <i class="bi bi-file-earmark-excel me-1"></i> File
                         </a>
                     </td>
                 </tr>

@@ -58,6 +58,28 @@
             border: 1px solid #333; border-radius: 50%; text-decoration: none; color: black; font-size: 13px;
         }
         .page-link-custom.active { background: #345E6F; color: white; border-color: #345E6F; }
+
+        /* Delete confirmation modal */
+        .delete-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+        .delete-modal-overlay.show { display: flex; }
+        .delete-modal-card {
+            width: min(420px, 100%);
+            background: #fff;
+            border: 2px solid #333;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 16px 34px rgba(0, 0, 0, 0.22);
+        }
+        .delete-modal-text { margin: 0; font-weight: 600; color: #333; text-align: center; }
     </style>
 </head>
 <body>
@@ -147,15 +169,24 @@
         </td>
         <td class="text-center">{{ $p->email ?? '-' }}</td>
         <td class="text-center">{{ $p->jabatan }}</td>
-        <td class="text-center fw-bold {{ in_array($p->id_user, $hadirUserIds ?? []) ? 'text-success' : 'text-danger' }}">
-            {{ in_array($p->id_user, $hadirUserIds ?? []) ? 'Hadir' : 'Belum Absen' }}
+        @php $stat = $statusAbsensiUser[$p->id_user] ?? null; @endphp
+        <td class="text-center fw-bold {{ $stat === 'hadir' ? 'text-success' : ($stat === 'sakit' ? 'text-warning' : ($stat === 'izin' ? 'text-primary' : 'text-danger')) }}">
+            @if($stat === 'hadir')
+                Hadir
+            @elseif($stat === 'sakit')
+                Sakit
+            @elseif($stat === 'izin')
+                Izin
+            @else
+                Belum Absen
+            @endif
         </td>
         <td class="text-center">
             <a href="{{ route('admin.personil.edit', $p->id_personil) }}" class="btn btn-custom btn-edit shadow-sm" style="padding: 4px 10px; font-size: 12px;">Edit</a>
-            <form action="{{ route('admin.personil.destroy', $p->id_personil) }}" method="POST" style="display: inline;">
+            <form action="{{ route('admin.personil.destroy', $p->id_personil) }}" method="POST" class="delete-form" style="display: inline;">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn btn-custom btn-hapus shadow-sm" style="padding: 4px 10px; font-size: 12px;" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                <button type="submit" class="btn btn-custom btn-hapus shadow-sm" style="padding: 4px 10px; font-size: 12px;">Hapus</button>
             </form>
         </td>
     </tr>
@@ -189,6 +220,65 @@
         </div>
     </div>
 </div>
+
+<div class="delete-modal-overlay" id="deleteConfirmModal" aria-hidden="true">
+    <div class="delete-modal-card">
+        <p class="delete-modal-text">Apakah Yakin Ingin Hapus</p>
+        <div class="d-flex justify-content-center gap-2 mt-4">
+            <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">Batal</button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Hapus</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = document.getElementById('deleteConfirmModal');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        const deleteForms = document.querySelectorAll('.delete-form');
+        let selectedForm = null;
+
+        function openModal(form) {
+            selectedForm = form;
+            modal.classList.add('show');
+            modal.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeModal() {
+            selectedForm = null;
+            modal.classList.remove('show');
+            modal.setAttribute('aria-hidden', 'true');
+        }
+
+        deleteForms.forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                openModal(form);
+            });
+        });
+
+        confirmDeleteBtn.addEventListener('click', function () {
+            if (selectedForm) {
+                selectedForm.submit();
+            }
+        });
+
+        cancelDeleteBtn.addEventListener('click', closeModal);
+
+        modal.addEventListener('click', function (event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && modal.classList.contains('show')) {
+                closeModal();
+            }
+        });
+    });
+</script>
 
 </body>
 </html>

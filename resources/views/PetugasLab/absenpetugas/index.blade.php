@@ -63,6 +63,7 @@
         .lokasi-overlay { position: absolute; left: 12px; bottom: 10px; z-index: 500; background: rgba(255,255,255,0.9); padding: 6px 10px; border-radius: 6px; border: 1px solid #000; font-size: 12px; color: #345E6F; }
         .btn-lokasi { position: absolute; top: 8px; right: 8px; z-index: 510; background-color: #2A4B5C; color: white; border: 2px solid #000; border-radius: 6px; padding: 8px 12px; font-size: 16px; cursor: pointer; transition: 0.2s; }
         .btn-lokasi:hover { background-color: #1f3744; }
+        .location-hint { background: #FFF3CD; border: 1px solid #E0B100; color: #7A5A00; border-radius: 8px; padding: 12px 15px; margin-bottom: 18px; font-size: 14px; }
 
         /* Info Card */
         .info-card { background: white; border: 2px solid #000; border-radius: 12px; padding: 20px 25px; margin-bottom: 25px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
@@ -148,6 +149,20 @@
         <div class="form-card mx-0">
             <h4 class="form-title">Absensi Harian</h4>
 
+            @php
+                $hasMasuk = isset($absenToday) && !empty($absenToday->jam_masuk);
+                $hasPulang = isset($absenToday) && !empty($absenToday->jam_pulang);
+                $statusToday = isset($absenToday) ? ($absenToday->status ?? null) : null;
+                $isIzinOrSakit = in_array($statusToday, ['sakit', 'izin']);
+                $needsLocation = !$isIzinOrSakit && (!isset($absenToday) || empty($absenToday->lokasi) || empty($absenToday->latitude) || empty($absenToday->longitude));
+            @endphp
+
+            @if($needsLocation && !$isIzinOrSakit)
+                <div class="location-hint">
+                    Lokasi belum tersedia. Silakan tekan <strong>Dapatkan Lokasi GPS</strong> sebelum absen masuk.
+                </div>
+            @endif
+
             <!-- Info Card - Date, Time, Location -->
             <div class="info-card">
                 <div class="info-label">📅 Tanggal</div>
@@ -166,20 +181,14 @@
                 @csrf
                 <input type="hidden" name="status" id="status-input" value="hadir">
                 <input type="hidden" name="type" id="type-input" value="masuk">
-                @php
-                    $hasMasuk = isset($absenToday) && !empty($absenToday->jam_masuk);
-                    $hasPulang = isset($absenToday) && !empty($absenToday->jam_pulang);
-                    $statusToday = isset($absenToday) ? ($absenToday->status ?? null) : null;
-                    $isIzinOrSakit = in_array($statusToday, ['sakit', 'izin']);
-                @endphp
                 
                 <!-- Input Lokasi dengan Map -->
                 @if(!$hasMasuk && !$isIzinOrSakit)
                 <div class="mb-5">
-                    <label class="custom-label">Pilih Lokasi di Map</label>
+                    <label class="custom-label">Lokasi GPS Pegawai</label>
                     <div class="box-lokasi-wrapper">
                         <div id="lokasi-map" class="lokasi-map"></div>
-                        <div id="lokasi-display" class="lokasi-overlay">Klik map untuk pilih lokasi</div>
+                        <div id="lokasi-display" class="lokasi-overlay">Tekan tombol GPS untuk mengambil lokasi pegawai</div>
                         <input type="hidden" name="lokasi" id="lokasi-input">
                         <input type="hidden" name="latitude" id="latitude-input">
                         <input type="hidden" name="longitude" id="longitude-input">
@@ -344,13 +353,6 @@
             setLocationDisplay(lat, lng);
         }
 
-        if (map) {
-            map.on('click', function (event) {
-                const { lat, lng } = event.latlng;
-                setCoordinates(lat, lng);
-            });
-        }
-
         const btnGetLokasi = document.getElementById('btn-get-lokasi');
         if (btnGetLokasi) {
             btnGetLokasi.addEventListener('click', function() {
@@ -389,6 +391,42 @@
                 }, function(err) {
                     alert('Gagal mendapatkan lokasi: ' + err.message);
                 }, { enableHighAccuracy: true });
+            });
+        }
+
+        const needsLocation = @json($needsLocation && !$isIzinOrSakit);
+        if (needsLocation) {
+            const locationModalEl = document.createElement('div');
+            locationModalEl.className = 'modal fade';
+            locationModalEl.id = 'locationReminderModal';
+            locationModalEl.tabIndex = -1;
+            locationModalEl.setAttribute('aria-hidden', 'true');
+            locationModalEl.innerHTML = `
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-2 border-dark">
+                        <div class="modal-header bg-warning text-dark">
+                            <h5 class="modal-title fw-bold">Berikan Lokasi</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Lokasi belum ada. Tekan <strong>Dapatkan Lokasi GPS</strong> untuk mengambil lokasi pegawai sebelum absen masuk.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nanti</button>
+                            <button type="button" class="btn btn-primary" id="modal-get-location-btn">Dapatkan Lokasi GPS</button>
+                        </div>
+                    </div>
+                </div>`;
+            document.body.appendChild(locationModalEl);
+            const locationReminderModal = new bootstrap.Modal(locationModalEl, { backdrop: 'static', keyboard: false });
+            locationReminderModal.show();
+
+            locationModalEl.querySelector('#modal-get-location-btn').addEventListener('click', function () {
+                const btn = document.getElementById('btn-get-lokasi');
+                if (btn) {
+                    btn.click();
+                }
+                locationReminderModal.hide();
             });
         }
 

@@ -166,6 +166,7 @@
                     <tr>
                         <th>Kode BMN</th>
                         <th>Nama Peralatan</th>
+                        <th>Tanggal Peralatan Masuk</th>
                         <th>Tanggal Kalibrasi</th>
                         <th>Status Kalibrasi</th>
                         <th>Petugas Kalibrasi</th>
@@ -177,6 +178,7 @@
                     <tr>
                         <td>{{ $peralatan->kode_bmn }}</td>
                         <td>{{ $peralatan->nama_peralatan }}</td>
+                        <td>{{ $peralatan->tanggal_masuk ? \Carbon\Carbon::parse($peralatan->tanggal_masuk)->format('d-m-Y') : '-' }}</td>
                         <td>{{ $peralatan->tanggal_kalibrasi }}</td>
                         <td>
                             @if(in_array($peralatan->status, ['terkalibrasi', 'sudah dikalibrasi']))

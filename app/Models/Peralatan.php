@@ -13,7 +13,7 @@ class Peralatan extends Model
     // kode_bmn adalah string biasa yang manual input
     
     protected $fillable = [
-        'kode_bmn', 'nama_peralatan', 'tanggal_kalibrasi', 'status'
+        'kode_bmn', 'nama_peralatan', 'tanggal_masuk', 'tanggal_kalibrasi', 'status'
     ];
 
     // 1 Alat bisa punya banyak riwayat Status/Perbaikan

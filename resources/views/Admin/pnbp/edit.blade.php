@@ -231,9 +231,6 @@
                     <label class="form-label">Status Pembayaran <span style="color: #dc3545;">*</span></label>
                     <select class="form-control" name="status_pembayaran" required>
                         <option value="">-- Pilih Status --</option>
-                        <option value="Belum Dibayar" {{ $pnbp->status_pembayaran === 'Belum Dibayar' ? 'selected' : '' }}>
-                            Belum Dibayar
-                        </option>
                         <option value="Belum Lunas" {{ $pnbp->status_pembayaran === 'Belum Lunas' ? 'selected' : '' }}>
                             Belum Lunas
                         </option>
