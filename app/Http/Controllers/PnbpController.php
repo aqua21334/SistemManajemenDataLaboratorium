@@ -90,7 +90,10 @@ class PnbpController extends Controller
 
         // Proses Upload Bukti Bayar
         $file = $request->file('bukti_bayar');
-        $filename = time() . '_BuktiBayar_' . $file->getClientOriginalName();
+        $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $extension = strtolower($file->getClientOriginalExtension());
+        $safeOriginalName = preg_replace('/[^A-Za-z0-9._-]/', '_', $originalName);
+        $filename = time() . '_BuktiBayar_' . $safeOriginalName . '.' . $extension;
         $file->move(public_path('uploads/pnbp'), $filename);
 
         // Simpan pembaruan ke database

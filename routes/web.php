@@ -4,18 +4,18 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 // Controllers
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\PermintaanLayananController;
-use App\Http\Controllers\PeralatanController;
-use App\Http\Controllers\PersonilController;
-use App\Http\Controllers\DaftarSopController;
-use App\Http\Controllers\AbsensiController;
-use App\Http\Controllers\PnbpController;
-use App\Http\Controllers\LaporanHasilController;
-use App\Http\Controllers\DokumenController;
-use App\Http\Controllers\DashboardKepalaLabController;
-use App\Http\Controllers\RiwayatPenelitianController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\DashboardController as dashboardController;
+use App\Http\Controllers\PermintaanLayananController as permintaanLayananController;
+use App\Http\Controllers\PeralatanController as peralatanController;
+use App\Http\Controllers\PersonilController as personilController;
+use App\Http\Controllers\DaftarSopController as daftarSopController;
+use App\Http\Controllers\AbsensiController as absensiController;
+use App\Http\Controllers\PnbpController as pnbpController;
+use App\Http\Controllers\LaporanHasilController as laporanHasilController;
+use App\Http\Controllers\DokumenController as dokumenController;
+use App\Http\Controllers\DashboardKepalaLabController as dashboardKepalaLabController;
+use App\Http\Controllers\RiwayatPenelitianController as riwayatPenelitianController;
+use App\Http\Controllers\UserController as userController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,43 +32,43 @@ Route::get('/', function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'petugas_lab'])->prefix('petugas')->name('petugas.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'indexPetugas'])
+    Route::get('/dashboard', [dashboardController::class, 'indexPetugas'])
         ->name('dashboard');
     
     // Absensi Petugas (halaman khusus Petugas Lab)
-    Route::get('/absensi', [\App\Http\Controllers\AbsensiController::class, 'indexPetugas'])
+    Route::get('/absensi', [absensiController::class, 'indexPetugas'])
         ->name('absensi.index');
-    Route::post('/absen-masuk', [\App\Http\Controllers\AbsensiController::class, 'absenMasukPetugas'])
+    Route::post('/absen-masuk', [absensiController::class, 'absenMasukPetugas'])
         ->name('absen.masuk');
-    Route::post('/absen-pulang', [\App\Http\Controllers\AbsensiController::class, 'absenPulangPetugas'])
+    Route::post('/absen-pulang', [absensiController::class, 'absenPulangPetugas'])
         ->name('absen.pulang');
     
     // Laporan Petugas
-    Route::get('/laporan', [\App\Http\Controllers\LaporanHasilController::class, 'indexPetugas'])
+    Route::get('/laporan', [laporanHasilController::class, 'indexPetugas'])
         ->name('laporanpetugas.index');
-    Route::get('/laporan/{id}/edit', [\App\Http\Controllers\LaporanHasilController::class, 'editPetugas'])
+    Route::get('/laporan/{id}/edit', [laporanHasilController::class, 'editPetugas'])
         ->name('laporanpetugas.edit');
-    Route::post('/laporan/{id}/upload', [\App\Http\Controllers\LaporanHasilController::class, 'uploadHasil'])
+    Route::post('/laporan/{id}/upload', [laporanHasilController::class, 'uploadHasil'])
         ->name('laporanpetugas.upload');
 
     // SOP Petugas
-    Route::get('/sop', [\App\Http\Controllers\DaftarSopController::class, 'indexPetugas'])
+    Route::get('/sop', [daftarSopController::class, 'indexPetugas'])
         ->name('sop.index');
     
     // Riwayat Penelitian (Petugas Lab)
-    Route::get('/riwayat', [\App\Http\Controllers\RiwayatPenelitianController::class, 'indexPetugas'])
+    Route::get('/riwayat', [riwayatPenelitianController::class, 'indexPetugas'])
         ->name('riwayat.index');
 
     // Peralatan (Petugas Lab)
-    Route::get('/peralatan', [\App\Http\Controllers\PeralatanController::class, 'indexPetugas'])
+    Route::get('/peralatan', [peralatanController::class, 'indexPetugas'])
         ->name('peralatan.index');
-    Route::get('/peralatan/create', [\App\Http\Controllers\PeralatanController::class, 'createPetugas'])
+    Route::get('/peralatan/create', [peralatanController::class, 'createPetugas'])
         ->name('peralatan.create');
-    Route::post('/peralatan', [\App\Http\Controllers\PeralatanController::class, 'storePetugas'])
+    Route::post('/peralatan', [peralatanController::class, 'storePetugas'])
         ->name('peralatan.store');
-    Route::get('/peralatan/{id}/edit', [\App\Http\Controllers\PeralatanController::class, 'editPetugas'])
+    Route::get('/peralatan/{id}/edit', [peralatanController::class, 'editPetugas'])
         ->name('peralatan.edit');
-    Route::put('/peralatan/{id}', [\App\Http\Controllers\PeralatanController::class, 'updatePetugas'])
+    Route::put('/peralatan/{id}', [peralatanController::class, 'updatePetugas'])
         ->name('peralatan.update');
 });
 
@@ -85,13 +85,13 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::prefix('user')->name('user.')->group(function () {
-        Route::get('/profile', [UserController::class, 'showProfile'])
+        Route::get('/profile', [userController::class, 'showProfile'])
             ->name('profile');
-        Route::put('/profile', [UserController::class, 'updateProfile'])
+        Route::put('/profile', [userController::class, 'updateProfile'])
             ->name('update-profile');
-        Route::get('/change-password', [UserController::class, 'showChangePassword'])
+        Route::get('/change-password', [userController::class, 'showChangePassword'])
             ->name('change-password');
-        Route::put('/change-password', [UserController::class, 'updatePassword'])
+        Route::put('/change-password', [userController::class, 'updatePassword'])
             ->name('update-password');
     });
     /*
@@ -104,33 +104,33 @@ Route::middleware('auth')->group(function () {
         ->name('admin.')
         ->group(function () {
 
-        Route::get('/dashboard', [DashboardController::class, 'index'])
+        Route::get('/dashboard', [dashboardController::class, 'index'])
             ->name('dashboard');
 
-        Route::resource('permintaan', PermintaanLayananController::class);
-        Route::put('/permintaan/{id}/update-status', [PermintaanLayananController::class, 'updateStatus'])
+        Route::resource('permintaan', permintaanLayananController::class);
+        Route::put('/permintaan/{id}/update-status', [permintaanLayananController::class, 'updateStatus'])
             ->name('permintaan.updateStatus');
 
-        Route::resource('pnbp', PnbpController::class);
-        Route::get('/pnbp/{id}/invoice', [PnbpController::class, 'cetakInvoice'])->name('pnbp.invoice');
+        Route::resource('pnbp', pnbpController::class);
+        Route::get('/pnbp/{id}/invoice', [pnbpController::class, 'cetakInvoice'])->name('pnbp.invoice');
 
-        Route::resource('laporan', LaporanHasilController::class);
-        Route::resource('dokumen', DokumenController::class);
+        Route::resource('laporan', laporanHasilController::class);
+        Route::resource('dokumen', dokumenController::class);
 
-        Route::resource('peralatan', PeralatanController::class);
-        Route::resource('personil', PersonilController::class)->names([
+        Route::resource('peralatan', peralatanController::class);
+        Route::resource('personil', personilController::class)->names([
             'index' => 'pegawai'
         ]);
 
-        Route::resource('sop', DaftarSopController::class);
-        Route::get('/absensi/export', [AbsensiController::class, 'exportExcel'])
+        Route::resource('sop', daftarSopController::class);
+        Route::get('/absensi/export', [absensiController::class, 'exportExcel'])
             ->name('absensi.export');
-        Route::resource('absensi', AbsensiController::class);
+        Route::resource('absensi', absensiController::class);
 
-        Route::get('/riwayat-penelitian', [RiwayatPenelitianController::class, 'index'])
+        Route::get('/riwayat-penelitian', [riwayatPenelitianController::class, 'index'])
             ->name('riwayat-penelitian.index');
 
-        Route::get('/riwayat-absensi', [AbsensiController::class, 'index'])
+        Route::get('/riwayat-absensi', [absensiController::class, 'index'])
             ->name('riwayat-absensi.index');
     });
 
@@ -143,41 +143,41 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['auth', 'kepala_lab'])->prefix('kepala')->group(function () {
 
     // Dashboard Kepala Lab
-    Route::get('/dashboard', [DashboardKepalaLabController::class, 'index'])
+    Route::get('/dashboard', [dashboardKepalaLabController::class, 'index'])
         ->name('kepalalab.dashboard');
 
     // Absensi Kepala Lab
-    Route::post('/absen-masuk', [DashboardKepalaLabController::class, 'absenMasuk'])
+    Route::post('/absen-masuk', [dashboardKepalaLabController::class, 'absenMasuk'])
         ->name('kepala.absen-masuk');
-    Route::post('/absen-pulang', [DashboardKepalaLabController::class, 'absenPulang'])
+    Route::post('/absen-pulang', [dashboardKepalaLabController::class, 'absenPulang'])
         ->name('kepala.absen-pulang');
 
     // Permintaan Layanan
-    Route::get('/permintaan', [PermintaanLayananController::class, 'indexKepalaLab'])
+    Route::get('/permintaan', [permintaanLayananController::class, 'indexKepalaLab'])
         ->name('kepala.permintaan');
-    Route::get('/permintaan/{id}/edit', [PermintaanLayananController::class, 'editKepalaLab'])
+    Route::get('/permintaan/{id}/edit', [permintaanLayananController::class, 'editKepalaLab'])
         ->name('kepala.permintaan.edit');
-    Route::put('/permintaan/{id}', [PermintaanLayananController::class, 'updateKepalaLab'])
+    Route::put('/permintaan/{id}', [permintaanLayananController::class, 'updateKepalaLab'])
         ->name('kepala.permintaan.update');
 
     // Monitoring Laporan
-    Route::get('/laporan', [LaporanHasilController::class, 'index'])
+    Route::get('/laporan', [laporanHasilController::class, 'index'])
         ->name('kepala.laporan');
 
     // Monitoring Riwayat
-    Route::get('/riwayat', [RiwayatPenelitianController::class, 'indexKepalaLab'])
+    Route::get('/riwayat', [riwayatPenelitianController::class, 'indexKepalaLab'])
         ->name('kepala.riwayat');
 
     // Monitoring Peralatan
-    Route::get('/peralatan', [PeralatanController::class, 'indexKepalaLab'])
+    Route::get('/peralatan', [peralatanController::class, 'indexKepalaLab'])
         ->name('kepala.peralatan');
 
     // Monitoring Pegawai
-    Route::get('/pegawai', [PersonilController::class, 'indexKepalaLab'])
+    Route::get('/pegawai', [personilController::class, 'indexKepalaLab'])
         ->name('kepala.pegawai');
 
     // Monitoring SOP Kepala Lab
-    Route::get('/sop', [DaftarSopController::class, 'indexKepalaLab'])
+    Route::get('/sop', [daftarSopController::class, 'indexKepalaLab'])
         ->name('kepala.sop');
 
 });
@@ -211,7 +211,10 @@ Route::middleware('auth')->group(function () {
             return view('Admin.pnbp.invoice', compact('pnbp'));
         })->name('invoice');
 
-        Route::post('/permintaan', [PermintaanLayananController::class, 'store'])
+        Route::get('/hasil/{id}', [permintaanLayananController::class, 'downloadHasilCustomer'])
+            ->name('hasil.download');
+
+        Route::post('/permintaan', [permintaanLayananController::class, 'store'])
             ->name('permintaan.store');
     });
 

@@ -34,7 +34,7 @@
         .btn-custom { border: 2px solid #333; border-radius: 10px; font-weight: bold; padding: 6px 25px; font-size: 14px; transition: 0.3s; text-decoration: none; display: inline-block; }
         .btn-print { background: white; color: #333; }
         .btn-tambah { background: #1F4557; color: white; border: none; }
-
+        
         /* Table PNBP */
         .white-table-card { background: white; border: 2px solid #333; border-radius: 15px; overflow: hidden; margin-top: 25px; }
         .table-pnbp { margin-bottom: 0; width: 100%; border-collapse: collapse; }
@@ -147,7 +147,18 @@
                     </td>
                     <td>
                         @if($p->pnbp && $p->pnbp->bukti_bayar)
-                            <a href="{{ asset('uploads/pnbp/' . $p->pnbp->bukti_bayar) }}" target="_blank" style="text-decoration:none;">Lihat</a>
+                            @php
+                                $buktiBayarFile = basename($p->pnbp->bukti_bayar);
+                                $publicBuktiBayar = public_path('uploads/pnbp/' . $buktiBayarFile);
+                                $storageBuktiBayar = storage_path('app/public/uploads/pnbp/' . $buktiBayarFile);
+
+                                $buktiBayarUrl = file_exists($publicBuktiBayar)
+                                    ? asset('uploads/pnbp/' . rawurlencode($buktiBayarFile))
+                                    : (file_exists($storageBuktiBayar)
+                                        ? asset('storage/uploads/pnbp/' . rawurlencode($buktiBayarFile))
+                                        : asset('uploads/pnbp/' . rawurlencode($buktiBayarFile)));
+                            @endphp
+                            <a href="{{ $buktiBayarUrl }}" target="_blank" style="text-decoration:none;">Lihat</a>
                         @else
                             -
                         @endif

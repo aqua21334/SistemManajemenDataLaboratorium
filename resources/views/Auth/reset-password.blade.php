@@ -22,16 +22,19 @@
             font-family: 'Times New Roman', serif;
             margin: 0;
         }
+        * { box-sizing: border-box; }
         .auth-card {
             display: flex;
-            width: 900px;
+            width: 100%;
+            max-width: 900px;
             background: #fff;
             box-shadow: 0 16px 40px rgba(0,0,0,0.45);
             border-radius: 6px;
             overflow: hidden;
+            margin: 32px;
         }
         .form-side {
-            width: 50%;
+            flex:1 1 50%;
             padding: 50px;
             display: flex;
             flex-direction: column;
@@ -39,7 +42,7 @@
             position: relative;
         }
         .panel-side {
-            width: 50%;
+            flex:1 1 50%;
             padding: 50px;
             background-color: #2b4c65;
             color: white;
@@ -65,6 +68,13 @@
         .btn-custom:hover { background-color: #9cb4d1; color: #1a3042; }
         .back-link { font-family: sans-serif; font-size: 13px; color: #666; text-decoration: none; transition: color 0.2s; }
         .back-link:hover { color: #2b4c65; text-decoration: underline; }
+        @media (max-width: 767.98px) {
+            body { background-attachment: scroll; }
+            .auth-card { flex-direction: column; margin: 16px; }
+            .form-side, .panel-side { padding: 20px; width: 100%; }
+            .logo-header { position: static; margin-bottom: 12px; }
+            .btn-custom { padding: 8px 20px; }
+        }
     </style>
 </head>
 <body>

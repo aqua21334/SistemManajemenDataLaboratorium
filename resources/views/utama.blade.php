@@ -12,16 +12,25 @@
             font-family: 'Times New Roman', Times, serif; 
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         /* Hero membentang 100% layar */
         .hero-section {
             background-image: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url("{{ asset('images/hero-btr.jpg') }}");
             background-size: cover;
             background-position: center;
-            height: 450px;
+            min-height: 450px;
             display: flex;
             align-items: center;
             color: white;
             border-bottom: 3px solid #FACC15; /* Garis kuning PU */
+            padding: 48px 0;
         }
 
         /* Navbar membentang 100% layar */
@@ -33,7 +42,14 @@
             margin-bottom: 40px;
         }
         
-        .nav-links a { color: #000; text-decoration: none; font-weight: bold; margin-right: 20px; font-family: sans-serif;}
+        .nav-links {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .nav-links a { color: #000; text-decoration: none; font-weight: bold; margin-right: 0; font-family: sans-serif;}
         
         /* Logo PU Bundar tetap di tengah */
         .logo-tengah {
@@ -65,6 +81,12 @@
             margin-bottom: 40px;
         }
 
+        .document-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+        }
+
         /* Elemen dalam konten */
         .garis-tengah { border-right: 2px solid #e2e8f0; }
         .table-custom { border: 1px solid #dee2e6; }
@@ -79,6 +101,78 @@
             padding: 50px 0 20px 0;
             margin-top: 50px;
         }
+
+        @media (max-width: 767.98px) {
+            .hero-section {
+                min-height: 280px;
+                padding: 32px 0;
+                text-align: center;
+            }
+
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+
+            .hero-section h2 {
+                font-size: 1.1rem;
+            }
+
+            .nav-container {
+                padding: 18px 0 16px;
+                margin-bottom: 24px;
+            }
+
+            .nav-container .container {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .nav-links {
+                justify-content: center;
+            }
+
+            .logo-tengah {
+                position: static;
+                transform: none;
+                margin: 0 auto;
+                width: 76px;
+                height: 76px;
+            }
+
+            .logo-tengah img {
+                width: 68px !important;
+                height: 68px !important;
+            }
+
+            .content-box {
+                padding: 20px 16px;
+                margin-bottom: 24px;
+            }
+
+            .garis-tengah {
+                border-right: 0;
+                border-bottom: 2px solid #e2e8f0;
+                padding-bottom: 16px;
+                margin-bottom: 16px;
+            }
+
+            .document-image {
+                height: 200px;
+                margin-bottom: 12px;
+            }
+
+            .document-title {
+                font-size: 1.25rem !important;
+            }
+
+            .document-text {
+                font-size: 1rem !important;
+            }
+
+            .footer-section {
+                padding-top: 32px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -90,11 +184,11 @@
     </div>
 
     <div class="nav-container">
-        <div class="container d-flex justify-content-between align-items-center">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
             <div class="nav-links">
                 <a href="#">Beranda</a>
-                <a href="#">Layanan</a>
-                <a href="#">Dokumentasi</a>
+                <a href="#layanan">Layanan</a>
+                <a href="#dokumentasi">Dokumentasi</a>
             </div>
             
             <div class="logo-tengah">
@@ -138,7 +232,7 @@
             </div>
         </div>
 
-        <div class="content-box">
+        <div class="content-box" id="layanan">
             <h5 class="mb-4 border-bottom pb-2">Layanan</h5>
             <form action="#" method="POST">
                 <div class="row mb-4">
@@ -181,39 +275,39 @@
                     ],
                     [
                         'foto' => 'images/dokumentasi3.jpg', // Sesuaikan dengan nama file foto 3
-                        'judul' => 'Pengoprasian Peralatan Kualitas Air',
+                        'judul' => 'Pengoperasian Peralatan Kualitas Air',
                         'keterangan' => 'Surveyor Laboratorium Balai Teknik Rawa melaksanakan pengoperasian peralatan kualitas air Horiba U50 di Jejangkit, Kalimantan Selatan, untuk menguji kualitas air pada saluran irigasi. Kegiatan ini bertujuan memperoleh data kualitas air secara akurat sebagai bahan analisis dan evaluasi kondisi perairan. Pengujian ini penting untuk mendukung pengelolaan sumber daya air, khususnya pada wilayah dengan sistem irigasi.'
                     ],
                     [
                         'foto' => 'images/dokumentasi4.jpg', // Sesuaikan dengan nama file foto 4
-                        'judul' => 'Pengoprasian Peralatan Acoustic Doppler Current Profiler',
-                        'keterangan' => 'Surveyor Laboratorium Balai Teknik Rawa melaksanakan pengoperasian peralatan kualitas air Horiba U50 di Jejangkit, Kalimantan Selatan, untuk menguji kualitas air pada saluran irigasi. Kegiatan ini dilakukan guna memperoleh data kualitas air secara akurat sebagai bahan analisis dan evaluasi kondisi perairan di lokasi pengukuran.'
+                        'judul' => 'Pengoperasian Peralatan Acoustic Doppler Current Profiler',
+                        'keterangan' => 'Pengoperasian Peralatan Acoustic Doppler Current Profiler (ADCP) merupakan kegiatan pengukuran kecepatan dan arah arus air menggunakan alat berbasis gelombang akustik dengan prinsip efek Doppler. ADCP dipasang pada perahu survei dan dioperasikan sepanjang jalur pengukuran yang telah ditentukan, sementara data direkam secara otomatis melalui perangkat lunak yang terhubung dengan GPS. Hasil pengukuran menghasilkan profil arus pada berbagai kedalaman yang dimanfaatkan untuk survei hidrografi, analisis kondisi perairan, serta mendukung perencanaan dan pengelolaan sumber daya air.'
                     ],
                 ];
             @endphp
                 </div>
             </form>
-        <h5 class="mb-4 border-bottom pb-2">Dokumentasi</h5>
+        <h5 class="mb-4 border-bottom pb-2" id="dokumentasi">Dokumentasi</h5>
 
 @foreach ($data_dokumentasi as $item)
 <div class="row mb-4 align-items-center">
+    @php($fotoDokumentasi = $item['foto'])
 
     <div class="col-md-4">
         <!-- Memanggil foto dari array -->
-        <img src="{{ asset($item['foto']) }}" 
+        <img src="{{ asset($fotoDokumentasi) }}" 
             alt="{{ $item['judul'] }}"
-            class="img-fluid rounded"
-            style="height: 280%; width:100%; object-fit:cover;"> 
+            class="img-fluid rounded document-image"> 
     </div>
 
     <div class="col-md-8">
         <!-- Memanggil judul dari array -->
-        <h5 class="mb-2" style="font-family: 'Times New Roman', Times, serif; font-size: 30px;">
+        <h5 class="mb-2 document-title" style="font-family: 'Times New Roman', Times, serif; font-size: 30px;">
             {{ $item['judul'] }}
         </h5>
         
         <!-- Memanggil keterangan dari array -->
-        <p class="text-muted" style="font-family: 'Times New Roman', Times, serif;font-size: 20px;">
+        <p class="text-muted document-text" style="font-family: 'Times New Roman', Times, serif;font-size: 20px;">
             {{ $item['keterangan'] }}
         </p>
     </div>

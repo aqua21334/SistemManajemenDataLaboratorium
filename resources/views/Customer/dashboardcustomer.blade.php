@@ -13,16 +13,23 @@
             font-family: 'Times New Roman', Times, serif; 
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * { box-sizing: border-box; }
+
         /* Hero membentang 100% layar */
         .hero-section {
             background-image: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url("{{ asset('images/hero-btr.jpg') }}");
             background-size: cover;
             background-position: center;
-            height: 450px;
+            min-height: 450px;
             display: flex;
             align-items: center;
             color: white;
             border-bottom: 3px solid #FACC15; /* Garis kuning PU */
+            padding: 48px 0;
         }
 
         /* Navbar membentang 100% layar */
@@ -34,7 +41,13 @@
             margin-bottom: 40px;
         }
         
-        .nav-links a { color: #000; text-decoration: none; font-weight: bold; margin-right: 20px; font-family: sans-serif;}
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .nav-links a { color: #000; text-decoration: none; font-weight: bold; margin-right: 0; font-family: sans-serif;}
         .nav-links a:hover { color: #2b4c65; }
         
         /* Logo PU Bundar tetap di tengah */
@@ -70,6 +83,15 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
             margin-bottom: 40px;
         }
+
+        .document-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+        }
+
+        .document-title { font-size: 30px; font-weight: bold; }
+        .document-text { font-size: 20px; line-height: 1.8; }
 
         /* Elemen dalam konten */
         .garis-tengah { border-right: 2px solid #e2e8f0; }
@@ -107,12 +129,28 @@
             margin-top: 50px;
         }
         .footer-section h5, .footer-section p { color: white !important; }
+
+        @media (max-width: 767.98px) {
+            .hero-section { min-height: 280px; padding: 32px 0; text-align: center; }
+            .hero-section h1 { font-size: 2rem; }
+            .hero-section h2 { font-size: 1.1rem; }
+            .nav-container { padding: 18px 0 16px; margin-bottom: 24px; }
+            .nav-container .container { flex-direction: column; gap: 12px; }
+            .logo-tengah { position: static; transform: none; margin: 0 auto; width: 76px; height: 76px; }
+            .logo-tengah img { width: 68px !important; height: 68px !important; }
+            .content-box { padding: 20px 12px; }
+            .garis-tengah { border-right: 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 16px; }
+            .document-image { height: 200px; margin-bottom: 12px; }
+            .document-title { font-size: 1.25rem !important; }
+            .document-text { font-size: 1rem !important; }
+            .footer-section { padding-top: 32px; }
+        }
     </style>
 </head>
 <body>
 
     <!-- HERO SECTION -->
-    <div class="hero-section">
+    <div class="hero-section" id="beranda">
         <div class="container"> 
             <h2 class="mb-0">Selamat Datang Di,</h2>
             <h1 class="fw-bold display-5">Laboratorium Balai Teknik Rawa</h1>
@@ -121,10 +159,10 @@
 
     <!-- NAVBAR SECTION -->
     <div class="nav-container">
-        <div class="container d-flex justify-content-between align-items-center">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
             
             <div class="nav-links">
-                <a href="#">Beranda</a>
+                <a href="#beranda">Beranda</a>
                 <a href="#layanan">Layanan</a>
                 <a href="#dokumentasi">Dokumentasi</a>
             </div>
@@ -258,8 +296,8 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if($p->status == 'selesai' && $p->laporanHasil)
-                                        <a href="{{ asset('uploads/laporan/' . $p->laporanHasil->file_hasil) }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                    @if(($p->status == 'selesai' || $p->status == 'diverifikasi') && $p->laporanHasil)
+                                        <a href="{{ route('customer.hasil.download', $p->id_permintaan) }}" class="btn btn-sm btn-outline-primary" target="_blank">
                                             <i class="bi bi-download me-1"></i> Unduh Hasil
                                         </a>
                                     @else
@@ -309,9 +347,9 @@
                         'keterangan' => 'Surveyor Laboratorium Balai Teknik Rawa melaksanakan pengoperasian peralatan kualitas air Horiba U50 di Jejangkit, Kalimantan Selatan, untuk menguji kualitas air pada saluran irigasi. Kegiatan ini bertujuan memperoleh data kualitas air secara akurat sebagai bahan analisis dan evaluasi kondisi perairan. Pengujian ini penting untuk mendukung pengelolaan sumber daya air, khususnya pada wilayah dengan sistem irigasi.'
                     ],
                     [
-                        'foto' => 'images/dokumentasi4.jpg',
+                        'foto' => 'images/dokumentasi4.jpg', // Sesuaikan dengan nama file foto 4
                         'judul' => 'Pengoperasian Peralatan Acoustic Doppler Current Profiler',
-                        'keterangan' => 'Surveyor Laboratorium Balai Teknik Rawa melaksanakan pengoperasian peralatan kualitas air Horiba U50 di Jejangkit, Kalimantan Selatan, untuk menguji kualitas air pada saluran irigasi. Kegiatan ini dilakukan guna memperoleh data kualitas air secara akurat sebagai bahan analisis dan evaluasi kondisi perairan di lokasi pengukuran.'
+                        'keterangan' => 'Pengoperasian Peralatan Acoustic Doppler Current Profiler (ADCP) merupakan kegiatan pengukuran kecepatan dan arah arus air menggunakan alat berbasis gelombang akustik dengan prinsip efek Doppler. ADCP dipasang pada perahu survei dan dioperasikan sepanjang jalur pengukuran yang telah ditentukan, sementara data direkam secara otomatis melalui perangkat lunak yang terhubung dengan GPS. Hasil pengukuran menghasilkan profil arus pada berbagai kedalaman yang dimanfaatkan untuk survei hidrografi, analisis kondisi perairan, serta mendukung perencanaan dan pengelolaan sumber daya air.'
                     ],
                 ];
             @endphp
@@ -326,36 +364,20 @@
 
                 <!-- FOTO -->
                 <div class="col-md-4">
-                    <img src="{{ asset($item['foto']) }}"
+                    @php($fotoDokumentasi = $item['foto'])
+                    <img src="{{ asset($fotoDokumentasi) }}"
                          alt="{{ $item['judul'] }}"
-                         class="img-fluid rounded shadow-sm"
-                         style="
-                            width:100%;
-                            height:280px;
-                            object-fit:cover;
-                         ">
+                         class="img-fluid rounded shadow-sm document-image">
                 </div>
 
                 <!-- KETERANGAN -->
                 <div class="col-md-8">
 
-                    <h5
-                    style="
-                        font-family:'Times New Roman',Times,serif;
-                        font-size:30px;
-                        font-weight:bold;
-                    ">
+                    <h5 class="document-title" style="font-family:'Times New Roman',Times,serif;">
                         {{ $item['judul'] }}
                     </h5>
 
-                    <p
-                    class="text-muted"
-                    style="
-                        font-family:'Times New Roman',Times,serif;
-                        font-size:20px;
-                        text-align:justify;
-                        line-height:1.8;
-                    ">
+                    <p class="text-muted document-text" style="font-family:'Times New Roman',Times,serif; text-align:justify;">
                         {{ $item['keterangan'] }}
                     </p>
 

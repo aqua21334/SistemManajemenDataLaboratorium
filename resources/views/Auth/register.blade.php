@@ -9,13 +9,21 @@
     
     <style>
         body { 
-            background-color: #222; display: flex; justify-content: center; align-items: center; 
+            background:
+                linear-gradient(rgba(20, 30, 40, 0.55), rgba(20, 30, 40, 0.55)),
+                url("{{ asset('images/hero-btr.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex; justify-content: center; align-items: center; 
             min-height: 100vh; font-family: 'Times New Roman', serif; margin: 0;
         }
-        .auth-card { display: flex; width: 900px; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .form-side { width: 50%; padding: 50px; display: flex; flex-direction: column; justify-content: center; }
+        * { box-sizing: border-box; }
+        .auth-card { display: flex; width: 100%; max-width: 900px; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin: 32px; border-radius:6px; overflow:hidden; }
+        .form-side { flex:1 1 50%; padding: 50px; display: flex; flex-direction: column; justify-content: center; }
         .panel-side { 
-            width: 50%; padding: 50px; background-color: #2b4c65; color: white; 
+            flex:1 1 50%; padding: 50px; background-color: #2b4c65; color: white; 
             display: flex; flex-direction: column; justify-content: center; align-items: center; 
             text-align: center; position: relative; overflow: hidden;
         }
@@ -37,6 +45,12 @@
         
         .btn-custom { background-color: #b0c4de; color: #2b4c65; border: 1px solid #333; font-weight: bold; padding: 8px 40px; border-radius: 4px; }
         .btn-custom:hover { background-color: #9cb4d1; color: #1a3042; }
+        @media (max-width: 767.98px) {
+            .auth-card { flex-direction: column; margin: 16px; }
+            .form-side, .panel-side { padding: 20px; width: 100%; }
+            .logo-header { position: static; margin-bottom: 12px; }
+            .btn-custom { padding: 8px 20px; }
+        }
     </style>
 </head>
 <body>

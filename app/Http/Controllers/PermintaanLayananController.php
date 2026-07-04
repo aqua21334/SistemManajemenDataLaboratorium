@@ -172,6 +172,21 @@ public function edit($id)
         return redirect()->route('customer.dashboard')->with('success', 'Permintaan berhasil dikirim');
     }
 
+    public function downloadHasilCustomer($id)
+    {
+        $permintaan = PermintaanLayanan::with('laporanHasil')->findOrFail($id);
+
+        abort_unless($permintaan->id_user === Auth::id(), 403);
+
+        $laporan = $permintaan->laporanHasil;
+        abort_unless($laporan && $laporan->file_hasil, 404);
+
+        $filePath = public_path('uploads/laporan/' . $laporan->file_hasil);
+        abort_unless(is_file($filePath), 404);
+
+        return response()->download($filePath);
+    }
+
     // 9. Menghapus Permintaan
     public function destroy($id)
     {

@@ -19,20 +19,40 @@
             display: flex; justify-content: center; align-items: center; 
             min-height: 100vh; font-family: 'Times New Roman', serif; margin: 0;
         }
-        .auth-card { 
-            display: flex; width: 900px; background: #fff; 
+        * { box-sizing: border-box; }
+
+        .auth-card {
+            display: flex;
+            width: 100%;
+            max-width: 900px;
+            background: #fff;
             box-shadow: 0 16px 40px rgba(0,0,0,0.45);
             border-radius: 6px;
             overflow: hidden;
+            margin: 32px;
         }
-        .form-side { 
-            width: 50%; padding: 50px; position: relative; 
-            display: flex; flex-direction: column; justify-content: center;
+
+        .form-side {
+            flex: 1 1 50%;
+            padding: 50px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
-        .panel-side { 
-            width: 50%; padding: 50px; background-color: #2b4c65; color: white; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            text-align: center; position: relative; overflow: hidden;
+
+        .panel-side {
+            flex: 1 1 50%;
+            padding: 50px;
+            background-color: #2b4c65;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
         
         .shape-1 { position: absolute; bottom: -20px; left: -20px; width: 150px; height: 150px; background: rgba(255,255,255,0.05); transform: rotate(45deg); }
@@ -58,6 +78,14 @@
         /* Tautan Kembali */
         .back-link { font-family: sans-serif; font-size: 13px; color: #666; text-decoration: none; transition: color 0.2s; }
         .back-link:hover { color: #2b4c65; text-decoration: underline; }
+        @media (max-width: 767.98px) {
+            body { background-attachment: scroll; }
+            .auth-card { flex-direction: column; margin: 16px; }
+            .form-side, .panel-side { padding: 20px; width: 100%; }
+            .logo-header { position: static; margin-bottom: 10px; }
+            .logo-header p { font-size: 12px; }
+            .btn-custom { padding: 8px 20px; }
+        }
     </style>
 </head>
 <body>
