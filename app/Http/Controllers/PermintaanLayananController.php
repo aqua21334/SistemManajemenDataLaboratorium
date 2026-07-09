@@ -187,6 +187,25 @@ public function edit($id)
         return response()->download($filePath);
     }
 
+    public function lihatFile($id)
+    {
+        $permintaan = PermintaanLayanan::findOrFail($id);
+
+        abort_unless($permintaan->file_layanan, 404);
+
+        $fileName = basename($permintaan->file_layanan);
+        $publicFile = public_path('uploads/permintaan/' . $fileName);
+        $storageFile = storage_path('app/public/uploads/permintaan/' . $fileName);
+
+        $filePath = is_file($publicFile)
+            ? $publicFile
+            : (is_file($storageFile) ? $storageFile : null);
+
+        abort_unless($filePath, 404);
+
+        return response()->file($filePath);
+    }
+
     // 9. Menghapus Permintaan
     public function destroy($id)
     {

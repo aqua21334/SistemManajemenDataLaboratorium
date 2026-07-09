@@ -11,7 +11,9 @@ class RiwayatPenelitianController extends Controller
     // Hanya menampilkan daftar penelitian yang sudah selesai
     public function index()
     {
-        $query = RiwayatPenelitian::with('permintaanLayanan', 'laporanHasil')->orderBy('created_at', 'desc');
+        $query = RiwayatPenelitian::with('permintaanLayanan', 'laporanHasil')
+            ->whereNotNull('nama_laporan')
+            ->orderBy('created_at', 'desc');
         
         // Search functionality
         $search = request('search');
@@ -59,6 +61,7 @@ class RiwayatPenelitianController extends Controller
         $search = request('search');
         
         $query = RiwayatPenelitian::with('permintaanLayanan', 'laporanHasil')
+                                    ->whereNotNull('nama_laporan')
                                     ->where('status', 'selesai')
                                     ->orderBy('created_at', 'desc');
         
@@ -73,7 +76,18 @@ class RiwayatPenelitianController extends Controller
             });
         }
         
-        $riwayatPenelitians = $query->paginate(5);
+        $all = $query->get()->unique('id_permintaan')->values();
+
+        $page = request()->get('page', 1);
+        $perPage = 5;
+        $slice = $all->slice(($page - 1) * $perPage, $perPage);
+        $riwayatPenelitians = new LengthAwarePaginator(
+            $slice->values(),
+            $all->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
         
         \Log::info('Riwayat Search', [
             'search' => $search,
@@ -81,7 +95,7 @@ class RiwayatPenelitianController extends Controller
             'per_page' => $riwayatPenelitians->perPage()
         ]);
         
-        return view('PetugasLab.riwayatpetugas.index', compact('riwayatPenelitians', 'search'));
+        return view('petugaslab.riwayatpetugas.index', compact('riwayatPenelitians', 'search'));
     }
 
     /**
@@ -90,6 +104,7 @@ class RiwayatPenelitianController extends Controller
     public function indexKepalaLab()
     {
         $query = RiwayatPenelitian::with(['permintaanLayanan', 'user.personil', 'laporanHasil'])
+            ->whereNotNull('nama_laporan')
             ->where('status', 'selesai')
             ->orderByDesc('tanggal_selesai')
             ->orderByDesc('created_at');
@@ -109,5 +124,25 @@ class RiwayatPenelitianController extends Controller
         
         $riwayatPenelitians = $query->paginate(5);
         return view('KepalaLab.riwayatkepala.index', compact('riwayatPenelitians', 'search'));
+    }
+
+    public function lihatFile($id)
+    {
+        $riwayat = RiwayatPenelitian::with('laporanHasil')->findOrFail($id);
+        $laporan = $riwayat->laporanHasil;
+
+        abort_unless($laporan && $laporan->file_hasil, 404);
+
+        $fileName = basename($laporan->file_hasil);
+        $publicFile = public_path('uploads/laporan/' . $fileName);
+        $storageFile = storage_path('app/public/uploads/laporan/' . $fileName);
+
+        $filePath = is_file($publicFile)
+            ? $publicFile
+            : (is_file($storageFile) ? $storageFile : null);
+
+        abort_unless($filePath, 404);
+
+        return response()->file($filePath);
     }
 }

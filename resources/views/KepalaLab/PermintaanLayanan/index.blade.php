@@ -219,7 +219,7 @@
                         </td>
                         <td>
                             @if($permintaan->file_layanan)
-                                <a href="{{ asset('uploads/permintaan/' . $permintaan->file_layanan) }}" target="_blank" class="pdf-file-link" title="Lihat {{ basename($permintaan->file_layanan) }}">
+                                    <a href="{{ route('kepala.permintaan.file', $permintaan->id_permintaan) }}" target="_blank" class="pdf-file-link" title="Lihat {{ basename($permintaan->file_layanan) }}">
                                     <span class="pdf-file-icon" aria-hidden="true"></span>
                                 </a>
                             @else

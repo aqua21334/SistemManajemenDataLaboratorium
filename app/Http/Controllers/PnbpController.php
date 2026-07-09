@@ -137,4 +137,22 @@ class PnbpController extends Controller
         
         return view('Admin.pnbp.invoice', compact('pnbp')); 
     }
+
+    // 6. Fungsi Melihat Bukti Pembayaran
+    public function lihatBuktiBayar($id)
+    {
+        $pnbp = Pnbp::findOrFail($id);
+
+        $fileName = basename($pnbp->bukti_bayar);
+        $publicFile = public_path('uploads/pnbp/' . $fileName);
+        $storageFile = storage_path('app/public/uploads/pnbp/' . $fileName);
+
+        $filePath = is_file($publicFile)
+            ? $publicFile
+            : (is_file($storageFile) ? $storageFile : null);
+
+        abort_unless($filePath, 404);
+
+        return response()->file($filePath);
+    }
 }

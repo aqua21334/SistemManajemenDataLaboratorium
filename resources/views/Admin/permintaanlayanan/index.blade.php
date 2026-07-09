@@ -155,7 +155,7 @@
                     </td>
                     <td>
                         @if($lap->file_layanan)
-                            <a href="{{ asset('uploads/permintaan/'.$lap->file_layanan) }}" target="_blank" class="text-danger"><i class="bi bi-file-earmark-pdf-fill fs-5"></i></a>
+                            <a href="{{ route('admin.permintaan.file', $lap->id_permintaan) }}" target="_blank" class="text-danger"><i class="bi bi-file-earmark-pdf-fill fs-5"></i></a>
                         @else
                             -
                         @endif
@@ -172,12 +172,9 @@
                     </td>
                 </tr>
                 @empty
-                    @for($i=0; $i<6; $i++)
                     <tr>
-                        <td><input type="checkbox" class="form-check-input"></td>
-                        <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+                        <td colspan="7" class="text-center text-muted py-4">Tidak ada permintaan saat ini</td>
                     </tr>
-                    @endfor
                 @endforelse
             </tbody>
         </table>

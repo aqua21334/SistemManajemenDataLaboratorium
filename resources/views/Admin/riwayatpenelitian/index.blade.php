@@ -115,7 +115,7 @@
                         <td>{{ \Carbon\Carbon::parse($riwayat->tanggal_selesai)->format('d/m/Y H:i') }}</td>
                         <td>
                             @if($riwayat->laporanHasil && $riwayat->laporanHasil->file_hasil)
-                                <a href="{{ asset('uploads/laporan/' . $riwayat->laporanHasil->file_hasil) }}" class="text-danger" target="_blank"><i class="bi bi-file-earmark-pdf-fill fs-5"></i></a>
+                                <a href="{{ route('admin.riwayat-penelitian.file', $riwayat->id_riwayat) }}" class="text-danger" target="_blank"><i class="bi bi-file-earmark-pdf-fill fs-5"></i></a>
                             @else
                                 -
                             @endif

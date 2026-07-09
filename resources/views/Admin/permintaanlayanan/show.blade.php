@@ -162,7 +162,7 @@
                             </div>
                             @if($permintaan->file_layanan)
                                 <div class="current-file-info">
-                                    <i class="bi bi-file-earmark"></i> File aktual: <a href="{{ asset('uploads/permintaan/'.$permintaan->file_layanan) }}" target="_blank">{{ $permintaan->file_layanan }}</a>
+                                    <i class="bi bi-file-earmark"></i> File aktual: <a href="{{ route('admin.permintaan.file', $permintaan->id_permintaan) }}" target="_blank">{{ $permintaan->file_layanan }}</a>
                                 </div>
                             @endif
                             @error('file_layanan')

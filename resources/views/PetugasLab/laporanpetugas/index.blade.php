@@ -190,17 +190,9 @@
                         </tr>
                         @endforeach
                     @else
-                        @for($i=0; $i<7; $i++)
                         <tr>
-                            <td><input type="checkbox" class="form-check-input-custom"></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td><a href="#" class="btn-action" style="pointer-events: none; opacity: 0.5;"><i class="bi bi-pencil-square"></i> Edit</a></td>
+                            <td colspan="6" class="text-center text-muted py-4">Tidak ada laporan saat ini</td>
                         </tr>
-                        @endfor
                     @endif
                 </tbody>
             </table>

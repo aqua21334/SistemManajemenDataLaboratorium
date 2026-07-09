@@ -147,18 +147,7 @@
                     </td>
                     <td>
                         @if($p->pnbp && $p->pnbp->bukti_bayar)
-                            @php
-                                $buktiBayarFile = basename($p->pnbp->bukti_bayar);
-                                $publicBuktiBayar = public_path('uploads/pnbp/' . $buktiBayarFile);
-                                $storageBuktiBayar = storage_path('app/public/uploads/pnbp/' . $buktiBayarFile);
-
-                                $buktiBayarUrl = file_exists($publicBuktiBayar)
-                                    ? asset('uploads/pnbp/' . rawurlencode($buktiBayarFile))
-                                    : (file_exists($storageBuktiBayar)
-                                        ? asset('storage/uploads/pnbp/' . rawurlencode($buktiBayarFile))
-                                        : asset('uploads/pnbp/' . rawurlencode($buktiBayarFile)));
-                            @endphp
-                            <a href="{{ $buktiBayarUrl }}" target="_blank" style="text-decoration:none;">Lihat</a>
+                            <a href="{{ route('admin.pnbp.bukti', $p->pnbp->id_pnbp) }}" target="_blank" style="text-decoration:none;">Lihat</a>
                         @else
                             -
                         @endif
@@ -174,12 +163,15 @@
                     </td>
                     <td>
                         @if($p->pnbp)
-                            <div style="display: flex; gap: 5px;">
-                                <a href="{{ route('admin.pnbp.edit', $p->pnbp->id_pnbp) }}" class="btn-text-hapus" style="color: #0d6efd; text-decoration: none;" title="Edit Status">✏️</a>
-                                <a href="{{ route('admin.pnbp.invoice', $p->pnbp->id_pnbp) }}" class="btn-text-hapus" style="color: #28a745; text-decoration: none;" title="Lihat Invoice">📄</a>
+                           <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+                                <a href="{{ route('admin.pnbp.edit', $p->pnbp->id_pnbp) }}" class="btn-text-hapus" style="color: #0d6efd; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px;" title="Edit Status">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
                             </div>
                         @else
-                            <a href="{{ route('admin.pnbp.create') }}?id_permintaan={{ $p->id_permintaan }}" class="btn-text-hapus" style="color: #0d6efd; text-decoration: none;">+ Buat</a>
+                            <a href="{{ route('admin.pnbp.create') }}?id_permintaan={{ $p->id_permintaan }}" class="btn-text-hapus" style="color: #0d6efd; text-decoration: none;">
+                                <i class="bi bi-plus-circle me-1"></i> Buat
+                            </a>
                         @endif
                     </td>
                 </tr>

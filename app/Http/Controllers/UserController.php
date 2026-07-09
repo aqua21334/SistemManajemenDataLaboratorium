@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
@@ -14,7 +15,7 @@ class UserController extends Controller
      */
     public function showProfile()
     {
-        $user = Auth::user();
+        $user = Auth::user()->fresh(['personil', 'role']);
         return view('User.profile', compact('user'));
     }
 
@@ -23,14 +24,23 @@ class UserController extends Controller
      */
     public function updateProfile(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::user()->fresh(['personil', 'role']);
 
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id_user . ',id_user',
         ]);
 
-        $user->update($validated);
+        DB::transaction(function () use ($user, $validated) {
+            $user->update($validated);
+
+            if ($user->personil) {
+                $user->personil->update([
+                    'nama_personil' => $validated['nama'],
+                    'email' => $validated['email'],
+                ]);
+            }
+        });
 
         return redirect()->route('user.profile')->with('success', 'Profil berhasil diperbarui!');
     }
@@ -40,7 +50,8 @@ class UserController extends Controller
      */
     public function showChangePassword()
     {
-        return view('User.change-password');
+        $user = Auth::user()->fresh(['personil', 'role']);
+        return view('User.change-password', compact('user'));
     }
 
     /**
@@ -59,7 +70,9 @@ class UserController extends Controller
             'password.min' => 'Password harus minimal 6 karakter',
         ]);
 
-        Auth::user()->update([
+        $user = Auth::user()->fresh(['personil', 'role']);
+
+        $user->update([
             'password' => Hash::make($validated['password']),
         ]);
 

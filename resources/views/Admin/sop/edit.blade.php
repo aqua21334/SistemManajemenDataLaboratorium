@@ -158,7 +158,7 @@
                         </div>
                         @if($sop->file_sop)
                             <div class="current-file">
-                                <i class="bi bi-file-earmark"></i> File: <a href="{{ asset('uploads/sop/'.$sop->file_sop) }}" target="_blank">{{ $sop->file_sop }}</a>
+                                <i class="bi bi-file-earmark"></i> File: <a href="{{ route('admin.sop.file', $sop->id_sop) }}" target="_blank">{{ $sop->file_sop }}</a>
                             </div>
                         @endif
                         @error('file_sop')

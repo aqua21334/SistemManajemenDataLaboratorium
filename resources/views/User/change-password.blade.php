@@ -58,9 +58,14 @@
 <body>
 
 @php
-    $userRoleId = Auth::user()->id_role;
+    $user = $user ?? Auth::user()->fresh(['personil', 'role']);
+    $userRoleId = $user->id_role;
     $isPetugasLab = $userRoleId == 3;
     $isKepalaLab = $userRoleId == 2;
+    $userPhoto = $user?->personil?->foto;
+    $userAvatar = $userPhoto && file_exists(public_path('images/pegawai/' . $userPhoto))
+        ? asset('images/pegawai/' . $userPhoto)
+        : 'https://ui-avatars.com/api/?name=' . urlencode($user->nama ?? 'WA') . '&background=E53E3E&color=fff';
 @endphp
 
 <div class="sidebar shadow">
@@ -103,11 +108,11 @@
         <!-- Dropdown Profil -->
         <div class="dropdown d-flex align-items-center" style="gap: 15px; position: relative;">
             <div>
-                <p class="m-0 fw-bold" style="font-size: 14px; color: #333;">{{ Auth::user()->nama }}</p>
+                <p class="m-0 fw-bold" style="font-size: 14px; color: #333;">{{ $user->nama }}</p>
                 <small class="text-muted" style="font-size: 12px;">{{ $isPetugasLab ? 'Petugas Lab' : ($isKepalaLab ? 'Kepala Lab' : 'User') }}</small>
             </div>
             <button class="dropdown-toggle" id="dropdownProfil" data-bs-toggle="dropdown" aria-expanded="false" style="background: none; border: none; padding: 0; cursor: pointer;">
-                <img src="https://ui-avatars.com/api/?name={{ Auth::user()->nama }}&background=E53E3E&color=fff" class="rounded-circle border border-2 border-danger" width="40">
+                <img src="{{ $userAvatar }}" class="rounded-circle border border-2 border-danger" width="40">
             </button>
             
             <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownProfil" style="border: 2px solid #333; border-radius: 8px; min-width: 200px; z-index: 1050; position: absolute;">

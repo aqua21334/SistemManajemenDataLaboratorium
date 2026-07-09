@@ -88,8 +88,13 @@ class PersonilController extends Controller
         }
 
         $idRolePegawai = $request->jabatan === 'Kepala Lab' ? 2 : 3;
+        $destination = public_path('images/pegawai');
 
-        DB::transaction(function () use ($request, $idRolePegawai) {
+        if (!file_exists($destination)) {
+            mkdir($destination, 0755, true);
+        }
+
+        DB::transaction(function () use ($request, $idRolePegawai, $destination) {
             $user = User::create([
                 'nama' => $request->nama,
                 'email' => $request->email,
@@ -108,7 +113,7 @@ class PersonilController extends Controller
             if ($request->hasFile('foto')) {
                 $file = $request->file('foto');
                 $nama_foto = time() . "_" . $file->getClientOriginalName();
-                $file->move(public_path('images/pegawai'), $nama_foto);
+                $file->move($destination, $nama_foto);
                 $data['foto'] = $nama_foto;
             }
 
@@ -167,13 +172,19 @@ class PersonilController extends Controller
             'id_role' => $request->jabatan === 'Kepala Lab' ? 2 : 3,
         ]);
 
+        $destination = public_path('images/pegawai');
+
+        if (!file_exists($destination)) {
+            mkdir($destination, 0755, true);
+        }
+
         if ($request->hasFile('foto')) {
             if ($personil->foto && file_exists(public_path('images/pegawai/' . $personil->foto))) {
                 unlink(public_path('images/pegawai/' . $personil->foto));
             }
             $file = $request->file('foto');
             $nama_foto = time() . "_" . $file->getClientOriginalName();
-            $file->move(public_path('images/pegawai'), $nama_foto);
+            $file->move($destination, $nama_foto);
             $data['foto'] = $nama_foto;
         }
 

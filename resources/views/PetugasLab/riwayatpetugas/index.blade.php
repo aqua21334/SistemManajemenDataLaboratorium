@@ -198,7 +198,7 @@
                         <td>{{ $riwayat->tanggal_selesai ? \Carbon\Carbon::parse($riwayat->tanggal_selesai)->format('d/m/Y') : '-' }}</td>
                         <td>
                             @if($riwayat->laporanHasil && $riwayat->laporanHasil->file_hasil)
-                                <a href="{{ asset('uploads/laporan/' . $riwayat->laporanHasil->file_hasil) }}" target="_blank" class="pdf-file-link" title="Lihat {{ basename($riwayat->laporanHasil->file_hasil) }}">
+                                <a href="{{ route('petugas.riwayat.file', $riwayat->id_riwayat) }}" target="_blank" class="pdf-file-link" title="Lihat {{ basename($riwayat->laporanHasil->file_hasil) }}">
                                     <span class="pdf-file-icon" aria-hidden="true"></span>
                                 </a>
                             @else

@@ -159,8 +159,13 @@
     <tr>
         <td>
             <div class="d-flex align-items-center">
-                {{-- Foto: Jika ada di DB pakai itu, jika tidak pakai inisial nama --}}
-                <img src="{{ $p->foto ? asset('images/pegawai/'.$p->foto) : 'https://ui-avatars.com/api/?name='.urlencode($p->nama_personil).'&background=random' }}" class="avatar-img">
+                @php
+                    $fotoPath = $p->foto ? public_path('images/pegawai/' . $p->foto) : null;
+                    $fotoUrl = $p->foto && file_exists($fotoPath)
+                        ? asset('images/pegawai/' . $p->foto)
+                        : 'https://ui-avatars.com/api/?name=' . urlencode($p->nama_personil) . '&background=random';
+                @endphp
+                <img src="{{ $fotoUrl }}" class="avatar-img" alt="Foto {{ $p->nama_personil }}">
                 <div>
                     <div class="fw-bold" style="font-size: 15px;">{{ $p->nama_personil }}</div>
                     <div class="text-muted" style="font-size: 11px;">NIP. {{ $p->nip ?? '-' }}</div>

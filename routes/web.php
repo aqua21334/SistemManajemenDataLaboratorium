@@ -59,6 +59,9 @@ Route::middleware(['auth', 'petugas_lab'])->prefix('petugas')->name('petugas.')-
     Route::get('/riwayat', [riwayatPenelitianController::class, 'indexPetugas'])
         ->name('riwayat.index');
 
+    Route::get('/riwayat/{id}/file', [riwayatPenelitianController::class, 'lihatFile'])
+        ->name('riwayat.file');
+
     // Peralatan (Petugas Lab)
     Route::get('/peralatan', [peralatanController::class, 'indexPetugas'])
         ->name('peralatan.index');
@@ -108,11 +111,13 @@ Route::middleware('auth')->group(function () {
             ->name('dashboard');
 
         Route::resource('permintaan', permintaanLayananController::class);
+        Route::get('/permintaan/{id}/file', [permintaanLayananController::class, 'lihatFile'])->name('permintaan.file');
         Route::put('/permintaan/{id}/update-status', [permintaanLayananController::class, 'updateStatus'])
             ->name('permintaan.updateStatus');
 
         Route::resource('pnbp', pnbpController::class);
         Route::get('/pnbp/{id}/invoice', [pnbpController::class, 'cetakInvoice'])->name('pnbp.invoice');
+        Route::get('/pnbp/{id}/bukti-bayar', [pnbpController::class, 'lihatBuktiBayar'])->name('pnbp.bukti');
 
         Route::resource('laporan', laporanHasilController::class);
         Route::resource('dokumen', dokumenController::class);
@@ -123,12 +128,16 @@ Route::middleware('auth')->group(function () {
         ]);
 
         Route::resource('sop', daftarSopController::class);
+        Route::get('/sop/{id}/file', [daftarSopController::class, 'lihatFile'])->name('sop.file');
         Route::get('/absensi/export', [absensiController::class, 'exportExcel'])
             ->name('absensi.export');
         Route::resource('absensi', absensiController::class);
 
         Route::get('/riwayat-penelitian', [riwayatPenelitianController::class, 'index'])
             ->name('riwayat-penelitian.index');
+
+        Route::get('/riwayat-penelitian/{id}/file', [riwayatPenelitianController::class, 'lihatFile'])
+            ->name('riwayat-penelitian.file');
 
         Route::get('/riwayat-absensi', [absensiController::class, 'index'])
             ->name('riwayat-absensi.index');
@@ -179,6 +188,12 @@ Route::middleware('auth')->group(function () {
     // Monitoring SOP Kepala Lab
     Route::get('/sop', [daftarSopController::class, 'indexKepalaLab'])
         ->name('kepala.sop');
+    Route::get('/sop/{id}/file', [daftarSopController::class, 'lihatFile'])
+        ->name('kepala.sop.file');
+
+    // File Permintaan Layanan Kepala Lab
+    Route::get('/permintaan/{id}/file', [permintaanLayananController::class, 'lihatFile'])
+        ->name('kepala.permintaan.file');
 
 });
 

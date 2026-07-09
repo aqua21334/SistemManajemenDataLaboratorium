@@ -99,6 +99,13 @@
 </div>
 
 <div class="main-wrapper">
+    @php
+        $authUser = Auth::user();
+        $authPhoto = $authUser?->personil?->foto;
+        $authAvatar = $authPhoto && file_exists(public_path('images/pegawai/' . $authPhoto))
+            ? asset('images/pegawai/' . $authPhoto)
+            : 'https://ui-avatars.com/api/?name=' . urlencode($authUser?->nama ?? 'WA') . '&background=E53E3E&color=fff';
+    @endphp
     <!-- Topbar dengan Fitur Dropdown Profil -->
     <div class="topbar-card shadow-sm">
         <h3 class="fw-bold m-0" style="color: #333; font-family: serif;">Selamat Datang</h3>
@@ -110,7 +117,7 @@
                     <p class="m-0 fw-bold" style="font-size: 14px; color: #333;">{{ Auth::user()->nama ?? 'Weka Athaya' }}</p>
                     <small class="text-muted">Petugas Lab</small>
                 </div>
-                <img src="https://ui-avatars.com/api/?name={{ Auth::user()->nama ?? 'WA' }}&background=E53E3E&color=fff" class="rounded-circle border border-2 border-danger" width="45">
+                <img src="{{ $authAvatar }}" class="rounded-circle border border-2 border-danger" width="45">
             </div>
             
             <!-- Menu Dropdown -->

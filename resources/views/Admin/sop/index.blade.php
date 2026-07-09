@@ -194,7 +194,7 @@
                     <td>{{ $sop->judul_sop }}</td>
                     <td>
                         @if($sop->file_sop)
-                            <a href="{{ asset('uploads/sop/'.$sop->file_sop) }}" target="_blank" class="pdf-file-link" title="Lihat {{ basename($sop->file_sop) }}">
+                            <a href="{{ route('admin.sop.file', $sop->id_sop) }}" target="_blank" class="pdf-file-link" title="Lihat {{ basename($sop->file_sop) }}">
                                 <span class="pdf-file-icon" aria-hidden="true"><span>PDF</span></span>
                             </a>
                         @else

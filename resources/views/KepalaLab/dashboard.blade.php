@@ -99,6 +99,13 @@
 </div>
 
 <div class="main-wrapper">
+    @php
+        $authUser = Auth::user();
+        $authPhoto = $authUser?->personil?->foto;
+        $authAvatar = $authPhoto && file_exists(public_path('images/pegawai/' . $authPhoto))
+            ? asset('images/pegawai/' . $authPhoto)
+            : 'https://ui-avatars.com/api/?name=' . urlencode($authUser?->nama ?? 'WA') . '&background=E53E3E&color=fff';
+    @endphp
     <!-- Topbar -->
     <div class="topbar-card shadow-sm">
         <h3 class="fw-bold m-0" style="color: #333; font-family: serif;">Selamat Datang</h3>
@@ -110,7 +117,7 @@
                 <small class="text-muted" style="font-size: 12px;">Kepala Lab</small>
             </div>
             <button class="dropdown-toggle" id="dropdownProfil" data-bs-toggle="dropdown" aria-expanded="false" style="background: none; border: none; padding: 0; cursor: pointer;">
-                <img src="https://ui-avatars.com/api/?name={{ Auth::user()->nama ?? 'WA' }}&background=E53E3E&color=fff" class="rounded-circle border border-2 border-danger" width="40">
+                <img src="{{ $authAvatar }}" class="rounded-circle border border-2 border-danger" width="40">
             </button>
             
             <!-- Isi Menu Dropdown -->

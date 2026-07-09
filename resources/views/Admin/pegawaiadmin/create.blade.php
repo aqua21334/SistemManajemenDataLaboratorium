@@ -68,6 +68,13 @@
 </div>
 
 <div class="main-wrapper">
+    @php
+        $authUser = Auth::user();
+        $authPhoto = $authUser?->personil?->foto;
+        $authAvatar = $authPhoto && file_exists(public_path('images/pegawai/' . $authPhoto))
+            ? asset('images/pegawai/' . $authPhoto)
+            : 'https://ui-avatars.com/api/?name=' . urlencode($authUser?->nama ?? 'WA') . '&background=E53E3E&color=fff';
+    @endphp
     <div class="topbar-card shadow-sm">
         <h3 class="fw-light m-0">Selamat Datang</h3>
         <div class="d-flex align-items-center">
@@ -75,7 +82,7 @@
                 <p class="m-0 fw-bold" style="font-size: 14px;">{{ Auth::user()->nama }}</p>
                 <small class="text-muted">Admin</small>
             </div>
-            <img src="https://ui-avatars.com/api/?name={{ Auth::user()->nama }}&background=E53E3E&color=fff" class="rounded-circle border border-2 border-danger" width="45">
+            <img src="{{ $authAvatar }}" class="rounded-circle border border-2 border-danger" width="45">
         </div>
     </div>
 

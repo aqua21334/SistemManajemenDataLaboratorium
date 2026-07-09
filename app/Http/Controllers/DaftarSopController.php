@@ -108,6 +108,25 @@ class DaftarSopController extends Controller
         return redirect()->route('admin.sop.index')->with('success', 'SOP berhasil dihapus!');
     }
 
+    public function lihatFile($id)
+    {
+        $sop = DaftarSop::findOrFail($id);
+
+        abort_unless($sop->file_sop, 404);
+
+        $fileName = basename($sop->file_sop);
+        $publicFile = public_path('uploads/sop/' . $fileName);
+        $storageFile = storage_path('app/public/uploads/sop/' . $fileName);
+
+        $filePath = is_file($publicFile)
+            ? $publicFile
+            : (is_file($storageFile) ? $storageFile : null);
+
+        abort_unless($filePath, 404);
+
+        return response()->file($filePath);
+    }
+
     /**
      * Menampilkan daftar SOP untuk Kepala Lab
      */
